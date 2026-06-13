@@ -11,7 +11,9 @@ uploads
 !evaluation/data/**/*.json
 !evaluation/data/**/*.pdf
 !evaluation/reports/*.json
-!spe/data/**/*.json
+!skill_proficiency_estimator/data/*.json
+!skill_proficiency_estimator/data/reports/*.json
+!skill_proficiency_estimator/scoring_model/**/*.json
 .ipynb_checkpoints/
 *.log
 .pytest_cache/
