@@ -1,0 +1,22 @@
+{
+  "full_name": "Maya Chen",
+  "email_address": "maya.chen@gmail.com",
+  "country_code": "+972",
+  "phone_number": "53-444-5566",
+  "linkedin": "https://linkedin.com/in/mayachen",
+  "github": "https://github.com/mayachen",
+  "degree_title": "Bachelor's",
+  "field_of_study": "Computer Science",
+  "institution": "Reichman University (IDC Herzliya)",
+  "graduation_year": "2022",
+  "gpa": "91/100",
+  "years_of_experience": "3",
+  "current_role": "Frontend Engineer at Fiverr",
+  "desired_job_title": "Senior Frontend Engineer",
+  "job_description": "Building high-performance React applications for Fiverr's marketplace platform. Leading the design system team. Implementing accessibility standards across 20+ product surfaces.",
+  "monthly_salary_expectation": "32,000 ILS",
+  "preferred_location": "Tel Aviv, Israel",
+  "availability": "July 2026",
+  "work_type": "Hybrid",
+  "open_to_relocation": "No"
+}

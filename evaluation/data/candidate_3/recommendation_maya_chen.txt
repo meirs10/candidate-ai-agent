@@ -1,0 +1,25 @@
+Letter of Recommendation — Maya Chen
+
+From: Lior Barak, Frontend Team Lead at Fiverr
+Date: May 25, 2026
+
+
+
+To Whom It May Concern,
+
+I am delighted to recommend Maya Chen, who has been an exceptional member of our frontend engineering team at Fiverr for the past three years. Maya joined us straight from university and has rapidly become one of our most impactful engineers.
+
+Maya's standout achievement has been leading our design system initiative. She built and maintains a component library used by 80+ engineers, with 60+ accessible components that have reduced UI development time by 40%. Her deep knowledge of accessibility standards led to our marketplace achieving full WCAG 2.1 AA compliance across 20+ product surfaces.
+
+Her work on web performance has been equally impressive. Maya improved our Largest Contentful Paint by 40% and reduced JavaScript bundle size by 35%, directly impacting user experience for 4M+ monthly active users. She also built our real-time collaborative editor using cutting-edge CRDT algorithms.
+
+Maya is a natural mentor and community builder. She regularly mentors junior developers, speaks at frontend meetups, and contributes to open-source accessibility tools. Her ReactA11y Hooks library has gained 300+ stars on GitHub and is used by teams outside Fiverr.
+
+I strongly recommend Maya for a senior frontend engineering role. She combines deep technical expertise with a passion for accessible, performant web experiences and genuine leadership ability.
+
+Sincerely,
+
+Lior Barak
+Frontend Team Lead
+Fiverr
+lior.barak@fiverr.com

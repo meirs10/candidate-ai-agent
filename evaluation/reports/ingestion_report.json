@@ -1,0 +1,971 @@
+{
+  "eval_cand_1": {
+    "name": "Dana Levy",
+    "report": {
+      "chunk_stats": {
+        "total_chunks": 27,
+        "avg_chunk_size": 233.6,
+        "min_chunk_size": 34,
+        "max_chunk_size": 1068,
+        "std_chunk_size": 218.2,
+        "empty_or_tiny_chunks": 0
+      },
+      "doc_type_breakdown": {
+        "cv": {
+          "chunk_count": 15,
+          "avg_size": 213.1,
+          "min_size": 34,
+          "max_size": 414
+        },
+        "readme": {
+          "chunk_count": 9,
+          "avg_size": 150.0,
+          "min_size": 36,
+          "max_size": 315
+        },
+        "recommendation": {
+          "chunk_count": 3,
+          "avg_size": 586.3,
+          "min_size": 53,
+          "max_size": 1068
+        }
+      },
+      "section_coverage": {
+        "expected": [
+          "Certifications",
+          "Education",
+          "Interests",
+          "Languages",
+          "Personal Information",
+          "Projects",
+          "Summary",
+          "Technical Skills",
+          "Work Experience"
+        ],
+        "found": [
+          "Academic Thesis: Adversarial ML on IDS",
+          "Architecture",
+          "Automated Threat Intelligence Platform (CyberArk)",
+          "Certifications",
+          "Contributing",
+          "Education",
+          "From: Dr. Alon Kaufman, VP of Security Research at CyberArk",
+          "Interests",
+          "Key Features",
+          "Languages",
+          "License",
+          "Open-Source: CloudSec Scanner",
+          "Overview",
+          "Performance",
+          "Personal Information",
+          "Projects",
+          "Red Team Automation Framework (CyberArk)",
+          "SIEM & Detection: Splunk, Elastic SIEM, Suricata, Snort, CrowdStrike Falcon",
+          "Security Analyst ? Check Point Software Technologies",
+          "Senior Security Engineer ? CyberArk",
+          "Summary",
+          "Tech Stack",
+          "Usage",
+          "general"
+        ],
+        "missing": [
+          "Technical Skills",
+          "Work Experience"
+        ],
+        "extra": [
+          "Academic Thesis: Adversarial ML on IDS",
+          "Architecture",
+          "Automated Threat Intelligence Platform (CyberArk)",
+          "Contributing",
+          "From: Dr. Alon Kaufman, VP of Security Research at CyberArk",
+          "Key Features",
+          "License",
+          "Open-Source: CloudSec Scanner",
+          "Overview",
+          "Performance",
+          "Red Team Automation Framework (CyberArk)",
+          "SIEM & Detection: Splunk, Elastic SIEM, Suricata, Snort, CrowdStrike Falcon",
+          "Security Analyst ? Check Point Software Technologies",
+          "Senior Security Engineer ? CyberArk",
+          "Tech Stack",
+          "Usage",
+          "general"
+        ],
+        "coverage_pct": 77.8,
+        "has_section_metadata": true
+      },
+      "duplicate_check": {
+        "exact_duplicates": 0,
+        "near_duplicates_sampled": 0,
+        "total_unique": 27
+      },
+      "summary_quality": {
+        "summary_exists": true,
+        "summary_length": 822,
+        "checklist_items_found": 5,
+        "checklist_total": 5,
+        "llm_score": 1.0,
+        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 1.0 /1.0"
+      },
+      "embedding_probes": {
+        "probes": [
+          {
+            "term": "SPIFFE",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Architecture\nThe system consists of three core layers: an Identity Provider (SPIFFE/SPIRE)"
+          },
+          {
+            "term": "Python",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Tech Stack\nLanguage: Go, Python"
+          },
+          {
+            "term": "Dana",
+            "found_in_top1": true,
+            "top1_preview": "Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk\nBeyond her technical skills, Da"
+          },
+          {
+            "term": "Dana Levy",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Personal Information\nFull Name: Dana Levy"
+          },
+          {
+            "term": "CyberArk",
+            "found_in_top1": true,
+            "top1_preview": "Section: ##Automated Threat Intelligence Platform (CyberArk)\nBuilt an end-to-end threat intelligence"
+          },
+          {
+            "term": "SPIRE",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Architecture\nThe system consists of three core layers: an Identity Provider (SPIFFE/SPIRE)"
+          },
+          {
+            "term": "She",
+            "found_in_top1": false,
+            "top1_preview": "Section: #Tech Stack\nLanguage: Go, Python"
+          },
+          {
+            "term": "Splunk",
+            "found_in_top1": true,
+            "top1_preview": "Section: ##Automated Threat Intelligence Platform (CyberArk)\nBuilt an end-to-end threat intelligence"
+          },
+          {
+            "term": "Terraform",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Projects\n##Zero-Trust Network Architecture (CyberArk)\n\nDesigned and implemented a zero-tru"
+          },
+          {
+            "term": "Zero",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Projects\n##Zero-Trust Network Architecture (CyberArk)\n\nDesigned and implemented a zero-tru"
+          }
+        ],
+        "hit_rate": 0.9
+      }
+    }
+  },
+  "eval_cand_2": {
+    "name": "Yoni Abergel",
+    "report": {
+      "chunk_stats": {
+        "total_chunks": 26,
+        "avg_chunk_size": 353.5,
+        "min_chunk_size": 28,
+        "max_chunk_size": 928,
+        "std_chunk_size": 231.4,
+        "empty_or_tiny_chunks": 0
+      },
+      "doc_type_breakdown": {
+        "cv": {
+          "chunk_count": 14,
+          "avg_size": 389.4,
+          "min_size": 99,
+          "max_size": 928
+        },
+        "readme": {
+          "chunk_count": 10,
+          "avg_size": 208.4,
+          "min_size": 28,
+          "max_size": 368
+        },
+        "recommendation": {
+          "chunk_count": 2,
+          "avg_size": 828.0,
+          "min_size": 757,
+          "max_size": 899
+        }
+      },
+      "section_coverage": {
+        "expected": [
+          "Certifications",
+          "Education",
+          "Interests",
+          "Languages",
+          "Personal Information",
+          "Projects",
+          "Summary",
+          "Technical Skills",
+          "Work Experience"
+        ],
+        "found": [
+          "Academic: Auto-Scaling Prediction System",
+          "Architecture",
+          "Bachelor of Science in Software Engineering — Ben-Gurion University of the Negev",
+          "Certifications",
+          "Contributing",
+          "DevOps Engineer — Wix.com",
+          "Installation",
+          "Interests",
+          "Key Features",
+          "Kubernetes Custom Autoscaler (Monday.com)",
+          "Languages",
+          "Letter of Recommendation — Yoni Abergel",
+          "License",
+          "Multi-Cloud Migration Framework",
+          "Multi-Cloud Migration Framework (Monday.com)",
+          "Open-Source: TerraLint",
+          "Overview",
+          "Performance",
+          "Personal Information",
+          "Self-Service Deployment Platform (Monday.com)",
+          "Senior DevOps Engineer — Monday.com",
+          "Summary",
+          "Tech Stack",
+          "Technical Skills",
+          "Usage"
+        ],
+        "missing": [
+          "Education",
+          "Projects",
+          "Work Experience"
+        ],
+        "extra": [
+          "Academic: Auto-Scaling Prediction System",
+          "Architecture",
+          "Bachelor of Science in Software Engineering — Ben-Gurion University of the Negev",
+          "Contributing",
+          "DevOps Engineer — Wix.com",
+          "Installation",
+          "Key Features",
+          "Kubernetes Custom Autoscaler (Monday.com)",
+          "Letter of Recommendation — Yoni Abergel",
+          "License",
+          "Multi-Cloud Migration Framework",
+          "Multi-Cloud Migration Framework (Monday.com)",
+          "Open-Source: TerraLint",
+          "Overview",
+          "Performance",
+          "Self-Service Deployment Platform (Monday.com)",
+          "Senior DevOps Engineer — Monday.com",
+          "Tech Stack",
+          "Usage"
+        ],
+        "coverage_pct": 66.7,
+        "has_section_metadata": true
+      },
+      "duplicate_check": {
+        "exact_duplicates": 0,
+        "near_duplicates_sampled": 0,
+        "total_unique": 26
+      },
+      "summary_quality": {
+        "summary_exists": true,
+        "summary_length": 621,
+        "checklist_items_found": 5,
+        "checklist_total": 5,
+        "llm_score": 0.95,
+        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 0.95 /1.0"
+      },
+      "embedding_probes": {
+        "probes": [
+          {
+            "term": "Kubernetes",
+            "found_in_top1": true,
+            "top1_preview": "Section: Kubernetes Custom Autoscaler (Monday.com)\nDeveloped a custom Kubernetes autoscaler using pr"
+          },
+          {
+            "term": "AWS",
+            "found_in_top1": true,
+            "top1_preview": "Section: Certifications\n1. AWS Certified Solutions Architect — Professional (February 2022, Amazon W"
+          },
+          {
+            "term": "GCP",
+            "found_in_top1": true,
+            "top1_preview": "Section: Senior DevOps Engineer — Monday.com\nApril 2021 – Present | Tel Aviv, Israel\n\nArchitecting m"
+          },
+          {
+            "term": "Terraform",
+            "found_in_top1": true,
+            "top1_preview": "Section: Open-Source: TerraLint\nCreated an open-source Terraform linting and policy enforcement tool"
+          },
+          {
+            "term": "Reduced",
+            "found_in_top1": true,
+            "top1_preview": "Section: Kubernetes Custom Autoscaler (Monday.com)\nDeveloped a custom Kubernetes autoscaler using pr"
+          },
+          {
+            "term": "Built",
+            "found_in_top1": false,
+            "top1_preview": "Section: Technical Skills\nProgramming Languages: Go, Python, Bash, TypeScript, HCL\n\nCloud Platforms:"
+          },
+          {
+            "term": "Prometheus",
+            "found_in_top1": true,
+            "top1_preview": "Section: Tech Stack\nLanguage: Go, Python\n\nInfrastructure: Terraform, Kubernetes\n\nService Mesh: Istio"
+          },
+          {
+            "term": "Monday.com",
+            "found_in_top1": true,
+            "top1_preview": "Section: Self-Service Deployment Platform (Monday.com)\nBuilt a developer portal enabling 150+ engine"
+          },
+          {
+            "term": "Yoni",
+            "found_in_top1": true,
+            "top1_preview": "Section: Letter of Recommendation — Yoni Abergel\nHis self-service deployment platform has been equal"
+          },
+          {
+            "term": "ArgoCD",
+            "found_in_top1": true,
+            "top1_preview": "Section: Tech Stack\nLanguage: Go, Python\n\nInfrastructure: Terraform, Kubernetes\n\nService Mesh: Istio"
+          }
+        ],
+        "hit_rate": 0.9
+      }
+    }
+  },
+  "eval_cand_3": {
+    "name": "Maya Chen",
+    "report": {
+      "chunk_stats": {
+        "total_chunks": 25,
+        "avg_chunk_size": 340.0,
+        "min_chunk_size": 19,
+        "max_chunk_size": 1038,
+        "std_chunk_size": 284.3,
+        "empty_or_tiny_chunks": 0
+      },
+      "doc_type_breakdown": {
+        "cv": {
+          "chunk_count": 12,
+          "avg_size": 413.0,
+          "min_size": 93,
+          "max_size": 1004
+        },
+        "readme": {
+          "chunk_count": 10,
+          "avg_size": 195.2,
+          "min_size": 19,
+          "max_size": 365
+        },
+        "recommendation": {
+          "chunk_count": 3,
+          "avg_size": 531.0,
+          "min_size": 37,
+          "max_size": 1038
+        }
+      },
+      "section_coverage": {
+        "expected": [
+          "Certifications",
+          "Education",
+          "Interests",
+          "Languages",
+          "Personal Information",
+          "Projects",
+          "Summary",
+          "Technical Skills",
+          "Work Experience"
+        ],
+        "found": [
+          "Architecture",
+          "Certifications",
+          "Contributing",
+          "Databases: PostgreSQL, MongoDB, Redis",
+          "Education",
+          "Fiverr",
+          "Fiverr Design System",
+          "Interests",
+          "Key Features",
+          "Languages",
+          "Letter of Recommendation — Maya Chen",
+          "Overview",
+          "Performance",
+          "Personal Information",
+          "Projects",
+          "Summary",
+          "Tech Stack",
+          "Technical Skills",
+          "Usage",
+          "Work Experience",
+          "```bash",
+          "system"
+        ],
+        "missing": [],
+        "extra": [
+          "Architecture",
+          "Contributing",
+          "Databases: PostgreSQL, MongoDB, Redis",
+          "Fiverr",
+          "Fiverr Design System",
+          "Key Features",
+          "Letter of Recommendation — Maya Chen",
+          "Overview",
+          "Performance",
+          "Tech Stack",
+          "Usage",
+          "```bash",
+          "system"
+        ],
+        "coverage_pct": 100.0,
+        "has_section_metadata": true
+      },
+      "duplicate_check": {
+        "exact_duplicates": 0,
+        "near_duplicates_sampled": 0,
+        "total_unique": 25
+      },
+      "summary_quality": {
+        "summary_exists": true,
+        "summary_length": 725,
+        "checklist_items_found": 5,
+        "checklist_total": 5,
+        "llm_score": 1.0,
+        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 1.0 / 1.0"
+      },
+      "embedding_probes": {
+        "probes": [
+          {
+            "term": "React",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Tech Stack\nFramework: React 18 with TypeScript\n\nStyling: CSS Modules + design tokens\n\nDocu"
+          },
+          {
+            "term": "TypeScript",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Technical Skills\nProgramming Languages: TypeScript, JavaScript, HTML5, CSS3, Python"
+          },
+          {
+            "term": "Fiverr",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Overview\nThe Fiverr Design System is a shared component library used by 80+ frontend engin"
+          },
+          {
+            "term": "Storybook",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Usage\nImport components and use with TypeScript type safety. All components support theme "
+          },
+          {
+            "term": "Tel Aviv",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Work Experience\n##Frontend Engineer — Fiverr June 2022 – Present | Tel Aviv, Israel\n\nBuild"
+          },
+          {
+            "term": "Built",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Work Experience\n##Frontend Engineer — Fiverr June 2022 – Present | Tel Aviv, Israel\n\nBuild"
+          },
+          {
+            "term": "WCAG",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Key Features\n60+ fully accessible React components\n\nAutomated visual regression testing wi"
+          },
+          {
+            "term": "Maya",
+            "found_in_top1": true,
+            "top1_preview": "Section: Letter of Recommendation — Maya Chen\nMaya is a natural mentor and community builder. She re"
+          },
+          {
+            "term": "She",
+            "found_in_top1": false,
+            "top1_preview": "Section: #Projects\n##Open-Source: ReactA11y Hooks Created an open-source library of React hooks for "
+          },
+          {
+            "term": "WebSockets",
+            "found_in_top1": false,
+            "top1_preview": "Section: #Education\n##Bachelor of Science in Computer Science — Reichman University (IDC Herzliya) 2"
+          }
+        ],
+        "hit_rate": 0.8
+      }
+    }
+  },
+  "eval_cand_4": {
+    "name": "Ofir Ohan",
+    "report": {
+      "chunk_stats": {
+        "total_chunks": 28,
+        "avg_chunk_size": 375.2,
+        "min_chunk_size": 54,
+        "max_chunk_size": 998,
+        "std_chunk_size": 254.3,
+        "empty_or_tiny_chunks": 0
+      },
+      "doc_type_breakdown": {
+        "cv": {
+          "chunk_count": 15,
+          "avg_size": 410.1,
+          "min_size": 77,
+          "max_size": 998
+        },
+        "readme": {
+          "chunk_count": 10,
+          "avg_size": 237.7,
+          "min_size": 54,
+          "max_size": 420
+        },
+        "recommendation": {
+          "chunk_count": 3,
+          "avg_size": 659.3,
+          "min_size": 145,
+          "max_size": 990
+        }
+      },
+      "section_coverage": {
+        "expected": [
+          "Certifications",
+          "Education",
+          "Interests",
+          "Languages",
+          "Personal Information",
+          "Projects",
+          "Summary",
+          "Technical Skills",
+          "Work Experience"
+        ],
+        "found": [
+          "Academic Capstone: Autonomous Drone Navigation",
+          "Architecture",
+          "Bachelor of Science in Computer Science — Tel Aviv University",
+          "Certifications",
+          "Contributing",
+          "Conversational AI Customer Support Bot (DataSphere Technologies)",
+          "Installation",
+          "Interests",
+          "Junior Data Scientist — TechStart Solutions",
+          "Key Features",
+          "Languages",
+          "Letter of Recommendation — Ofir Ohan",
+          "License",
+          "Machine Learning Engineer — DataSphere Technologies",
+          "Open-Source Contribution: LangChain",
+          "Overview",
+          "Performance",
+          "Personal Information",
+          "Real-time Fraud Detection Pipeline (DataSphere Technologies)",
+          "Smart Recommendation Engine",
+          "Smart Recommendation Engine (DataSphere Technologies)",
+          "Summary",
+          "Tech Stack",
+          "Technical Skills",
+          "Usage"
+        ],
+        "missing": [
+          "Education",
+          "Projects",
+          "Work Experience"
+        ],
+        "extra": [
+          "Academic Capstone: Autonomous Drone Navigation",
+          "Architecture",
+          "Bachelor of Science in Computer Science — Tel Aviv University",
+          "Contributing",
+          "Conversational AI Customer Support Bot (DataSphere Technologies)",
+          "Installation",
+          "Junior Data Scientist — TechStart Solutions",
+          "Key Features",
+          "Letter of Recommendation — Ofir Ohan",
+          "License",
+          "Machine Learning Engineer — DataSphere Technologies",
+          "Open-Source Contribution: LangChain",
+          "Overview",
+          "Performance",
+          "Real-time Fraud Detection Pipeline (DataSphere Technologies)",
+          "Smart Recommendation Engine",
+          "Smart Recommendation Engine (DataSphere Technologies)",
+          "Tech Stack",
+          "Usage"
+        ],
+        "coverage_pct": 66.7,
+        "has_section_metadata": true
+      },
+      "duplicate_check": {
+        "exact_duplicates": 0,
+        "near_duplicates_sampled": 0,
+        "total_unique": 28
+      },
+      "summary_quality": {
+        "summary_exists": true,
+        "summary_length": 643,
+        "checklist_items_found": 5,
+        "checklist_total": 5,
+        "llm_score": 1.0,
+        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 1.0 /1.0"
+      },
+      "embedding_probes": {
+        "probes": [
+          {
+            "term": "PyTorch",
+            "found_in_top1": true,
+            "top1_preview": "Section: Tech Stack\nDeep Learning: PyTorch for model training and inference\n\nServing: FastAPI with R"
+          },
+          {
+            "term": "Redis",
+            "found_in_top1": true,
+            "top1_preview": "Section: Tech Stack\nDeep Learning: PyTorch for model training and inference\n\nServing: FastAPI with R"
+          },
+          {
+            "term": "DataSphere Technologies",
+            "found_in_top1": true,
+            "top1_preview": "Section: Machine Learning Engineer — DataSphere Technologies\nWorked extensively with large-scale dat"
+          },
+          {
+            "term": "LangChain",
+            "found_in_top1": true,
+            "top1_preview": "Section: Open-Source Contribution: LangChain\nContributed a document loader module for Hebrew text pr"
+          },
+          {
+            "term": "FastAPI",
+            "found_in_top1": true,
+            "top1_preview": "Section: Tech Stack\nDeep Learning: PyTorch for model training and inference\n\nServing: FastAPI with R"
+          },
+          {
+            "term": "Ofir",
+            "found_in_top1": true,
+            "top1_preview": "Section: Letter of Recommendation — Ofir Ohan\nEqually impressive is his work on the real-time fraud "
+          },
+          {
+            "term": "Built",
+            "found_in_top1": true,
+            "top1_preview": "Section: Machine Learning Engineer — DataSphere Technologies\nJanuary 2022 – Present | Tel Aviv, Isra"
+          },
+          {
+            "term": "SageMaker",
+            "found_in_top1": true,
+            "top1_preview": "Section: Usage\nThe system exposes a REST API for real-time recommendations. Configure user and item "
+          },
+          {
+            "term": "Technologies",
+            "found_in_top1": false,
+            "top1_preview": "Section: Technical Skills\nProgramming Languages: Python, SQL, JavaScript, Bash\n\nMachine Learning & D"
+          },
+          {
+            "term": "NLP",
+            "found_in_top1": true,
+            "top1_preview": "Section: Conversational AI Customer Support Bot (DataSphere Technologies)\nDeveloped an NLP chatbot u"
+          }
+        ],
+        "hit_rate": 0.9
+      }
+    }
+  },
+  "eval_cand_5": {
+    "name": "Noa Friedman",
+    "report": {
+      "chunk_stats": {
+        "total_chunks": 23,
+        "avg_chunk_size": 417.0,
+        "min_chunk_size": 48,
+        "max_chunk_size": 975,
+        "std_chunk_size": 278.7,
+        "empty_or_tiny_chunks": 0
+      },
+      "doc_type_breakdown": {
+        "cv": {
+          "chunk_count": 15,
+          "avg_size": 374.8,
+          "min_size": 48,
+          "max_size": 950
+        },
+        "readme": {
+          "chunk_count": 5,
+          "avg_size": 412.4,
+          "min_size": 149,
+          "max_size": 915
+        },
+        "recommendation": {
+          "chunk_count": 3,
+          "avg_size": 635.3,
+          "min_size": 131,
+          "max_size": 975
+        }
+      },
+      "section_coverage": {
+        "expected": [
+          "Certifications",
+          "Education",
+          "Interests",
+          "Languages",
+          "Personal Information",
+          "Projects",
+          "Summary",
+          "Technical Skills",
+          "Work Experience"
+        ],
+        "found": [
+          "Academic: SaaS Chum Prediction",
+          "Certifications",
+          "Education",
+          "Key Features",
+          "Languages",
+          "ML-Powered Ad Mediation (Unity)",
+          "Overview",
+          "Performance",
+          "Personal Information",
+          "Predictive LTV Modeling (Unity)",
+          "Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel",
+          "Real-Time Publisher Analytics Dashboard (Unity)",
+          "SDK Integration Redesign (ironSource)",
+          "Summary",
+          "To Whom It May Concem,",
+          "Work Experience",
+          "general",
+          "installation",
+          "interests"
+        ],
+        "missing": [
+          "Projects",
+          "Technical Skills"
+        ],
+        "extra": [
+          "Academic: SaaS Chum Prediction",
+          "Key Features",
+          "ML-Powered Ad Mediation (Unity)",
+          "Overview",
+          "Performance",
+          "Predictive LTV Modeling (Unity)",
+          "Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel",
+          "Real-Time Publisher Analytics Dashboard (Unity)",
+          "SDK Integration Redesign (ironSource)",
+          "To Whom It May Concem,",
+          "general",
+          "installation"
+        ],
+        "coverage_pct": 77.8,
+        "has_section_metadata": true
+      },
+      "duplicate_check": {
+        "exact_duplicates": 0,
+        "near_duplicates_sampled": 0,
+        "total_unique": 23
+      },
+      "summary_quality": {
+        "summary_exists": true,
+        "summary_length": 853,
+        "checklist_items_found": 5,
+        "checklist_total": 5,
+        "llm_score": 1.0,
+        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 1.0 /1.0"
+      },
+      "embedding_probes": {
+        "probes": [
+          {
+            "term": "Unity",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Work Experience\n##Senior Product Manager — Unity Technologies February 2023 — Present | Te"
+          },
+          {
+            "term": "Noa",
+            "found_in_top1": true,
+            "top1_preview": "Section: To Whom It May Concem,\nAtironSource, Noa redesigned the SDK integration experience, reducin"
+          },
+          {
+            "term": "SDK",
+            "found_in_top1": true,
+            "top1_preview": "Section: ##SDK Integration Redesign (ironSource)\nRedesigned the SDK integration experience reducing "
+          },
+          {
+            "term": "BigQuery",
+            "found_in_top1": true,
+            "top1_preview": "Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel\nData & Anal"
+          },
+          {
+            "term": "Real",
+            "found_in_top1": false,
+            "top1_preview": "Section: ##Predictive LTV Modeling (Unity)\nCollaborated with ML engineering to build user lifetime v"
+          },
+          {
+            "term": "She",
+            "found_in_top1": false,
+            "top1_preview": "Section: general\nLetter of Recommendation — Noa Friedman\n\nFrom: Oren Kaniel, VP of Product at Unity "
+          },
+          {
+            "term": "Noa Friedman",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Personal Information\n- Full Name: Noa Friedman - Email: noa friedman@gmail.com - Phone: +9"
+          },
+          {
+            "term": "Tel Aviv",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Personal Information\n- Full Name: Noa Friedman - Email: noa friedman@gmail.com - Phone: +9"
+          },
+          {
+            "term": "Collaborated",
+            "found_in_top1": false,
+            "top1_preview": "Section: #Work Experience\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n##Product Manager — itronSource (acquired by Unity) S"
+          },
+          {
+            "term": "Work Experience",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Work Experience\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n##Product Manager — itronSource (acquired by Unity) S"
+          }
+        ],
+        "hit_rate": 0.7
+      }
+    }
+  },
+  "eval_cand_6": {
+    "name": "Tal Ben-David",
+    "report": {
+      "chunk_stats": {
+        "total_chunks": 20,
+        "avg_chunk_size": 255.8,
+        "min_chunk_size": 34,
+        "max_chunk_size": 940,
+        "std_chunk_size": 253.7,
+        "empty_or_tiny_chunks": 0
+      },
+      "doc_type_breakdown": {
+        "cv": {
+          "chunk_count": 10,
+          "avg_size": 209.6,
+          "min_size": 34,
+          "max_size": 935
+        },
+        "readme": {
+          "chunk_count": 8,
+          "avg_size": 203.2,
+          "min_size": 40,
+          "max_size": 317
+        },
+        "recommendation": {
+          "chunk_count": 2,
+          "avg_size": 697.5,
+          "min_size": 455,
+          "max_size": 940
+        }
+      },
+      "section_coverage": {
+        "expected": [
+          "Certifications",
+          "Education",
+          "Interests",
+          "Languages",
+          "Personal Information",
+          "Projects",
+          "Summary",
+          "Technical Skills",
+          "Work Experience"
+        ],
+        "found": [
+          "Architecture",
+          "Certifications",
+          "Education",
+          "Installation",
+          "Interests",
+          "Key Features",
+          "Languages",
+          "Letter of Recommendation — Tal Ben-David",
+          "License",
+          "Overview",
+          "Performance",
+          "Personal Information",
+          "Real-Time Event Enrichment Pipeline",
+          "Real-Time Event Enrichment Pipeline (AppsFlyer)",
+          "Staff Backend Engineer ? AppsFlyer",
+          "Summary",
+          "Tech Stack",
+          "general"
+        ],
+        "missing": [
+          "Projects",
+          "Technical Skills",
+          "Work Experience"
+        ],
+        "extra": [
+          "Architecture",
+          "Installation",
+          "Key Features",
+          "Letter of Recommendation — Tal Ben-David",
+          "License",
+          "Overview",
+          "Performance",
+          "Real-Time Event Enrichment Pipeline",
+          "Real-Time Event Enrichment Pipeline (AppsFlyer)",
+          "Staff Backend Engineer ? AppsFlyer",
+          "Tech Stack",
+          "general"
+        ],
+        "coverage_pct": 66.7,
+        "has_section_metadata": true
+      },
+      "duplicate_check": {
+        "exact_duplicates": 0,
+        "near_duplicates_sampled": 0,
+        "total_unique": 20
+      },
+      "summary_quality": {
+        "summary_exists": true,
+        "summary_length": 701,
+        "checklist_items_found": 5,
+        "checklist_total": 5,
+        "llm_score": 1.0,
+        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 1.0 /1.0"
+      },
+      "embedding_probes": {
+        "probes": [
+          {
+            "term": "Kafka",
+            "found_in_top1": true,
+            "top1_preview": "Section: Architecture\nThree-stage pipeline: Kafka ingestion layer with 500+ partitions, Flink statef"
+          },
+          {
+            "term": "Tal Ben",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Personal Information\nFull Name: Tal Ben-David"
+          },
+          {
+            "term": "AppsFlyer",
+            "found_in_top1": true,
+            "top1_preview": "Section: License\nProprietary — AppsFlyer"
+          },
+          {
+            "term": "Real",
+            "found_in_top1": false,
+            "top1_preview": "Section: Tech Stack\nLanguage: Java 17, Kotlin\n\nStreaming: Apache Kafka, Apache Flink\n\nStorage: Click"
+          },
+          {
+            "term": "Flink",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Interests\nContributing to Apache Kafka and Flink communities"
+          },
+          {
+            "term": "ClickHouse",
+            "found_in_top1": true,
+            "top1_preview": "Section: Tech Stack\nLanguage: Java 17, Kotlin\n\nStreaming: Apache Kafka, Apache Flink\n\nStorage: Click"
+          },
+          {
+            "term": "Tal",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Personal Information\nFull Name: Tal Ben-David"
+          },
+          {
+            "term": "David",
+            "found_in_top1": true,
+            "top1_preview": "Section: #Personal Information\nFull Name: Tal Ben-David"
+          },
+          {
+            "term": "Technologies",
+            "found_in_top1": false,
+            "top1_preview": "Section: Tech Stack\nLanguage: Java 17, Kotlin\n\nStreaming: Apache Kafka, Apache Flink\n\nStorage: Click"
+          },
+          {
+            "term": "Java",
+            "found_in_top1": true,
+            "top1_preview": "Section: Tech Stack\nLanguage: Java 17, Kotlin\n\nStreaming: Apache Kafka, Apache Flink\n\nStorage: Click"
+          }
+        ],
+        "hit_rate": 0.8
+      }
+    }
+  }
+}

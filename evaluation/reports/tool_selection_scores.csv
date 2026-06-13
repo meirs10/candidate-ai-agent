@@ -1,0 +1,427 @@
+id,question,candidate_id,candidate_name,expected_tool,actual_tool,tool_correct,trajectory_summary
+q001,What is the candidate's full name?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q002,What is the candidate's email address?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q003,What is the candidate's phone number?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q004,What is the candidate's LinkedIn profile?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q005,What is the candidate's GitHub profile URL?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q006,How can I contact the candidate?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q007,What country is the candidate based in?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q008,What is the candidate's country dialing code?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q009,What degree does the candidate hold?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q010,What did the candidate study?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q011,Where did the candidate study?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q012,When did the candidate graduate?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q013,What is the candidate's GPA?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q014,Tell me about the candidate's educational background.,eval_cand_1,Dana Levy,docs,structured,False,get_structured_data
+q015,What was the candidate's thesis about?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q016,Did the candidate receive any academic honors?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q017,How many years of experience does the candidate have?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q018,What is the candidate's current role?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q019,Describe the candidate's current job responsibilities.,eval_cand_1,Dana Levy,structured,docs,False,get_structured_data → search_documents
+q020,Where has the candidate worked previously?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q021,What was the candidate's first job?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q022,Describe the candidate's work at Check Point.,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q023,Has the candidate held a leadership role?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q024,What industries has the candidate worked in?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q025,What is a key technical achievement the candidate accomplished?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q026,Has the candidate had any teaching experience?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q027,What programming languages does the candidate know?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q028,What are the candidate's primary security tools and frameworks?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q029,What cloud platforms does the candidate have experience with?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q030,What databases has the candidate worked with?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q031,Does the candidate have DevSecOps experience?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q032,Does the candidate know Python?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q033,Does the candidate have experience with penetration testing?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q034,Does the candidate have SIEM experience?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q035,What threat analysis experience does the candidate have?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q036,Does the candidate have identity and access management experience?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q037,Does the candidate have experience with Kubernetes?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q038,What networking skills does the candidate have?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q039,What projects has the candidate worked on?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q040,Tell me about the zero-trust architecture project.,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q041,What was the outcome of the threat intelligence project?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q042,What technologies were used in the red team automation project?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q043,What is the candidate's most significant project?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q044,Has the candidate contributed to open-source projects?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q045,What systems has the candidate built?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q046,Does the candidate have red team experience?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q047,Has the candidate worked on any research projects?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q048,What is the scale of systems the candidate has worked with?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q049,What certifications does the candidate have?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q050,Does the candidate have an OSCP certification?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q051,Does the candidate have a CISSP certification?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q052,When did the candidate get their AWS security certification?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q053,Does the candidate have any management certifications?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q054,What is the candidate's salary expectation?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q055,Where does the candidate prefer to work?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q056,When is the candidate available to start?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q057,"Does the candidate prefer remote, hybrid, or onsite work?",eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q058,Is the candidate open to relocation?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q059,What job title is the candidate looking for?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q060,Would the candidate work fully onsite?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q061,When can the candidate start working?,eval_cand_1,Dana Levy,structured,structured,True,get_structured_data
+q066,What is the candidate's blood type?,eval_cand_1,Dana Levy,none,docs,False,search_documents
+q067,What are the candidate's political opinions?,eval_cand_1,Dana Levy,none,none,True,no tools
+q068,Is the candidate married?,eval_cand_1,Dana Levy,none,none,True,no tools
+q069,What is the candidate's religion?,eval_cand_1,Dana Levy,none,none,True,no tools
+q070,What is the candidate's credit score?,eval_cand_1,Dana Levy,none,none,True,no tools
+q071,Is this candidate overqualified for a junior security analyst role?,eval_cand_1,Dana Levy,docs,docs,True,get_structured_data → search_documents
+q072,Would this candidate be a good fit for a remote security role in Europe?,eval_cand_1,Dana Levy,docs,structured,False,get_structured_data
+q073,Compare the candidate's academic and professional experience.,eval_cand_1,Dana Levy,docs,docs,True,get_structured_data → get_structured_data → get_structured_data → search_documents
+q074,What unique combination of skills does this candidate offer?,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q075,Summarize why I should consider this candidate for a principal security engineer position.,eval_cand_1,Dana Levy,docs,docs,True,search_documents
+q001,What is the candidate's full name?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q002,What is the candidate's email address?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q003,What is the candidate's phone number?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q004,What is the candidate's LinkedIn profile?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q005,What is the candidate's GitHub profile URL?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q006,How can I contact the candidate?,eval_cand_2,Yoni Abergel,structured,none,False,no tools
+q007,What country is the candidate based in?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q008,What is the candidate's country dialing code?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q009,What degree does the candidate hold?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q010,What did the candidate study?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q011,Where did the candidate study?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q012,When did the candidate graduate?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q013,What is the candidate's GPA?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q014,Tell me about the candidate's educational background.,eval_cand_2,Yoni Abergel,docs,structured,False,get_structured_data
+q015,What was the candidate's capstone project about?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q016,Did the candidate receive any academic honors?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q017,How many years of experience does the candidate have?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q018,What is the candidate's current role?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q019,Describe the candidate's current job responsibilities.,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q020,Where has the candidate worked previously?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q021,What was the candidate's first job?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q022,Describe the candidate's work at Wix.,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q023,Has the candidate held a leadership role?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q024,What industries has the candidate worked in?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q025,What is a key technical achievement the candidate accomplished?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q026,Has the candidate had any teaching or mentoring experience?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q027,What programming languages does the candidate know?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q028,What are the candidate's primary technical frameworks and tools?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q029,What cloud platforms does the candidate have experience with?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q030,What databases has the candidate worked with?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q031,Does the candidate have DevOps or infrastructure experience?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q032,Does the candidate know Python?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q033,Does the candidate have experience with Kubernetes?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q034,Does the candidate have CI/CD experience?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q035,What observability experience does the candidate have?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q036,Does the candidate have Infrastructure-as-Code experience?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q037,Does the candidate have experience with service mesh?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q038,What networking and security tools does the candidate know?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q039,What projects has the candidate worked on?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q040,Tell me about the multi-cloud migration project.,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q041,What was the outcome of the deployment platform project?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q042,What technologies were used in the autoscaler project?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q043,What is the candidate's most significant project?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q044,Has the candidate contributed to open-source projects?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q045,What systems has the candidate built?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q046,Does the candidate have experience with cost optimization?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q047,Has the candidate worked on any developer productivity projects?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q048,What is the scale of systems the candidate has worked with?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q049,What certifications does the candidate have?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q050,Does the candidate have an AWS certification?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q051,Does the candidate have a Kubernetes certification?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q052,When did the candidate get their Terraform certification?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q053,Does the candidate have any management certifications?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q054,What is the candidate's salary expectation?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q055,Where does the candidate prefer to work?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q056,When is the candidate available to start?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q057,"Does the candidate prefer remote, hybrid, or onsite work?",eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q058,Is the candidate open to relocation?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q059,What job title is the candidate looking for?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q060,Would the candidate work fully onsite?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q061,When can the candidate start working?,eval_cand_2,Yoni Abergel,structured,structured,True,get_structured_data
+q066,What is the candidate's blood type?,eval_cand_2,Yoni Abergel,none,docs,False,search_documents
+q067,What are the candidate's political opinions?,eval_cand_2,Yoni Abergel,none,none,True,no tools
+q068,Is the candidate married?,eval_cand_2,Yoni Abergel,none,docs,False,search_documents
+q069,What is the candidate's religion?,eval_cand_2,Yoni Abergel,none,none,True,no tools
+q070,What is the candidate's credit score?,eval_cand_2,Yoni Abergel,none,none,True,no tools
+q071,Is this candidate overqualified for a junior DevOps role?,eval_cand_2,Yoni Abergel,docs,docs,True,get_structured_data → search_documents
+q072,Would this candidate be a good fit for a remote DevOps role in Europe?,eval_cand_2,Yoni Abergel,docs,docs,True,get_structured_data → get_structured_data → get_structured_data → search_documents
+q073,Compare the candidate's academic and professional experience.,eval_cand_2,Yoni Abergel,docs,structured,False,get_structured_data → get_structured_data
+q074,What unique combination of skills does this candidate offer?,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q075,Summarize why I should consider this candidate for a staff DevOps engineer position.,eval_cand_2,Yoni Abergel,docs,docs,True,search_documents
+q001,What is the candidate's full name?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q002,What is the candidate's email address?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q003,What is the candidate's phone number?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q004,What is the candidate's LinkedIn profile?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q005,What is the candidate's GitHub profile URL?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q006,How can I contact the candidate?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q007,What country is the candidate based in?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q008,What is the candidate's country dialing code?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q009,What degree does the candidate hold?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q010,What did the candidate study?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q011,Where did the candidate study?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q012,When did the candidate graduate?,eval_cand_3,Maya Chen,structured,docs,False,search_documents
+q013,What is the candidate's GPA?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q014,Tell me about the candidate's educational background.,eval_cand_3,Maya Chen,docs,structured,False,get_structured_data
+q015,What was the candidate's capstone project about?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q016,Did the candidate receive any academic honors?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q017,How many years of experience does the candidate have?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q018,What is the candidate's current role?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q019,Describe the candidate's current job responsibilities.,eval_cand_3,Maya Chen,structured,docs,False,get_structured_data → search_documents
+q020,Where has the candidate worked previously?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q021,What was the candidate's first job?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q022,Describe the candidate's work at Wix.,eval_cand_3,Maya Chen,docs,docs,True,get_structured_data → search_documents
+q023,Has the candidate held a leadership role?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q024,What industries has the candidate worked in?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q025,What is a key technical achievement the candidate accomplished?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q026,Has the candidate had any teaching or mentoring experience?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q027,What programming languages does the candidate know?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q028,What are the candidate's primary technical frameworks and tools?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q029,What cloud platforms does the candidate have experience with?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q030,What databases has the candidate worked with?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q031,Does the candidate have DevOps experience?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q032,Does the candidate know Python?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q033,Does the candidate have experience with React?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q034,Does the candidate have testing experience?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q035,What accessibility experience does the candidate have?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q036,Does the candidate have design system experience?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q037,Does the candidate have experience with build tools?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q038,What backend and API skills does the candidate have?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q039,What projects has the candidate worked on?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q040,Tell me about the design system project.,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q041,What was the outcome of the collaborative editor project?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q042,What technologies were used in the performance optimization project?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q043,What is the candidate's most significant project?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q044,Has the candidate contributed to open-source projects?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q045,What systems has the candidate built?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q046,Does the candidate have web performance experience?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q047,Has the candidate worked on real-time applications?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q048,What is the scale of systems the candidate has worked with?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q049,What certifications does the candidate have?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q050,Does the candidate have a Google Cloud certification?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q051,Does the candidate have an accessibility certification?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q052,When did the candidate get their Meta certification?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q053,Does the candidate have any management certifications?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q054,What is the candidate's salary expectation?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q055,Where does the candidate prefer to work?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q056,When is the candidate available to start?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q057,"Does the candidate prefer remote, hybrid, or onsite work?",eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q058,Is the candidate open to relocation?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q059,What job title is the candidate looking for?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q060,Would the candidate work fully onsite?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q061,When can the candidate start working?,eval_cand_3,Maya Chen,structured,structured,True,get_structured_data
+q066,What is the candidate's blood type?,eval_cand_3,Maya Chen,none,docs,False,search_documents
+q067,What are the candidate's political opinions?,eval_cand_3,Maya Chen,none,none,True,no tools
+q068,Is the candidate married?,eval_cand_3,Maya Chen,none,none,True,no tools
+q069,What is the candidate's religion?,eval_cand_3,Maya Chen,none,docs,False,search_documents
+q070,What is the candidate's credit score?,eval_cand_3,Maya Chen,none,none,True,no tools
+q071,Is this candidate overqualified for a junior frontend role?,eval_cand_3,Maya Chen,docs,docs,True,get_structured_data → search_documents
+q072,Would this candidate be a good fit for a remote frontend role in Europe?,eval_cand_3,Maya Chen,docs,structured,False,get_structured_data → get_structured_data
+q073,Compare the candidate's academic and professional experience.,eval_cand_3,Maya Chen,docs,docs,True,get_structured_data → get_structured_data → search_documents
+q074,What unique combination of skills does this candidate offer?,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q075,Summarize why I should consider this candidate for a senior frontend engineer position.,eval_cand_3,Maya Chen,docs,docs,True,search_documents
+q001,What is the candidate's full name?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q002,What is the candidate's email address?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q003,What is the candidate's phone number?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q004,What is the candidate's LinkedIn profile?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q005,What is the candidate's GitHub profile URL?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q006,How can I contact the candidate?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q007,What country is the candidate based in?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q008,What is the candidate's country dialing code?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q009,What degree does the candidate hold?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q010,What did the candidate study?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q011,Where did the candidate study?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q012,When did the candidate graduate?,eval_cand_4,Ofir Ohan,structured,docs,False,search_documents
+q013,What is the candidate's GPA?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q014,Tell me about the candidate's educational background.,eval_cand_4,Ofir Ohan,docs,structured,False,get_structured_data
+q015,What was the candidate's capstone project about?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q016,Was the candidate on the Dean's List?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q017,How many years of experience does the candidate have?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q018,What is the candidate's current role?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q019,Describe the candidate's current job responsibilities.,eval_cand_4,Ofir Ohan,structured,docs,False,get_structured_data → search_documents
+q020,Where has the candidate worked previously?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q021,What was the candidate's first job?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q022,Describe the candidate's work at TechStart Solutions.,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q023,Has the candidate led a team?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q024,What industries has the candidate worked in?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q025,How did the candidate reduce model inference latency?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q026,Has the candidate worked as a teaching assistant?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q027,What programming languages does the candidate know?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q028,What ML and deep learning frameworks does the candidate use?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q029,What cloud platforms does the candidate have experience with?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q030,What databases has the candidate worked with?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q031,Does the candidate have DevOps experience?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q032,Does the candidate know Python?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q033,Does the candidate have experience with PyTorch?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q034,Does the candidate have frontend development skills?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q035,What NLP experience does the candidate have?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q036,Does the candidate have computer vision experience?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q037,Does the candidate have experience with Kubernetes?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q038,What data engineering tools does the candidate know?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q039,What projects has the candidate worked on?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q040,Tell me about the recommendation engine project.,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q041,What was the outcome of the fraud detection project?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q042,What technologies were used in the chatbot project?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q043,What is the candidate's most significant project?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q044,Has the candidate contributed to open-source projects?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q045,What ML models has the candidate built?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q046,Does the candidate have real-time systems experience?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q047,Has the candidate worked on any NLP projects?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q048,What is the largest dataset the candidate has worked with?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q049,What certifications does the candidate have?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q050,Does the candidate have any AWS certifications?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q051,Does the candidate have a deep learning certification?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q052,When did the candidate get their AWS certification?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q053,Does the candidate have any project management certifications?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q054,What is the candidate's salary expectation?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q055,Where does the candidate prefer to work?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q056,When is the candidate available to start?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q057,"Does the candidate prefer remote, hybrid, or onsite work?",eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q058,Is the candidate open to relocation?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q059,What job title is the candidate looking for?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q060,Would the candidate work fully onsite?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q061,When can the candidate start working?,eval_cand_4,Ofir Ohan,structured,structured,True,get_structured_data
+q066,What is the candidate's blood type?,eval_cand_4,Ofir Ohan,none,docs,False,search_documents
+q067,What are the candidate's political opinions?,eval_cand_4,Ofir Ohan,none,none,True,no tools
+q068,Is the candidate married?,eval_cand_4,Ofir Ohan,none,docs,False,search_documents
+q069,What is the candidate's religion?,eval_cand_4,Ofir Ohan,none,none,True,no tools
+q070,What is the candidate's credit score?,eval_cand_4,Ofir Ohan,none,none,True,no tools
+q071,Is this candidate overqualified for a junior data scientist role?,eval_cand_4,Ofir Ohan,docs,docs,True,get_structured_data → search_documents
+q072,Would this candidate be a good fit for a remote ML role in Europe?,eval_cand_4,Ofir Ohan,docs,structured,False,get_structured_data → get_structured_data
+q073,Compare the candidate's academic and professional experience.,eval_cand_4,Ofir Ohan,docs,structured,False,get_structured_data → get_structured_data
+q074,What unique combination of skills does this candidate offer?,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q075,Summarize why I should consider this candidate for a senior ML engineer position.,eval_cand_4,Ofir Ohan,docs,docs,True,search_documents
+q001,What is the candidate's full name?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q002,What is the candidate's email address?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q003,What is the candidate's phone number?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q004,What is the candidate's LinkedIn profile?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q005,What is the candidate's GitHub profile URL?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q006,How can I contact the candidate?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q007,What country is the candidate based in?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q008,What is the candidate's country dialing code?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q009,What degree does the candidate hold?,eval_cand_5,Noa Friedman,docs,structured,False,get_structured_data
+q010,What did the candidate study?,eval_cand_5,Noa Friedman,docs,structured,False,get_structured_data
+q011,Where did the candidate study?,eval_cand_5,Noa Friedman,docs,structured,False,get_structured_data
+q012,When did the candidate graduate?,eval_cand_5,Noa Friedman,docs,structured,False,get_structured_data
+q013,What is the candidate's GPA?,eval_cand_5,Noa Friedman,docs,structured,False,get_structured_data
+q014,Tell me about the candidate's educational background.,eval_cand_5,Noa Friedman,docs,structured,False,get_structured_data
+q015,What was the candidate's MBA project about?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q016,Did the candidate receive any academic honors?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q017,How many years of experience does the candidate have?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q018,What is the candidate's current role?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q019,Describe the candidate's current job responsibilities.,eval_cand_5,Noa Friedman,structured,docs,False,get_structured_data → search_documents
+q020,Where has the candidate worked previously?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q021,What was the candidate's first job?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q022,Describe the candidate's work at ironSource.,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q023,Has the candidate held a leadership role?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q024,What industries has the candidate worked in?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q025,What is a key technical achievement the candidate accomplished?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q026,Has the candidate had any mentoring experience?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q027,What programming languages does the candidate know?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q028,What are the candidate's primary product tools?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q029,What cloud platforms does the candidate have experience with?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q030,What data and analytics tools does the candidate use?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q031,Does the candidate have technical knowledge?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q032,Does the candidate know Python?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q033,Does the candidate have A/B testing experience?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q034,Does the candidate have data analytics experience?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q035,What product management methodologies does the candidate use?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q036,Does the candidate have user research experience?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q037,Does the candidate have experience with ML products?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q038,What visualization and reporting tools does the candidate know?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q039,What projects has the candidate worked on?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q040,Tell me about the ad mediation project.,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q041,What was the outcome of the analytics dashboard project?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q042,What technologies were used in the LTV modeling project?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q043,What is the candidate's most significant project?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q044,Has the candidate contributed to open-source projects?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q045,What products has the candidate built or launched?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q046,Does the candidate have monetization experience?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q047,Has the candidate worked on developer-facing products?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q048,What is the scale of products the candidate has managed?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q049,What certifications does the candidate have?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q050,Does the candidate have a product management certification?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q051,Does the candidate have a data analytics certification?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q052,When did the candidate get their Scrum certification?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q053,Does the candidate have any management or methodology certifications?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q054,What is the candidate's salary expectation?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q055,Where does the candidate prefer to work?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q056,When is the candidate available to start?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q057,"Does the candidate prefer remote, hybrid, or onsite work?",eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q058,Is the candidate open to relocation?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q059,What job title is the candidate looking for?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q060,Would the candidate work fully onsite?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q061,When can the candidate start working?,eval_cand_5,Noa Friedman,structured,structured,True,get_structured_data
+q066,What is the candidate's blood type?,eval_cand_5,Noa Friedman,none,none,True,no tools
+q067,What are the candidate's political opinions?,eval_cand_5,Noa Friedman,none,none,True,no tools
+q068,Is the candidate married?,eval_cand_5,Noa Friedman,none,none,True,no tools
+q069,What is the candidate's religion?,eval_cand_5,Noa Friedman,none,none,True,no tools
+q070,What is the candidate's credit score?,eval_cand_5,Noa Friedman,none,none,True,no tools
+q071,Is this candidate overqualified for a junior product manager role?,eval_cand_5,Noa Friedman,docs,structured,False,get_structured_data → get_structured_data
+q072,Would this candidate be a good fit for a remote product role in Europe?,eval_cand_5,Noa Friedman,docs,docs,True,get_structured_data → get_structured_data → search_documents
+q073,Compare the candidate's academic and professional experience.,eval_cand_5,Noa Friedman,docs,structured,False,get_structured_data → get_structured_data
+q074,What unique combination of skills does this candidate offer?,eval_cand_5,Noa Friedman,docs,docs,True,search_documents
+q075,Summarize why I should consider this candidate for a director of product position.,eval_cand_5,Noa Friedman,docs,docs,True,get_structured_data → search_documents
+q001,What is the candidate's full name?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q002,What is the candidate's email address?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q003,What is the candidate's phone number?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q004,What is the candidate's LinkedIn profile?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q005,What is the candidate's GitHub profile URL?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q006,How can I contact the candidate?,eval_cand_6,Tal Ben-David,structured,none,False,no tools
+q007,What country is the candidate based in?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q008,What is the candidate's country dialing code?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q009,What degree does the candidate hold?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q010,What did the candidate study?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q011,Where did the candidate study?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q012,When did the candidate graduate?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q013,What is the candidate's GPA?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q014,Tell me about the candidate's educational background.,eval_cand_6,Tal Ben-David,docs,structured,False,get_structured_data
+q015,What was the candidate's thesis about?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q016,Did the candidate receive any academic honors?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q017,How many years of experience does the candidate have?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q018,What is the candidate's current role?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q019,Describe the candidate's current job responsibilities.,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q020,Where has the candidate worked previously?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q021,What was the candidate's first job?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q022,Describe the candidate's work at Amdocs.,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q023,Has the candidate held a leadership role?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q024,What industries has the candidate worked in?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q025,What is a key technical achievement the candidate accomplished?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q026,Has the candidate had any teaching experience?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q027,What programming languages does the candidate know?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q028,What are the candidate's primary technical frameworks and tools?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q029,What cloud platforms does the candidate have experience with?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q030,What databases has the candidate worked with?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q031,Does the candidate have DevOps or infrastructure experience?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q032,Does the candidate know Python?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q033,Does the candidate have experience with Kafka?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q034,Does the candidate have distributed systems experience?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q035,What architecture patterns does the candidate know?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q036,Does the candidate have observability experience?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q037,Does the candidate have experience with Kubernetes?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q038,What streaming and data processing tools does the candidate know?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q039,What projects has the candidate worked on?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q040,Tell me about the event enrichment pipeline.,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q041,What was the outcome of the multi-region architecture project?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q042,What technologies were used in the microservices migration?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q043,What is the candidate's most significant project?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q044,Has the candidate contributed to open-source projects?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q045,What systems has the candidate built?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q046,Does the candidate have high-availability experience?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q047,Has the candidate worked on migration projects?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q048,What is the scale of systems the candidate has worked with?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q049,What certifications does the candidate have?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q050,Does the candidate have an AWS certification?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q051,Does the candidate have a Kafka certification?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q052,When did the candidate get their Java certification?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q053,Does the candidate have any management certifications?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q054,What is the candidate's salary expectation?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q055,Where does the candidate prefer to work?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q056,When is the candidate available to start?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q057,"Does the candidate prefer remote, hybrid, or onsite work?",eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q058,Is the candidate open to relocation?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q059,What job title is the candidate looking for?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q060,Would the candidate work fully onsite?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q061,When can the candidate start working?,eval_cand_6,Tal Ben-David,structured,structured,True,get_structured_data
+q066,What is the candidate's blood type?,eval_cand_6,Tal Ben-David,none,docs,False,search_documents
+q067,What are the candidate's political opinions?,eval_cand_6,Tal Ben-David,none,docs,False,search_documents
+q068,Is the candidate married?,eval_cand_6,Tal Ben-David,none,docs,False,search_documents
+q069,What is the candidate's religion?,eval_cand_6,Tal Ben-David,none,docs,False,search_documents
+q070,What is the candidate's credit score?,eval_cand_6,Tal Ben-David,none,none,True,no tools
+q071,Is this candidate overqualified for a junior backend role?,eval_cand_6,Tal Ben-David,docs,docs,True,get_structured_data → search_documents
+q072,Would this candidate be a good fit for a remote backend role in Europe?,eval_cand_6,Tal Ben-David,docs,structured,False,get_structured_data → get_structured_data
+q073,Compare the candidate's academic and professional experience.,eval_cand_6,Tal Ben-David,docs,docs,True,get_structured_data → search_documents
+q074,What unique combination of skills does this candidate offer?,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents
+q075,Summarize why I should consider this candidate for a principal engineer position.,eval_cand_6,Tal Ben-David,docs,docs,True,search_documents

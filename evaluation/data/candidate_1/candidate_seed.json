@@ -1,0 +1,22 @@
+{
+  "full_name": "Dana Levy",
+  "email_address": "dana.levy@gmail.com",
+  "country_code": "+972",
+  "phone_number": "52-987-6543",
+  "linkedin": "https://linkedin.com/in/danalevy",
+  "github": "https://github.com/danalevy",
+  "degree_title": "Master's",
+  "field_of_study": "Computer Science",
+  "institution": "Technion - Israel Institute of Technology",
+  "graduation_year": "2020",
+  "gpa": "92/100",
+  "years_of_experience": "5",
+  "current_role": "Senior Security Engineer at CyberArk",
+  "desired_job_title": "Principal Security Engineer",
+  "job_description": "Leading offensive security research and designing zero-trust architecture for enterprise identity protection. Managing a red team of 4 engineers. Conducting penetration testing on cloud-native infrastructure.",
+  "monthly_salary_expectation": "45,000 ILS",
+  "preferred_location": "Haifa, Israel",
+  "availability": "August 2026",
+  "work_type": "Hybrid",
+  "open_to_relocation": "No"
+}

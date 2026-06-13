@@ -1,0 +1,22 @@
+{
+  "full_name": "Tal Ben-David",
+  "email_address": "tal.bendavid@gmail.com",
+  "country_code": "+972",
+  "phone_number": "58-222-3344",
+  "linkedin": "https://linkedin.com/in/talbendavid",
+  "github": "https://github.com/talbendavid",
+  "degree_title": "Master's",
+  "field_of_study": "Computer Science",
+  "institution": "Tel Aviv University",
+  "graduation_year": "2018",
+  "gpa": "90/100",
+  "years_of_experience": "7",
+  "current_role": "Staff Backend Engineer at AppsFlyer",
+  "desired_job_title": "Principal Engineer",
+  "job_description": "Designing distributed event-processing systems handling 100B+ daily events. Leading backend architecture guild of 8 engineers. Driving microservices migration and platform reliability.",
+  "monthly_salary_expectation": "55,000 ILS",
+  "preferred_location": "Herzliya, Israel",
+  "availability": "August 2026",
+  "work_type": "Hybrid",
+  "open_to_relocation": "No"
+}

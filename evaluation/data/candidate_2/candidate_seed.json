@@ -1,0 +1,22 @@
+{
+  "full_name": "Yoni Abergel",
+  "email_address": "yoni.abergel@gmail.com",
+  "country_code": "+972",
+  "phone_number": "50-111-2233",
+  "linkedin": "https://linkedin.com/in/yoniabergel",
+  "github": "https://github.com/yoniabergel",
+  "degree_title": "Bachelor's",
+  "field_of_study": "Software Engineering",
+  "institution": "Ben-Gurion University of the Negev",
+  "graduation_year": "2019",
+  "gpa": "85/100",
+  "years_of_experience": "6",
+  "current_role": "Senior DevOps Engineer at Monday.com",
+  "desired_job_title": "Staff DevOps Engineer",
+  "job_description": "Architecting multi-cloud infrastructure and CI/CD pipelines at scale. Leading platform engineering team of 5. Managing Kubernetes clusters serving 200K+ daily active users.",
+  "monthly_salary_expectation": "42,000 ILS",
+  "preferred_location": "Tel Aviv, Israel",
+  "availability": "September 2026",
+  "work_type": "Remote",
+  "open_to_relocation": "Yes"
+}

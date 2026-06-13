@@ -1,0 +1,122 @@
+Maya Chen — Curriculum Vitae
+
+#Personal Information
+
+- Full Name: Maya Chen
+- Email: maya.chen@gmail.com
+- Phone: +972 53-444-5566
+- Location: Tel Aviv, Israel
+- LinkedIn: https://linkedin.com/in/mayachen
+- GitHub: https://github.com/mayachen
+
+
+
+#Summary
+
+Frontend Engineer with 3 years of experience building performant, accessible web applications at scale. Specialized in React, TypeScript, and design systems. Passionate about web performance optimization, component-driven architecture, and inclusive design. Track record of improving Core Web Vitals and delivering pixel-perfect UIs in fast-paced product environments.
+
+
+
+#Work Experience
+
+##Frontend Engineer — Fiverr
+June 2022 – Present | Tel Aviv, Israel
+
+- Building high-performance React applications for Fiverr's marketplace serving 4M+ monthly active users.
+- Leading the design system team, maintaining a shared component library used by 80+ frontend engineers.
+- Improved Largest Contentful Paint (LCP) by 40% through code splitting, lazy loading, and image optimization.
+- Implemented WCAG 2.1 AA accessibility standards across 20+ product surfaces, achieving full compliance audit pass.
+- Built a real-time collaborative editing feature for gig descriptions using WebSockets and CRDT algorithms.
+- Reduced JavaScript bundle size by 35% through tree shaking, dynamic imports, and dependency audit.
+- Developed A/B testing framework enabling product teams to run 50+ experiments concurrently.
+- Mentored 3 junior frontend developers through code reviews and pair programming sessions.
+
+##Junior Frontend Developer — Wix.com
+January 2022 – May 2022 | Tel Aviv, Israel
+
+- Developed responsive UI components for Wix's template marketplace using React and Styled Components.
+- Built interactive data visualization dashboards with D3.js for the analytics product.
+- Implemented micro-frontend architecture for the Wix App Market using Module Federation.
+- Contributed to the Wix Design System, creating 10+ reusable accessible components.
+- Participated in design sprints and user research sessions with UX team.
+- Wrote comprehensive unit and integration tests with Jest and React Testing Library.
+
+
+
+#Education
+
+##Bachelor of Science in Computer Science — Reichman University (IDC Herzliya)
+2018 – 2022 | GPA: 91/100
+
+- Relevant coursework: Web Technologies, UI/UX Design, Algorithms, Data Structures, Human-Computer Interaction, Mobile Development, Software Engineering.
+- Capstone Project: AccessiCheck — an AI-powered web accessibility audit tool that crawls websites and generates WCAG compliance reports with auto-fix suggestions. Grade: 95/100.
+- Dean's List: 2020, 2021.
+- President of the Web Development Club (2020-2022).
+
+
+
+#Technical Skills
+
+Programming Languages: TypeScript, JavaScript, HTML5, CSS3, Python
+
+Frontend Frameworks: React, Next.js, Vue.js, Svelte
+
+State Management: Redux, Zustand, React Query, Apollo Client
+
+Styling: CSS Modules, Styled Components, Tailwind CSS, Sass, CSS-in-JS
+
+Testing: Jest, React Testing Library, Cypress, Playwright, Storybook
+
+Build Tools: Webpack, Vite, esbuild, Turborepo
+
+Design Tools: Figma, Storybook, Chromatic
+
+Backend & APIs: Node.js, Express, GraphQL, REST, WebSockets
+
+Databases: PostgreSQL, MongoDB, Redis
+
+DevOps: Docker, GitHub Actions, Vercel, Netlify, AWS (S3, CloudFront, Lambda)
+
+
+
+#Projects
+
+##Fiverr Design System (Fiverr)
+Led development of a shared component library used by 80+ frontend engineers. Built with React, TypeScript, and Storybook. Includes 60+ accessible components with automated visual regression testing via Chromatic. Reduced UI development time by 40%.
+
+##Real-time Collaborative Editor (Fiverr)
+Built a collaborative editing feature for gig descriptions using WebSockets, CRDT algorithms (Yjs), and React. Supports concurrent editing by multiple sellers with conflict resolution and presence indicators. Technologies: React, TypeScript, Yjs, WebSockets, Node.js.
+
+##Web Performance Optimization Suite (Fiverr)
+Developed an internal performance monitoring and optimization toolkit. Automated Core Web Vitals tracking, bundle analysis, and performance regression detection in CI. Improved LCP by 40% and reduced bundle size by 35%.
+
+##Open-Source: ReactA11y Hooks
+Created an open-source library of React hooks for common accessibility patterns (focus management, keyboard navigation, live regions, screen reader announcements). 300+ stars on GitHub. Technologies: React, TypeScript.
+
+##Academic Capstone: AccessiCheck
+Built an AI-powered accessibility audit tool that crawls websites and generates WCAG 2.1 compliance reports with actionable auto-fix suggestions using NLP. Technologies: Python, React, Playwright, GPT API. Grade: 95/100.
+
+
+
+#Certifications
+
+1. Google Professional Cloud Developer (March 2024, Google Cloud)
+2. Web Accessibility Specialist (WAS) (November 2023, IAAP)
+3. Meta Frontend Developer Professional Certificate (June 2022, Meta via Coursera)
+
+
+
+#Languages
+
+- Hebrew: Native
+- English: Fluent (professional proficiency)
+- Mandarin: Conversational (heritage speaker)
+
+
+
+#Interests
+
+- Contributing to accessibility-focused open-source projects
+- Speaking at frontend meetups (React Israel, CSS Day)
+- Digital illustration and generative art with p5.js
+- Yoga and indoor climbing

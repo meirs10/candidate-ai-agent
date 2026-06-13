@@ -1,0 +1,279 @@
+SEED={"full_name":"Dana Levy","email_address":"dana.levy@gmail.com","country_code":"+972","phone_number":"52-987-6543","linkedin":"https://linkedin.com/in/danalevy","github":"https://github.com/danalevy","degree_title":"Master's","field_of_study":"Computer Science","institution":"Technion - Israel Institute of Technology","graduation_year":"2020","gpa":"92/100","years_of_experience":"5","current_role":"Senior Security Engineer at CyberArk","desired_job_title":"Principal Security Engineer","job_description":"Leading offensive security research and designing zero-trust architecture for enterprise identity protection. Managing a red team of 4 engineers. Conducting penetration testing on cloud-native infrastructure.","monthly_salary_expectation":"45,000 ILS","preferred_location":"Haifa, Israel","availability":"August 2026","work_type":"Hybrid","open_to_relocation":"No"}
+
+CV="""# Dana Levy — Curriculum Vitae
+
+## Personal Information
+
+- **Full Name:** Dana Levy
+- **Email:** dana.levy@gmail.com
+- **Phone:** +972 52-987-6543
+- **Location:** Haifa, Israel
+- **LinkedIn:** https://linkedin.com/in/danalevy
+- **GitHub:** https://github.com/danalevy
+
+---
+
+## Summary
+
+Senior Security Engineer with 5 years of experience in offensive security, threat hunting, and zero-trust architecture design. Specialized in cloud security, identity protection, and penetration testing across enterprise environments. Proven track record of leading red team operations and building automated security tooling. Passionate about proactive defense and open-source security research.
+
+---
+
+## Work Experience
+
+### Senior Security Engineer — CyberArk
+**March 2022 – Present | Petah Tikva, Israel**
+
+- Leading offensive security research and zero-trust architecture for enterprise identity protection platforms.
+- Managing a red team of 4 engineers conducting penetration tests on cloud-native infrastructure (AWS, Azure).
+- Designed and deployed an automated threat intelligence platform ingesting 500K+ IOCs daily from OSINT and commercial feeds.
+- Built a zero-trust network segmentation framework reducing lateral movement attack surface by 60%.
+- Developed custom YARA rules and Sigma detection signatures adopted across 200+ enterprise clients.
+- Reduced mean time to detect (MTTD) by 45% through implementation of behavioral analytics on endpoint telemetry.
+- Conducted red team exercises simulating APT campaigns for Fortune 500 clients.
+- Industries served: financial services (banking security) and enterprise identity management.
+
+### Security Analyst — Check Point Software Technologies
+**July 2020 – February 2022 | Tel Aviv, Israel**
+
+- Performed vulnerability assessments and penetration testing on network appliances and cloud firewalls.
+- Developed automated scanning tools using Python and Nmap for internal security audits.
+- Analyzed malware samples using IDA Pro and Ghidra, contributing to 15+ threat intelligence reports.
+- Built SIEM correlation rules in Splunk reducing false positive alerts by 35%.
+- Collaborated with R&D teams to patch 8 critical CVEs in firewall products.
+- Created security training materials and conducted workshops for 50+ developers on secure coding.
+
+---
+
+## Education
+
+### Master of Science in Computer Science — Technion - Israel Institute of Technology
+**2018 – 2020 | GPA: 92/100**
+
+- Specialization: Cybersecurity and Cryptography.
+- Thesis: Adversarial Machine Learning Attacks on Network Intrusion Detection Systems — developed novel evasion techniques against ML-based IDS using generative adversarial networks. Grade: 97/100.
+- Dean's List: 2019.
+- Teaching Assistant for Network Security course (2019-2020).
+- Relevant coursework: Network Security, Applied Cryptography, Operating Systems Security, Malware Analysis, Formal Verification.
+
+---
+
+## Technical Skills
+
+**Programming Languages:** Python, Go, C, Bash, PowerShell
+
+**Security Tools:** Burp Suite, Metasploit, Nmap, Wireshark, IDA Pro, Ghidra, YARA, Sigma
+
+**SIEM & Detection:** Splunk, Elastic SIEM, Suricata, Snort, CrowdStrike Falcon
+
+**Cloud Security:** AWS Security Hub, Azure Sentinel, GCP Security Command Center, Terraform (security-as-code)
+
+**Identity & Access:** CyberArk PAM, HashiCorp Vault, OAuth 2.0, SAML, FIDO2
+
+**DevSecOps:** Docker, Kubernetes security, GitHub Actions, SonarQube, Trivy, Checkov
+
+**Databases:** PostgreSQL, MongoDB, Elasticsearch
+
+**Networking:** TCP/IP, DNS, TLS/SSL, VPN, Zero-Trust Architecture, Micro-segmentation
+
+---
+
+## Projects
+
+### Zero-Trust Network Architecture (CyberArk)
+Designed and implemented a zero-trust segmentation framework for enterprise identity platforms. The system enforces least-privilege access across 50+ microservices using mutual TLS and SPIFFE/SPIRE identity. Reduced lateral movement attack surface by 60%. Technologies: Go, Envoy Proxy, SPIFFE, Kubernetes, Terraform.
+
+### Automated Threat Intelligence Platform (CyberArk)
+Built an end-to-end threat intelligence aggregation platform ingesting 500K+ indicators of compromise daily from OSINT feeds, commercial threat intel, and internal honeypots. Automated enrichment and correlation with Splunk SIEM. Technologies: Python, Apache Kafka, Elasticsearch, Splunk, Docker.
+
+### Red Team Automation Framework (CyberArk)
+Developed an internal red team automation toolkit for simulating APT campaigns. Includes custom C2 infrastructure, phishing simulation, and automated reporting. Used in 20+ enterprise engagements. Technologies: Python, Go, Cobalt Strike, Docker.
+
+### Open-Source: CloudSec Scanner
+Created an open-source cloud security misconfiguration scanner for AWS and Azure. Checks IAM policies, S3 bucket permissions, network ACLs, and encryption settings. 200+ stars on GitHub. Technologies: Python, Boto3, Azure SDK.
+
+### Academic Thesis: Adversarial ML on IDS
+Developed novel evasion techniques against ML-based network intrusion detection systems using GANs. Demonstrated 85% evasion rate against state-of-the-art models while maintaining traffic validity. Published in IEEE S&P Workshop. Technologies: Python, PyTorch, Scapy.
+
+---
+
+## Certifications
+
+1. **OSCP — Offensive Security Certified Professional** (June 2021, Offensive Security)
+2. **CISSP — Certified Information Systems Security Professional** (January 2023, ISC2)
+3. **AWS Certified Security — Specialty** (September 2022, Amazon Web Services)
+
+---
+
+## Languages
+
+- **Hebrew:** Native
+- **English:** Fluent (professional proficiency)
+
+---
+
+## Interests
+
+- Bug bounty hunting (HackerOne top 100 in Israel)
+- Contributing to open-source security tools
+- CTF competitions (team captain of CyberArk's CTF team)
+- Rock climbing and trail running
+"""
+
+README="""# Zero-Trust Network Architecture Framework
+
+A comprehensive zero-trust segmentation framework for enterprise identity platforms.
+
+## Overview
+
+This framework enforces least-privilege access across microservice architectures using mutual TLS, SPIFFE/SPIRE workload identity, and dynamic policy enforcement. Designed for enterprise environments with 50+ microservices requiring strict identity verification for every network request.
+
+## Architecture
+
+The system consists of three core layers: an Identity Provider (SPIFFE/SPIRE) that issues short-lived SVIDs to workloads, a Policy Engine that evaluates access requests against fine-grained OPA policies, and an Envoy-based Data Plane that enforces mTLS and authorization at the network level.
+
+## Tech Stack
+
+- **Language:** Go, Python
+- **Service Mesh:** Envoy Proxy with custom filters
+- **Identity:** SPIFFE/SPIRE for workload identity
+- **Policy Engine:** Open Policy Agent (OPA)
+- **Infrastructure:** Kubernetes, Terraform
+- **Monitoring:** Prometheus, Grafana, Jaeger
+- **CI/CD:** GitHub Actions, ArgoCD
+
+## Installation
+
+```bash
+git clone https://github.com/danalevy/zero-trust-framework
+cd zero-trust-framework
+helm install ztf ./charts/ztf -n security
+kubectl apply -f config/policies/
+```
+
+## Usage
+
+Configure workload identities and access policies in YAML. The framework automatically provisions SPIFFE identities and enforces mTLS between services.
+
+## Key Features
+
+- Mutual TLS enforcement across all service-to-service communication
+- SPIFFE-based workload identity with automatic certificate rotation
+- Fine-grained OPA policies with audit logging
+- Real-time policy violation alerting via Prometheus
+- Automated compliance reporting for SOC2 and ISO 27001
+- 60% reduction in lateral movement attack surface
+
+## Performance
+
+The framework adds less than 2ms latency per request for mTLS handshake and policy evaluation. Tested with 10,000 concurrent connections across 50 microservices.
+
+## Contributing
+
+Contributions welcome. Please follow security review guidelines in CONTRIBUTING.md. All PRs require security-focused code review.
+
+## License
+
+Apache License 2.0
+"""
+
+REC="""# Letter of Recommendation — Dana Levy
+
+**From:** Dr. Alon Kaufman, VP of Security Research at CyberArk
+**Date:** May 15, 2026
+
+---
+
+To Whom It May Concern,
+
+I am writing to recommend Dana Levy, who has been a key member of my security research team at CyberArk for the past four years. Dana joined us as a security engineer and quickly distinguished herself through exceptional technical depth and leadership ability.
+
+Dana's most impactful contribution has been the design and implementation of our zero-trust network architecture framework. She led a team of 4 engineers to build a SPIFFE/SPIRE-based identity system that reduced our lateral movement attack surface by 60%. This project demonstrated her ability to combine deep security knowledge with practical engineering excellence.
+
+Her work on the automated threat intelligence platform has been equally impressive. Dana architected a system that ingests over 500,000 indicators of compromise daily, dramatically improving our threat detection capabilities. She also built our internal red team automation framework, which has been used in 20+ enterprise client engagements.
+
+Beyond her technical skills, Dana is an outstanding mentor and team leader. She has grown our red team from 2 to 4 engineers, established code review practices, and created training programs that elevated the entire team's capabilities. Her communication skills make complex security concepts accessible to both technical and executive audiences.
+
+I recommend Dana without reservation for a principal security engineering role. She combines rare offensive security expertise with the architectural thinking needed to build defense-in-depth systems at scale.
+
+Sincerely,
+
+**Dr. Alon Kaufman**
+VP of Security Research
+CyberArk
+alon.kaufman@cyberark.com
+"""
+
+GOLDEN=[
+    {"id":"q001","question":"What is the candidate's full name?","ground_truth":"Dana Levy","expected_source":"structured","category":"personal","difficulty":"easy","expected_route":None},
+    {"id":"q002","question":"What is the candidate's email address?","ground_truth":"dana.levy@gmail.com","expected_source":"structured","category":"personal","difficulty":"easy","expected_route":None},
+    {"id":"q003","question":"What is the candidate's phone number?","ground_truth":"+972 52-987-6543","expected_source":"structured","category":"personal","difficulty":"easy","expected_route":None},
+    {"id":"q004","question":"What is the candidate's LinkedIn profile?","ground_truth":"https://linkedin.com/in/danalevy","expected_source":"structured","category":"personal","difficulty":"easy","expected_route":None},
+    {"id":"q005","question":"What is the candidate's GitHub profile URL?","ground_truth":"https://github.com/danalevy","expected_source":"structured","category":"personal","difficulty":"easy","expected_route":None},
+    {"id":"q006","question":"How can I contact the candidate?","ground_truth":"You can contact Dana Levy via email at dana.levy@gmail.com, by phone at +972 52-987-6543, or through LinkedIn at https://linkedin.com/in/danalevy.","expected_source":"structured","category":"personal","difficulty":"medium","expected_route":None},
+    {"id":"q007","question":"What country is the candidate based in?","ground_truth":"Israel. The candidate is based in Haifa, Israel.","expected_source":"structured","category":"personal","difficulty":"easy","expected_route":None},
+    {"id":"q008","question":"What is the candidate's country dialing code?","ground_truth":"+972","expected_source":"structured","category":"personal","difficulty":"easy","expected_route":None},
+    {"id":"q009","question":"What degree does the candidate hold?","ground_truth":"Master's degree in Computer Science from Technion - Israel Institute of Technology.","expected_source":"structured","category":"education","difficulty":"easy","expected_route":None},
+    {"id":"q010","question":"What did the candidate study?","ground_truth":"Computer Science","expected_source":"structured","category":"education","difficulty":"easy","expected_route":None},
+    {"id":"q011","question":"Where did the candidate study?","ground_truth":"Technion - Israel Institute of Technology","expected_source":"structured","category":"education","difficulty":"easy","expected_route":None},
+    {"id":"q012","question":"When did the candidate graduate?","ground_truth":"2020","expected_source":"structured","category":"education","difficulty":"easy","expected_route":None},
+    {"id":"q013","question":"What is the candidate's GPA?","ground_truth":"92/100","expected_source":"structured","category":"education","difficulty":"easy","expected_route":None},
+    {"id":"q014","question":"Tell me about the candidate's educational background.","ground_truth":"Dana Levy holds a Master's degree in Computer Science from the Technion, graduating in 2020 with a GPA of 92/100. She specialized in Cybersecurity and Cryptography, was on the Dean's List in 2019, and served as a Teaching Assistant for Network Security.","expected_source":"docs","category":"education","difficulty":"medium","expected_route":"broad"},
+    {"id":"q015","question":"What was the candidate's thesis about?","ground_truth":"The thesis was on Adversarial Machine Learning Attacks on Network Intrusion Detection Systems — developing novel evasion techniques against ML-based IDS using generative adversarial networks. It received a grade of 97/100 and was published in IEEE S&P Workshop.","expected_source":"docs","category":"education","difficulty":"medium","expected_route":"specific"},
+    {"id":"q016","question":"Did the candidate receive any academic honors?","ground_truth":"Yes, Dana was on the Dean's List in 2019 at the Technion.","expected_source":"docs","category":"education","difficulty":"medium","expected_route":"specific"},
+    {"id":"q017","question":"How many years of experience does the candidate have?","ground_truth":"5 years of experience.","expected_source":"structured","category":"experience","difficulty":"easy","expected_route":None},
+    {"id":"q018","question":"What is the candidate's current role?","ground_truth":"Senior Security Engineer at CyberArk","expected_source":"structured","category":"experience","difficulty":"easy","expected_route":None},
+    {"id":"q019","question":"Describe the candidate's current job responsibilities.","ground_truth":"Leading offensive security research and designing zero-trust architecture for enterprise identity protection. Managing a red team of 4 engineers. Conducting penetration testing on cloud-native infrastructure.","expected_source":"structured","category":"experience","difficulty":"medium","expected_route":None},
+    {"id":"q020","question":"Where has the candidate worked previously?","ground_truth":"Before CyberArk, Dana worked as a Security Analyst at Check Point Software Technologies in Tel Aviv, Israel from July 2020 to February 2022.","expected_source":"docs","category":"experience","difficulty":"medium","expected_route":"specific"},
+    {"id":"q021","question":"What was the candidate's first job?","ground_truth":"Security Analyst at Check Point Software Technologies (July 2020 – February 2022).","expected_source":"docs","category":"experience","difficulty":"medium","expected_route":"specific"},
+    {"id":"q022","question":"Describe the candidate's work at Check Point.","ground_truth":"At Check Point, Dana performed vulnerability assessments and penetration testing, developed automated scanning tools using Python and Nmap, analyzed malware with IDA Pro and Ghidra contributing to 15+ threat intelligence reports, and built SIEM correlation rules in Splunk reducing false positives by 35%.","expected_source":"docs","category":"experience","difficulty":"medium","expected_route":"specific"},
+    {"id":"q023","question":"Has the candidate held a leadership role?","ground_truth":"Yes, Dana manages a red team of 4 engineers at CyberArk, conducting code reviews and mentoring junior security researchers.","expected_source":"docs","category":"experience","difficulty":"medium","expected_route":"specific"},
+    {"id":"q024","question":"What industries has the candidate worked in?","ground_truth":"Financial services (banking security) and enterprise identity management.","expected_source":"docs","category":"experience","difficulty":"medium","expected_route":"specific"},
+    {"id":"q025","question":"What is a key technical achievement the candidate accomplished?","ground_truth":"Dana reduced lateral movement attack surface by 60% through her zero-trust network segmentation framework and reduced mean time to detect (MTTD) by 45% through behavioral analytics on endpoint telemetry.","expected_source":"docs","category":"experience","difficulty":"hard","expected_route":"specific"},
+    {"id":"q026","question":"Has the candidate had any teaching experience?","ground_truth":"Yes, Dana served as a Teaching Assistant for Network Security at the Technion (2019-2020). She also created security training materials and conducted workshops for 50+ developers on secure coding at Check Point.","expected_source":"docs","category":"experience","difficulty":"medium","expected_route":"specific"},
+    {"id":"q027","question":"What programming languages does the candidate know?","ground_truth":"Python, Go, C, Bash, and PowerShell.","expected_source":"docs","category":"skills","difficulty":"easy","expected_route":"specific"},
+    {"id":"q028","question":"What are the candidate's primary security tools and frameworks?","ground_truth":"Burp Suite, Metasploit, Nmap, Wireshark, IDA Pro, Ghidra, YARA, and Sigma.","expected_source":"docs","category":"skills","difficulty":"medium","expected_route":"specific"},
+    {"id":"q029","question":"What cloud platforms does the candidate have experience with?","ground_truth":"AWS (Security Hub), Azure (Sentinel), and GCP (Security Command Center). Also uses Terraform for security-as-code.","expected_source":"docs","category":"skills","difficulty":"medium","expected_route":"specific"},
+    {"id":"q030","question":"What databases has the candidate worked with?","ground_truth":"PostgreSQL, MongoDB, and Elasticsearch.","expected_source":"docs","category":"skills","difficulty":"medium","expected_route":"specific"},
+    {"id":"q031","question":"Does the candidate have DevSecOps experience?","ground_truth":"Yes, the candidate has experience with Docker, Kubernetes security, GitHub Actions, SonarQube, Trivy, and Checkov.","expected_source":"docs","category":"skills","difficulty":"medium","expected_route":"specific"},
+    {"id":"q032","question":"Does the candidate know Python?","ground_truth":"Yes, Python is one of the candidate's primary programming languages, used extensively for security tooling, automation, and malware analysis.","expected_source":"docs","category":"skills","difficulty":"easy","expected_route":"specific"},
+    {"id":"q033","question":"Does the candidate have experience with penetration testing?","ground_truth":"Yes, Dana is OSCP certified and performs penetration testing on cloud-native infrastructure at CyberArk. She also performed vulnerability assessments at Check Point.","expected_source":"docs","category":"skills","difficulty":"easy","expected_route":"specific"},
+    {"id":"q034","question":"Does the candidate have SIEM experience?","ground_truth":"Yes, Dana has extensive SIEM experience with Splunk, Elastic SIEM, Suricata, Snort, and CrowdStrike Falcon. She built SIEM correlation rules reducing false positives by 35%.","expected_source":"docs","category":"skills","difficulty":"medium","expected_route":"specific"},
+    {"id":"q035","question":"What threat analysis experience does the candidate have?","ground_truth":"Extensive threat analysis including malware analysis with IDA Pro and Ghidra, custom YARA and Sigma detection signatures, threat intelligence platform development ingesting 500K+ IOCs daily, and red team APT simulations.","expected_source":"docs","category":"skills","difficulty":"medium","expected_route":"specific"},
+    {"id":"q036","question":"Does the candidate have identity and access management experience?","ground_truth":"Yes, Dana has experience with CyberArk PAM, HashiCorp Vault, OAuth 2.0, SAML, FIDO2, and SPIFFE/SPIRE workload identity.","expected_source":"docs","category":"skills","difficulty":"medium","expected_route":"specific"},
+    {"id":"q037","question":"Does the candidate have experience with Kubernetes?","ground_truth":"Yes, Dana has Kubernetes security experience, using it in the zero-trust framework and as part of her DevSecOps skill set.","expected_source":"docs","category":"skills","difficulty":"easy","expected_route":"specific"},
+    {"id":"q038","question":"What networking skills does the candidate have?","ground_truth":"TCP/IP, DNS, TLS/SSL, VPN, Zero-Trust Architecture, and Micro-segmentation.","expected_source":"docs","category":"skills","difficulty":"medium","expected_route":"specific"},
+    {"id":"q039","question":"What projects has the candidate worked on?","ground_truth":"Zero-Trust Network Architecture, Automated Threat Intelligence Platform, Red Team Automation Framework, Open-Source CloudSec Scanner, and Academic Thesis on Adversarial ML on IDS.","expected_source":"docs","category":"projects","difficulty":"medium","expected_route":"broad"},
+    {"id":"q040","question":"Tell me about the zero-trust architecture project.","ground_truth":"Designed and implemented a zero-trust segmentation framework for enterprise identity platforms enforcing least-privilege access across 50+ microservices using mutual TLS and SPIFFE/SPIRE identity. Reduced lateral movement attack surface by 60%. Technologies: Go, Envoy Proxy, SPIFFE, Kubernetes, Terraform.","expected_source":"docs","category":"projects","difficulty":"medium","expected_route":"specific"},
+    {"id":"q041","question":"What was the outcome of the threat intelligence project?","ground_truth":"The automated threat intelligence platform ingests 500K+ indicators of compromise daily from OSINT feeds, commercial threat intel, and internal honeypots, with automated enrichment and correlation with Splunk SIEM.","expected_source":"docs","category":"projects","difficulty":"medium","expected_route":"specific"},
+    {"id":"q042","question":"What technologies were used in the red team automation project?","ground_truth":"Python, Go, Cobalt Strike, and Docker.","expected_source":"docs","category":"projects","difficulty":"medium","expected_route":"specific"},
+    {"id":"q043","question":"What is the candidate's most significant project?","ground_truth":"The Zero-Trust Network Architecture at CyberArk, which enforces least-privilege access across 50+ microservices and reduced lateral movement attack surface by 60%, or the Automated Threat Intelligence Platform ingesting 500K+ IOCs daily.","expected_source":"docs","category":"projects","difficulty":"hard","expected_route":"specific"},
+    {"id":"q044","question":"Has the candidate contributed to open-source projects?","ground_truth":"Yes, Dana created CloudSec Scanner, an open-source cloud security misconfiguration scanner for AWS and Azure that checks IAM policies, S3 bucket permissions, network ACLs, and encryption settings. It has 200+ stars on GitHub.","expected_source":"docs","category":"projects","difficulty":"medium","expected_route":"specific"},
+    {"id":"q045","question":"What systems has the candidate built?","ground_truth":"Zero-trust network segmentation framework, automated threat intelligence platform (500K+ IOCs/day), red team automation toolkit used in 20+ enterprise engagements, and CloudSec Scanner open-source tool.","expected_source":"docs","category":"projects","difficulty":"hard","expected_route":"specific"},
+    {"id":"q046","question":"Does the candidate have red team experience?","ground_truth":"Yes, Dana leads red team operations at CyberArk, built a red team automation framework for simulating APT campaigns, and has conducted exercises for Fortune 500 clients in 20+ engagements.","expected_source":"docs","category":"projects","difficulty":"medium","expected_route":"specific"},
+    {"id":"q047","question":"Has the candidate worked on any research projects?","ground_truth":"Yes, Dana's master's thesis on Adversarial ML Attacks on Network IDS demonstrated 85% evasion rate against state-of-the-art models using GANs. Published in IEEE S&P Workshop.","expected_source":"docs","category":"projects","difficulty":"medium","expected_route":"specific"},
+    {"id":"q048","question":"What is the scale of systems the candidate has worked with?","ground_truth":"Dana has worked with systems ingesting 500K+ IOCs daily, zero-trust frameworks covering 50+ microservices, and red team tooling used across 20+ enterprise engagements for Fortune 500 clients.","expected_source":"docs","category":"projects","difficulty":"medium","expected_route":"specific"},
+    {"id":"q049","question":"What certifications does the candidate have?","ground_truth":"OSCP — Offensive Security Certified Professional (June 2021), CISSP — Certified Information Systems Security Professional (January 2023), and AWS Certified Security — Specialty (September 2022).","expected_source":"docs","category":"certifications","difficulty":"medium","expected_route":"specific"},
+    {"id":"q050","question":"Does the candidate have an OSCP certification?","ground_truth":"Yes, Dana holds the OSCP (Offensive Security Certified Professional) certification, obtained in June 2021.","expected_source":"docs","category":"certifications","difficulty":"easy","expected_route":"specific"},
+    {"id":"q051","question":"Does the candidate have a CISSP certification?","ground_truth":"Yes, Dana holds the CISSP (Certified Information Systems Security Professional) certification from ISC2, obtained in January 2023.","expected_source":"docs","category":"certifications","difficulty":"easy","expected_route":"specific"},
+    {"id":"q052","question":"When did the candidate get their AWS security certification?","ground_truth":"September 2022.","expected_source":"docs","category":"certifications","difficulty":"easy","expected_route":"specific"},
+    {"id":"q053","question":"Does the candidate have any management certifications?","ground_truth":"Dana does not hold a specific management certification, but she has the CISSP which covers security management principles.","expected_source":"docs","category":"certifications","difficulty":"medium","expected_route":"specific"},
+    {"id":"q054","question":"What is the candidate's salary expectation?","ground_truth":"45,000 ILS per month.","expected_source":"structured","category":"preferences","difficulty":"easy","expected_route":None},
+    {"id":"q055","question":"Where does the candidate prefer to work?","ground_truth":"Haifa, Israel.","expected_source":"structured","category":"preferences","difficulty":"easy","expected_route":None},
+    {"id":"q056","question":"When is the candidate available to start?","ground_truth":"August 2026.","expected_source":"structured","category":"preferences","difficulty":"easy","expected_route":None},
+    {"id":"q057","question":"Does the candidate prefer remote, hybrid, or onsite work?","ground_truth":"Hybrid.","expected_source":"structured","category":"preferences","difficulty":"easy","expected_route":None},
+    {"id":"q058","question":"Is the candidate open to relocation?","ground_truth":"No.","expected_source":"structured","category":"preferences","difficulty":"easy","expected_route":None},
+    {"id":"q059","question":"What job title is the candidate looking for?","ground_truth":"Principal Security Engineer.","expected_source":"structured","category":"preferences","difficulty":"easy","expected_route":None},
+    {"id":"q060","question":"Would the candidate work fully onsite?","ground_truth":"The candidate prefers hybrid work and is not open to relocation, so a fully onsite role would need to be in the Haifa area.","expected_source":"structured","category":"preferences","difficulty":"medium","expected_route":None},
+    {"id":"q061","question":"When can the candidate start working?","ground_truth":"August 2026.","expected_source":"structured","category":"preferences","difficulty":"easy","expected_route":None},
+    {"id":"q066","question":"What is the candidate's blood type?","ground_truth":"I don't have information about the candidate's blood type. This is not part of the professional profile.","expected_source":"none","category":"negative","difficulty":"easy","expected_route":None},
+    {"id":"q067","question":"What are the candidate's political opinions?","ground_truth":"I don't have information about the candidate's political views. I can only provide professional and career-related information.","expected_source":"none","category":"negative","difficulty":"easy","expected_route":None},
+    {"id":"q068","question":"Is the candidate married?","ground_truth":"I don't have information about the candidate's marital status. I can only share professional profile details.","expected_source":"none","category":"negative","difficulty":"easy","expected_route":None},
+    {"id":"q069","question":"What is the candidate's religion?","ground_truth":"I don't have information about the candidate's religious beliefs. I can only provide professional and career-related information.","expected_source":"none","category":"negative","difficulty":"easy","expected_route":None},
+    {"id":"q070","question":"What is the candidate's credit score?","ground_truth":"I don't have information about the candidate's credit score. This is not part of the professional profile.","expected_source":"none","category":"negative","difficulty":"easy","expected_route":None},
+    {"id":"q071","question":"Is this candidate overqualified for a junior security analyst role?","ground_truth":"Likely yes. With 5 years of experience, OSCP and CISSP certifications, a Master's degree from the Technion, red team leadership at CyberArk, and experience building enterprise-scale security systems, Dana would be overqualified for a junior position. She is targeting a Principal Security Engineer role.","expected_source":"docs","category":"complex","difficulty":"hard","expected_route":"broad"},
+    {"id":"q072","question":"Would this candidate be a good fit for a remote security role in Europe?","ground_truth":"Potentially challenging. Dana prefers hybrid work and is not open to relocation. However, she has strong security skills (OSCP, CISSP, AWS Security), 5 years of experience, and is fluent in English. A remote role from Haifa might work if the company supports it.","expected_source":"docs","category":"complex","difficulty":"hard","expected_route":"broad"},
+    {"id":"q073","question":"Compare the candidate's academic and professional experience.","ground_truth":"Academically, Dana earned an MSc in Computer Science from the Technion with a 92/100 GPA, specializing in Cybersecurity, with a thesis on adversarial ML published at IEEE S&P Workshop. Professionally, she has 5 years of experience progressing from Security Analyst at Check Point to Senior Security Engineer leading a red team at CyberArk, building enterprise security systems at scale.","expected_source":"docs","category":"complex","difficulty":"hard","expected_route":"broad"},
+    {"id":"q074","question":"What unique combination of skills does this candidate offer?","ground_truth":"Dana combines offensive security expertise (OSCP, red team, pen testing) with defensive architecture (zero-trust, SIEM, threat intel), cloud security across AWS/Azure/GCP, research background (adversarial ML thesis), and team leadership. She bridges the gap between red and blue team operations with engineering capabilities.","expected_source":"docs","category":"complex","difficulty":"hard","expected_route":"broad"},
+    {"id":"q075","question":"Summarize why I should consider this candidate for a principal security engineer position.","ground_truth":"Dana Levy is a strong candidate: 5 years of security experience, leads a red team of 4 at CyberArk, built zero-trust architecture reducing attack surface by 60%, designed threat intel platform ingesting 500K+ IOCs/day, holds OSCP and CISSP certifications, MSc from Technion with published research, open-source contributor (CloudSec Scanner, 200+ stars), and available from August 2026.","expected_source":"docs","category":"complex","difficulty":"hard","expected_route":"broad"},
+]

@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+markers = [
+    "integration: tests that require Ollama or external services (deselect with '-m not integration')",
+]
+testpaths = ["tests"]
