@@ -122,10 +122,10 @@ Recruiters interact with the AI agent through a clean conversational UI, asking 
 graph TD;
     A[Recruiter] -->|Questions| B(Streamlit Chat Interface);
     B --> C{LangChain Agent};
-    C -->|Fetch Exact Facts| D[(Structured Store)];
+    D[(Structured Store)] --> C;
+    C -->|Fetch Exact Facts| D;
     C -->|Fetch Skill Proficiency| P[get_skill_proficiency];
     C -->|Search Context| E[Advanced RAG Pipeline];
-    D --> C;
     
     P --> D;
 
