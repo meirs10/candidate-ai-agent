@@ -51,13 +51,13 @@ The agent's flagship feature: instead of leaving "how good are they at X?" to ke
 
 * **At setup time**, the candidate lists their skills. For each one, the system retrieves the supporting evidence from their ingested documents and runs a fine-tuned **DeBERTa-v3 + CORAL ordinal scorer** to infer a level:
 
-  | Level | Meaning |
-  |---|---|
-  | 1 | Awareness — a passing mention |
-  | 2 | Working familiarity |
-  | 3 | Competent / day-to-day use |
-  | 4 | Strong / leads work in it |
-  | 5 | Expert / authority |
+  | Level | Meaning                       |
+  |---|-------------------------------|
+  | 1 | Awareness - a passing mention |
+  | 2 | Working familiarity           |
+  | 3 | Competent / day-to-day use    |
+  | 4 | Strong / leads work in it     |
+  | 5 | Expert / authority            |
 
 * The level is **inferred from how the skill is demonstrated**, never self-reported. The **score + the evidence chunks** are saved into the candidate's structured data, and surfaced to recruiters through the `get_skill_proficiency` tool.
 * The scoring model is a self-contained subsystem in [`skill_proficiency_estimator/`](skill_proficiency_estimator/) that generates its own labelled corpus, retrieves per-skill evidence, and trains the scorer. Best model (`coral_top3`) on a 469-row held-out test set: **MAE 0.467 · ±1 accuracy 0.957 · QWK 0.804**. See the [feature deep-dive](#-skill-proficiency-estimation-under-the-hood) and [`scoring_model/runs/report.md`](skill_proficiency_estimator/scoring_model/runs/report.md).
@@ -101,14 +101,14 @@ Built with **RAGAS** and **DeepEval (GEval)**, the `evaluation/` module benchmar
 A standout feature of the suite is **retrieval gate localization**, which traces each failed query to the exact stage it broke down — ingestion, recall, or re-ranking. This pinpointed the re-ranker as the primary bottleneck and informed a targeted upgrade to `Qwen3-Reranker-0.6B`, rather than guessing from an aggregate recall score.
 
 ### 💻 Candidate Setup Dashboard
-A sleek Streamlit interface where the candidate inputs verified structured facts, uploads unstructured PDFs/Docs for automatic chunking and ingestion, and — in the **Skills section** — lists their skills and runs the proficiency estimator (each result shows a 1–5 bar and an expandable "Evidence used" panel).
+A sleek Streamlit interface where the candidate inputs verified structured facts, uploads unstructured PDFs/Docs for automatic chunking and ingestion, and - in the **Skills section** - lists their skills and runs the proficiency estimator (each result shows a 1–5 bar and an expandable "Evidence used" panel).
 
 <p align="center">
   <img src="images/candidate_side.png" alt="Candidate Setup Dashboard" width="500" />
 </p>
 
 ### 💬 Recruiter Chat Interface
-Recruiters interact with the AI agent through a clean conversational UI, asking questions about the candidate's background, skills, and availability — all answered in real-time by the agentic pipeline.
+Recruiters interact with the AI agent through a clean conversational UI, asking questions about the candidate's background, skills, and availability - all answered in real-time by the agentic pipeline.
 
 <p align="center">
   <img src="images/recruiter_side.png" alt="Recruiter Chat Interface" width="500" />
@@ -123,9 +123,10 @@ graph TD;
     A[Recruiter] -->|Questions| B(Streamlit Chat Interface);
     B --> C{LangChain Agent};
     C -->|Fetch Exact Facts| D[(Structured Store)];
-    C -->|Skill Proficiency 1-5| P[get_skill_proficiency];
+    C -->|Fetch Skill Proficiency| P[get_skill_proficiency];
     C -->|Search Context| E[Advanced RAG Pipeline];
-
+    D --> C;
+    
     P --> D;
 
     E --> F{Query Router};
@@ -184,7 +185,7 @@ graph TD
 
 Retrieval feeding the scorer is near-perfect (**Hit@8 = 0.998**), so remaining errors are intrinsic to the scorer and concentrated on adjacent levels. Full comparison, learning curves, and confusion matrices: [`scoring_model/runs/report.md`](skill_proficiency_estimator/scoring_model/runs/report.md).
 
-> The trained checkpoint (`runs/coral_top3/best_model.pt`, ~700 MB) is required for live estimation and is not committed via normal git. Rebuild it with `train.py`, or supply it via Git LFS / a release asset.
+> The trained checkpoint (`runs/coral_top3/best_model.pt`, ~700 MB) is required for live estimation and is not committed. Can be rebuilt with `train.py`.
 
 ---
 
