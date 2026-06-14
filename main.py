@@ -1,6 +1,6 @@
 import streamlit as st
 
-import config
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 from auth import require_auth
 
 # Gate the whole app behind the shared access code (no-op if APP_PASSWORD unset).

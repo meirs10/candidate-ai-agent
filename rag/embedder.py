@@ -24,7 +24,7 @@ EMBED_PROVIDER requires rebuilding the ChromaDB index (re-run ingestion).
 
 from __future__ import annotations
 
-import config
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 
 # Voyage processes many texts per call; keep batches comfortably within limits.
 _VOYAGE_BATCH = 96

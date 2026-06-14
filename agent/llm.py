@@ -26,7 +26,9 @@ import re
 import uuid
 from dataclasses import dataclass, field
 
-import config
+# Imported as `config` for readability, but the module is named `settings` so it
+# can't shadow the skill scorer's own flat `import config`.
+import settings as config
 
 # Max generation tokens — high enough for a full recruiter answer, low enough to
 # stay well under any HTTP timeout without streaming.

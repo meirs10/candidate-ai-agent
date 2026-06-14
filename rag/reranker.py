@@ -17,7 +17,7 @@ imports torch.
 
 from __future__ import annotations
 
-import config
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 
 
 class VoyageReranker:

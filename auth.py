@@ -9,7 +9,7 @@ local development.
 
 import streamlit as st
 
-import config
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 
 
 def require_auth() -> None:
