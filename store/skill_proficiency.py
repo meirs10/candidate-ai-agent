@@ -28,6 +28,40 @@ if str(_SCORING_DIR) not in sys.path:
 
 import predict  # noqa: E402  (import after sys.path setup, by design)
 
+
+def _free_ollama_vram() -> None:
+    """Ask the Ollama server to evict its model from VRAM so the memory-heavy
+    DeBERTa scorer gets the GPU to itself for the brief scoring window.
+
+    Only relevant for the local Ollama LLM stack — with OLLAMA_NUM_PARALLEL the
+    resident model can occupy most of the card. The model reloads automatically
+    (honoring NUM_PARALLEL) on the next agent/judge call, so the QA loop is
+    unaffected. No-op for the API stack (no Ollama in play).
+    """
+    import settings
+    if settings.LLM_PROVIDER != "ollama":
+        return
+    model = settings.OLLAMA_MODEL
+    # Ollama unloads a model immediately when sent a request with keep_alive=0
+    # and no prompt (documented behavior). Try the client, fall back to raw HTTP.
+    try:
+        import ollama
+        ollama.generate(model=model, prompt="", keep_alive=0)
+        return
+    except Exception:
+        pass
+    try:
+        import json
+        import urllib.request
+        req = urllib.request.Request(
+            "http://localhost:11434/api/generate",
+            data=json.dumps({"model": model, "keep_alive": 0}).encode(),
+            headers={"Content-Type": "application/json"},
+        )
+        urllib.request.urlopen(req, timeout=30).read()
+    except Exception as e:
+        print(f"[skill] could not unload Ollama model: {e}")
+
 # Chunks ingested via ingest_document() carry a "Section: <name>\n" prefix for
 # retrieval context. The scorer was trained on raw chunk text (no such prefix),
 # so we strip it before scoring to keep inputs in the training distribution.
@@ -71,7 +105,13 @@ def estimate_skills(
         (skill, [_for_scoring(c) for c in r["chunks"]])
         for skill, r in zip(skills, retrievals)
     ]
-    levels = predict.predict_levels(items)
+    # Hand the GPU to DeBERTa for the scoring burst (evict Ollama), then give it
+    # back so the QA loop's Ollama can reload with full OLLAMA_NUM_PARALLEL.
+    _free_ollama_vram()
+    try:
+        levels = predict.predict_levels(items)
+    finally:
+        predict.unload()
 
     results: list[dict] = []
     for skill, r, level in zip(skills, retrievals, levels):

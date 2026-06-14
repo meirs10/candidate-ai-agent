@@ -14,6 +14,7 @@ as a module-level singleton (loading the 700 MB checkpoint is expensive).
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -73,14 +74,21 @@ def _build_input_text(skill: str, chunks: list[str], sep: str) -> str:
 
 
 @torch.no_grad()
-def predict_levels(items: list[tuple[str, list[str]]], batch_size: int = 8) -> list[int]:
+def predict_levels(items: list[tuple[str, list[str]]], batch_size: int | None = None) -> list[int]:
     """Predict 1-5 proficiency for a batch of (skill, chunks) pairs.
 
     Returns one int per item, in input order. A skill with no chunks still gets a
     prediction (the model reads just the skill name) — typically a low level.
+
+    Batching is purely a memory/speed knob — predictions are identical regardless
+    of batch_size. DeBERTa's disentangled attention at MAX_LEN is memory-heavy, so
+    on a smaller GPU (or when sharing VRAM with Ollama/the reranker) lower it via
+    the SCORER_BATCH_SIZE env var (e.g. 2). Defaults to 8.
     """
     if not items:
         return []
+    if batch_size is None:
+        batch_size = int(os.environ.get("SCORER_BATCH_SIZE", "8"))
     _ensure_loaded()
     sep = _tokenizer.sep_token
     amp = config.USE_AMP and _device.type == "cuda"
@@ -108,3 +116,19 @@ def predict_levels(items: list[tuple[str, list[str]]], batch_size: int = 8) -> l
 def predict_level(skill: str, chunks: list[str]) -> int:
     """Predict 1-5 proficiency for a single (skill, chunks) pair."""
     return predict_levels([(skill, chunks)])[0]
+
+
+def unload() -> None:
+    """Drop the model from (GPU) memory and clear the CUDA cache.
+
+    Used to hand the GPU back after a scoring burst — e.g. so a memory-hungry
+    Ollama (OLLAMA_NUM_PARALLEL) can reclaim VRAM for the QA loop. The model
+    reloads transparently on the next predict_* call via _ensure_loaded()."""
+    global _model
+    if _model is None:
+        return
+    _model = None
+    import gc
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
