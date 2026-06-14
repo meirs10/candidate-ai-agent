@@ -25,6 +25,8 @@ from evaluation.pipeline import (
     run_full_pipeline,
     set_candidate_id,
     restore_candidate_id,
+    set_project_id,
+    restore_project_id,
 )
 from rag.ingest import ingest_document
 from store.structured import DATA_PATH as STRUCTURED_DATA_PATH
@@ -34,6 +36,14 @@ EVAL_DIR = Path(__file__).parent
 DATA_DIR = EVAL_DIR / "data"
 REPORTS_DIR = EVAL_DIR / "reports"
 CHROMA_PATH = "./chroma_db"
+
+# Project knowledge-base evaluation. Questions about the system itself live in
+# data/project/golden_dataset.json and are evaluated through the same pipeline as
+# the candidate document questions, but against an isolated project collection.
+PROJECT_DATA_DIR = DATA_DIR / "project"
+PROJECT_DOC = EVAL_DIR.parent / "store" / "data" / "project" / "project_overview.txt"
+EVAL_PROJECT_ID = "eval_project"
+PROJECT_NAME = "Project Knowledge Base"
 
 
 # ── Discovery & helpers ─────────────────────────────────────────────────────
@@ -158,6 +168,34 @@ def _seed_documents(candidate_dir: Path, eval_candidate_id: str):
     print(f"[Harness] Ingested {len(doc_files)} documents into '{eval_candidate_id}'")
 
 
+def _seed_skill_scores(candidate_dir: Path, eval_candidate_id: str):
+    """Estimate skill proficiencies from the ingested docs and persist them into
+    the seeded structured store — mirroring the production setup page, so the
+    agent's get_skill_proficiency tool has real data during evaluation.
+
+    Must run AFTER _seed_structured_data (which writes candidate.json) and
+    _seed_documents (so the candidate's ChromaDB collection exists). No-op if the
+    seed lists no skills. Imported lazily so torch/the scorer only load when an
+    actual (non-dry, non-reuse) run reaches this point.
+    """
+    seed_path = candidate_dir / "candidate_seed.json"
+    with open(seed_path, "r", encoding="utf-8") as f:
+        seed = json.load(f)
+    skills = seed.get("skills") or []
+    if not skills:
+        print(f"[Harness] No skills listed for {candidate_dir.name} — skipping estimation")
+        return
+
+    from store.skill_proficiency import estimate_skills
+    from store.structured import save_skill_results
+
+    print(f"[Harness] Estimating proficiency for {len(skills)} skill(s): {skills}")
+    results = estimate_skills(eval_candidate_id, skills)
+    save_skill_results(skills, results)
+    summary = ", ".join("{}={}".format(r["skill"], r["level"]) for r in results)
+    print(f"[Harness] Saved skill_scores for {candidate_dir.name} ({summary})")
+
+
 def _cleanup_eval_collections(eval_candidate_id: str):
     """Delete the evaluation ChromaDB collections (chunks + summaries)."""
     client = chromadb.PersistentClient(path=CHROMA_PATH)
@@ -229,6 +267,7 @@ def _run_pipeline_on_dataset(
             "ground_truth": item["ground_truth"],
             "category": item["category"],
             "expected_source": item["expected_source"],
+            "accept_sources": item.get("accept_sources"),
             "difficulty": item["difficulty"],
             "expected_route": item.get("expected_route"),
             "tool_trajectory": pipeline_result["tool_trajectory"],
@@ -238,6 +277,86 @@ def _run_pipeline_on_dataset(
             "candidate_id": eval_candidate_id,
             "candidate_name": candidate_name,
         })
+
+    return results
+
+
+# ── Project knowledge-base block ─────────────────────────────────────────────
+
+
+def _seed_project_kb(eval_project_id: str):
+    """Ingest the project overview into an isolated eval collection (chunks +
+    summary), mirroring the production build_project_kb.py flow."""
+    _cleanup_eval_collections(eval_project_id)
+    print(f"[Harness] Ingesting project overview into '{eval_project_id}'...")
+    ingest_document(str(PROJECT_DOC), eval_project_id, doc_type="project",
+                    build_summary=True)
+
+
+def _run_project_block(
+    top_k: int,
+    category_filter: str | None,
+    resume: bool,
+    partial_dir: Path,
+) -> list[dict]:
+    """Run the agent over the project-knowledge golden dataset.
+
+    Questions about the system itself are scored by exactly the same components as
+    the candidate document questions (tool selection, RAG quality, GEval, refusal,
+    router, retrieval gates) — the results just carry a distinct candidate_id so
+    they stay attributable. Returns the tagged pipeline results (or []).
+    """
+    dataset_path = PROJECT_DATA_DIR / "golden_dataset.json"
+    if not dataset_path.exists():
+        return []
+
+    with open(dataset_path, "r", encoding="utf-8") as f:
+        dataset = json.load(f)
+    if category_filter:
+        dataset = [q for q in dataset if q.get("category") == category_filter]
+    if not dataset:
+        return []
+
+    print(f"\n{'=' * 70}")
+    print(f"  PROJECT KNOWLEDGE BASE ({len(dataset)} questions)")
+    print(f"{'=' * 70}")
+
+    # Resume from checkpoint if config matches.
+    partial_path = partial_dir / f"{EVAL_PROJECT_ID}.json"
+    if resume and partial_path.exists():
+        try:
+            with open(partial_path, "r", encoding="utf-8") as f:
+                payload = json.load(f)
+            if (payload.get("top_k") == top_k
+                    and payload.get("category_filter") == category_filter):
+                if not _collection_has_data(EVAL_PROJECT_ID):
+                    _seed_project_kb(EVAL_PROJECT_ID)
+                print(f"[Harness] ↳ Resumed project block from checkpoint "
+                      f"({len(payload['results'])} cached results)")
+                return payload["results"]
+        except Exception as e:
+            print(f"[Harness] Could not read project checkpoint: {e}")
+
+    _seed_project_kb(EVAL_PROJECT_ID)
+
+    # Point BOTH the project tool and the (fallback) candidate tool at the project
+    # collection so retrieval — and the retrieval-gate analysis, which loads the
+    # collection by candidate_id — operates on the project index.
+    set_project_id(EVAL_PROJECT_ID)
+    set_candidate_id(EVAL_PROJECT_ID)
+    try:
+        results = _run_pipeline_on_dataset(dataset, EVAL_PROJECT_ID, PROJECT_NAME, top_k)
+    finally:
+        restore_project_id()
+        restore_candidate_id()
+
+    try:
+        with open(partial_path, "w", encoding="utf-8") as f:
+            json.dump({"results": results, "top_k": top_k,
+                       "category_filter": category_filter}, f, ensure_ascii=False)
+        print(f"[Harness] ✔ Checkpointed project block → {partial_path.name}")
+    except Exception as e:
+        print(f"[Harness] WARNING: failed to checkpoint project block: {e}")
 
     return results
 
@@ -493,6 +612,10 @@ def run_evaluation(
                 # Set candidate ID for the agent
                 set_candidate_id(eval_id)
 
+                # Estimate + persist skill proficiencies so the agent's
+                # get_skill_proficiency tool has real data (mirrors setup.py).
+                _seed_skill_scores(cand["dir"], eval_id)
+
                 print(f"[Harness] {len(dataset)} questions for {cand['name']}")
 
                 # Run pipeline
@@ -529,6 +652,16 @@ def run_evaluation(
             })
 
             print(f"[Harness] ✓ {cand['name']}: {len(results)} results collected")
+
+        # ── Project knowledge-base questions (about the system itself) ──
+        if category_filter in (None, "project"):
+            project_results = _run_project_block(
+                top_k, category_filter, resume, partial_dir
+            )
+            if project_results:
+                all_pipeline_results.extend(project_results)
+                eval_candidate_ids.append(EVAL_PROJECT_ID)
+                print(f"[Harness] ✓ Project KB: {len(project_results)} results collected")
 
         pipeline_elapsed = time.time() - start_time
         print(f"\n[Harness] Pipeline completed in {pipeline_elapsed:.1f}s "

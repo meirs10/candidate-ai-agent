@@ -18,5 +18,12 @@
   "preferred_location": "Haifa, Israel",
   "availability": "August 2026",
   "work_type": "Hybrid",
-  "open_to_relocation": "No"
+  "open_to_relocation": "No",
+  "skills": [
+    "Python",
+    "Burp Suite",
+    "AWS",
+    "Kubernetes",
+    "Splunk"
+  ]
 }

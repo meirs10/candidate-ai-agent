@@ -1,9 +1,26 @@
-"""Generate all 6 candidate evaluation datasets. Run: python evaluation/data/generate_all.py"""
+"""Generate all 6 candidate evaluation datasets.
+
+    python evaluation/data/generate_all.py              # full regen (docs + JSON)
+    python evaluation/data/generate_all.py --json-only  # only candidate_seed.json + golden_dataset.json
+
+Use --json-only after changing only SEED/GOLDEN (e.g. adding skills or proficiency
+questions): it rewrites the two JSON artifacts without re-rendering the CV/readme/rec
+documents. Re-rendering the binary docs (esp. candidate_5's PNG) would change OCR
+output and silently shift retrieval results, so keep them untouched unless the
+document *content* actually changed.
+"""
 import json
+import sys
 from pathlib import Path
-from fpdf import FPDF
-from docx import Document
-from PIL import Image, ImageDraw, ImageFont
+
+JSON_ONLY = "--json-only" in sys.argv
+
+# The document writers pull in heavy/optional deps (fpdf, python-docx, Pillow).
+# Only import them when we actually need to render documents.
+if not JSON_ONLY:
+    from fpdf import FPDF
+    from docx import Document
+    from PIL import Image, ImageDraw, ImageFont
 
 DATA_DIR = Path(__file__).parent
 
@@ -83,11 +100,13 @@ def gen(idx, fmts, seed, cv, readme, rec, golden):
     d=DATA_DIR/f"candidate_{idx}";d.mkdir(exist_ok=True)
     slug=seed["full_name"].lower().replace(" ","_").replace("-","_")
     (d/"candidate_seed.json").write_text(json.dumps(seed,indent=2,ensure_ascii=False),encoding="utf-8")
-    W[fmts[0]](cv, d/f"cv_{slug}.{fmts[0]}")
-    W[fmts[1]](readme, d/f"readme_{slug}.{fmts[1]}")
-    W[fmts[2]](rec, d/f"recommendation_{slug}.{fmts[2]}")
+    if not JSON_ONLY:
+        W[fmts[0]](cv, d/f"cv_{slug}.{fmts[0]}")
+        W[fmts[1]](readme, d/f"readme_{slug}.{fmts[1]}")
+        W[fmts[2]](rec, d/f"recommendation_{slug}.{fmts[2]}")
     (d/"golden_dataset.json").write_text(json.dumps(golden,indent=2,ensure_ascii=False),encoding="utf-8")
-    print(f"  candidate_{idx}/  {seed['full_name']}  ({fmts})  {len(golden)}q")
+    tag="(json only)" if JSON_ONLY else f"({fmts})"
+    print(f"  candidate_{idx}/  {seed['full_name']}  {tag}  {len(golden)}q")
 
 if __name__=="__main__":
     print("Generating candidates...\n")

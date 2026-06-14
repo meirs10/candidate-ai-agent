@@ -5,7 +5,7 @@ SYSTEM_PROMPT = """
 You are an AI representative for a job candidate. 
 Your job is to answer recruiter questions accurately and professionally.
 
-You have three tools at your disposal:
+You have four tools at your disposal:
 - get_structured_data: Returns fixed, verified fields (contact info, education summary,
   job preferences, etc.). Use when the question maps to a specific known field.
 - get_skill_proficiency: Returns the candidate's proficiency LEVEL (1-5) in a specific
@@ -15,12 +15,20 @@ You have three tools at your disposal:
   (e.g. "How good is she at Python?", "What are their strongest skills?"). Pass the skill
   name, or omit it to list all assessed skills with their levels.
 - search_documents: Searches the candidate's uploaded documents (CV, certificates, etc.)
-  using semantic retrieval. Use when the question is about projects, detailed experience,
-  what they did with a technology, certifications, achievements, or anything requiring
-  richer context.
+  using semantic retrieval. Use when the question is about the candidate's projects,
+  detailed experience, what they did with a technology, certifications, achievements, or
+  anything about the candidate requiring richer context.
+- search_project: Searches documentation about THIS app/system itself — how it was built,
+  its architecture, RAG pipeline, the skill-proficiency model, the evaluation suite,
+  deployment, and design decisions. Use ONLY for questions about the project/system/tool
+  itself (e.g. "How does the RAG pipeline work?", "What reranker does this use?",
+  "How is skill proficiency estimated?"), NOT for questions about the candidate.
 
 Rules:
 - Choose the tool that best fits the question. You may call several if needed.
+- Distinguish the two RAG tools by SUBJECT: a question about the *candidate* (their
+  experience, projects, skills) → search_documents; a question about *this software
+  project / how the system works* → search_project. Never mix them.
 - A question about a *proficiency level / how skilled* the candidate is → use
   get_skill_proficiency. A question about *what they did / built / projects* → use
   search_documents. They complement each other: you may report the level AND then
@@ -48,52 +56,60 @@ def run(conversation_history: list, user_message: str) -> tuple[str, list, list]
     tool_trajectory is a list of dicts:
         [{"tool": "get_structured_data", "args": {"field": "full_name"},
           "result_preview": "full_name: Ofir Ohan"}]
+
+    conversation_history holds only plain {role, content} text turns (no tool
+    plumbing), so it stays simple and serializable for Streamlit session state.
+    The tool_use / tool_result exchange lives in a per-turn working copy.
     """
 
-    # Add new user message to history
+    # Add new user message to the persisted history.
     conversation_history.append({"role": "user", "content": user_message})
 
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
+    # Per-turn working messages — starts from history, then accumulates the
+    # assistant tool_use / tool_result exchange for this turn only.
+    messages = [dict(m) for m in conversation_history]
 
     tool_trajectory = []
+    answer = ""
 
     for _ in range(MAX_TOOL_ROUNDS):
-        response = llm.call(messages=messages, tools=TOOL_SCHEMAS)
-        message = response["message"]
-        print("OLLAMA RAW MESSAGE:", message)
+        reply = llm.chat(system=SYSTEM_PROMPT, messages=messages, tools=TOOL_SCHEMAS)
 
-        # If no tool call, we have our final answer
-        if not message.get("tool_calls"):
-            answer = message["content"]
+        # No tool calls → this is the final answer.
+        if not reply.tool_calls:
+            answer = reply.text
             break
 
-        # Execute each tool call the LLM requested
-        tool_call = message["tool_calls"][0]
-        tool_name = tool_call["function"]["name"]
-        tool_args = tool_call["function"]["arguments"]
-
-        tool_result = execute_tool(tool_name, tool_args)
-        print(f"[Agent] Tool '{tool_name}' returned: {tool_result[:200]}")
-
-        # Record the tool call in the trajectory
-        tool_trajectory.append({
-            "tool": tool_name,
-            "args": tool_args,
-            "result_preview": tool_result[:300],
+        # Record the assistant's tool-call turn.
+        messages.append({
+            "role": "assistant",
+            "content": reply.text,
+            "tool_calls": reply.tool_calls,
         })
 
-        # Append the tool interaction so the LLM sees the result
-        messages.append({"role": "assistant", "content": "", "tool_calls": [tool_call]})
-        messages.append({"role": "tool", "content": tool_result})
-
+        # Execute every requested tool and feed the results back.
+        for tc in reply.tool_calls:
+            tool_result = execute_tool(tc["name"], tc["arguments"])
+            print(f"[Agent] Tool '{tc['name']}' returned: {tool_result[:200]}")
+            tool_trajectory.append({
+                "tool": tc["name"],
+                "args": tc["arguments"],
+                "result_preview": tool_result[:300],
+            })
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc["id"],
+                "content": tool_result,
+            })
         # Loop continues — the LLM will now either call another tool
         # (e.g. fallback to search_documents) or produce a final answer.
     else:
-        # Safety: if we exhausted all rounds, do one final call without tools
-        response = llm.call(messages=messages)
-        answer = response["message"]["content"]
+        # Safety: if we exhausted all rounds, do one final pass with no tools so
+        # the model is forced to produce a text answer rather than another call.
+        reply = llm.chat(system=SYSTEM_PROMPT, messages=messages, tools=None)
+        answer = reply.text
 
-    # Update conversation history
+    # Persist only the final assistant text.
     conversation_history.append({"role": "assistant", "content": answer})
 
     return answer, conversation_history, tool_trajectory

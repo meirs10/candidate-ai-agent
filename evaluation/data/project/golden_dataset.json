@@ -1,0 +1,182 @@
+[
+  {
+    "id": "p001",
+    "question": "What is this project?",
+    "ground_truth": "It is an AI-powered digital representative for a job candidate: a recruiter chats with it over a secured link and it answers questions about the candidate, grounded in the candidate's own documents and a trained scoring model. It combines an agentic ReAct-style architecture with an advanced RAG pipeline.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "broad",
+    "difficulty": "easy"
+  },
+  {
+    "id": "p002",
+    "question": "Give me a high-level overview of the system.",
+    "ground_truth": "An agentic recruiter-facing chat that routes between verified structured facts, a trained 1-5 skill-proficiency scorer, document RAG, and project RAG. It has a build phase (local ingestion, embedding, and skill scoring) and an always-on serve phase (retrieval plus LLM calls).",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "broad",
+    "difficulty": "easy"
+  },
+  {
+    "id": "p003",
+    "question": "What reranker does the project use?",
+    "ground_truth": "A cross-encoder reranker: the Voyage rerank API by default, or a local Qwen3-Reranker, which is a causal language model scored by the probability of the 'yes' token over a query/document relevance prompt. There is also a 'none' option that skips reranking.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p004",
+    "question": "How does the skill proficiency estimation work?",
+    "ground_truth": "A fine-tuned DeBERTa-v3 transformer with a CORAL ordinal regression head scores each listed skill from 1 to 5 using the evidence chunks retrieved from the candidate's documents. The level and its supporting evidence are saved into the structured store, and it runs only at setup time.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p005",
+    "question": "What evaluation frameworks does the project use?",
+    "ground_truth": "RAGAS for RAG quality (faithfulness, context precision and recall, answer relevancy) and DeepEval's GEval for answer correctness, plus custom evaluators for tool selection, broad/specific routing, refusal accuracy, and per-gate retrieval failure localization.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p006",
+    "question": "What is Reciprocal Rank Fusion used for in the retrieval pipeline?",
+    "ground_truth": "RRF merges the ranked result lists from dense vector search and BM25 keyword search (across the expanded query variations) into a single fused ranking, scoring each list independently so the top of any list gets equal weight.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p007",
+    "question": "Which vector database does the project use?",
+    "ground_truth": "ChromaDB, used as a persistent on-disk index with cosine similarity, with a separate collection per candidate and a separate collection for the project overview.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "easy"
+  },
+  {
+    "id": "p008",
+    "question": "What embedding options does the project support?",
+    "ground_truth": "Voyage AI embeddings as the cloud default, or a local nomic-embed-text model via sentence-transformers. Both are asymmetric, so switching providers requires rebuilding the vector index.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p009",
+    "question": "How are documents ingested?",
+    "ground_truth": "They are parsed with the Unstructured library (PyMuPDF for PDFs, python-docx for Word, Tesseract OCR for images) using section-aware extraction, then split into roughly 1000-character overlapping chunks prefixed with their section name and stored with source provenance. A per-document summary index is also built.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "hard"
+  },
+  {
+    "id": "p010",
+    "question": "What tools does the agent have?",
+    "ground_truth": "Four tools: get_structured_data for verified facts, get_skill_proficiency for the 1-5 trained skill score, search_documents for RAG over the candidate's documents, and search_project for RAG over the project's own documentation.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p011",
+    "question": "What does the query router do?",
+    "ground_truth": "An LLM router classifies each query as BROAD (a general overview question) or SPECIFIC; broad queries are answered from the summary index, while specific queries go through the full query-expansion, hybrid-fusion, and re-ranking path.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p012",
+    "question": "How is the recruiter chat deployed and secured?",
+    "ground_truth": "It deploys to a Streamlit host such as Streamlit Community Cloud or Hugging Face Spaces over HTTPS, gated by a single shared access code. In production only the recruiter chat is served and the candidate setup page is hidden.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p013",
+    "question": "What is the build-vs-serve split?",
+    "ground_truth": "The build phase runs locally and parses documents, embeds them, and runs the skill scorer to produce the vector index and structured store. The serve phase is hosted and always on and only performs retrieval and LLM calls, avoiding any heavy local model so it fits cheap hosting.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "hard"
+  },
+  {
+    "id": "p014",
+    "question": "What do the 1 to 5 skill proficiency levels mean?",
+    "ground_truth": "1 is awareness (a passing mention), 2 is working familiarity, 3 is competent or day-to-day use, 4 is strong or leads work in it, and 5 is expert or authority.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "easy"
+  },
+  {
+    "id": "p015",
+    "question": "How was the training data for the skill scorer created?",
+    "ground_truth": "It was synthetically generated: realistic candidate personas and archetypes with controlled skill evidence at known proficiency levels, phrase tracking to avoid repetition, sanitization, and validation via statistical checks, cross-validation, and shortcut detection.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "hard"
+  },
+  {
+    "id": "p016",
+    "question": "Which LLM does the project use?",
+    "ground_truth": "Claude via the Anthropic API by default, or a local Ollama model; the choice is configurable, and the same provider-neutral client serves the agent loop, the router, query expansion, and build-time summaries.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p017",
+    "question": "What is the per-gate retrieval analysis?",
+    "ground_truth": "For specific document questions it localizes where a relevant chunk was lost in retrieval — at ingestion, at recall (never entered the fused pool), or at re-ranking (cut from the final top-k) — instead of reporting only an aggregate recall number.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "hard"
+  },
+  {
+    "id": "p018",
+    "question": "How many synthetic candidates are used for evaluation and how many questions does each have?",
+    "ground_truth": "Six synthetic candidates with varied document formats, each with a golden dataset of 75 questions.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p019",
+    "question": "What hybrid search methods are combined in retrieval?",
+    "ground_truth": "Dense vector search over ChromaDB embeddings and sparse BM25 Okapi keyword search, fused with Reciprocal Rank Fusion and then re-ranked by a cross-encoder.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p020",
+    "question": "Does the project use prompt caching?",
+    "ground_truth": "Yes. Prompt caching is applied to the frozen system prompt and the tool definitions to reduce the cost of the Claude API calls.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  }
+]

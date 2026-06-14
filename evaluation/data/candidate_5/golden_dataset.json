@@ -283,6 +283,9 @@
     "question": "Does the candidate know Python?",
     "ground_truth": "Yes, Noa uses Python for data analysis and built a churn prediction model with Python during her MBA project.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -546,6 +549,42 @@
     "expected_source": "structured",
     "category": "preferences",
     "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q062",
+    "question": "How proficient is the candidate in SQL?",
+    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in SQL, inferred from her documents with supporting evidence. SQL is a well-evidenced data skill used for analytics, reporting, and predictive modelling.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q063",
+    "question": "Rate the candidate's Tableau skills.",
+    "ground_truth": "Provides a model-estimated 1-5 proficiency level for Tableau, inferred from the documents with evidence. Tableau is listed among her data and analytics visualization tools.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q064",
+    "question": "What are the candidate's strongest skills?",
+    "ground_truth": "Provides a ranked list of the candidate's assessed skills (SQL, Python, Tableau, Amplitude, Mixpanel) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q065",
+    "question": "How strong is the candidate at Looker?",
+    "ground_truth": "Looker is not among the explicitly assessed skills, so this is answered from the documents: Looker is listed among the candidate's data and analytics tools.",
+    "expected_source": "docs",
+    "category": "proficiency",
+    "difficulty": "medium",
     "expected_route": null
   },
   {

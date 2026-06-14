@@ -292,6 +292,9 @@
     "question": "Does the candidate have experience with Kafka?",
     "ground_truth": "Yes, Kafka is central to Tal's work — building pipelines processing 1.2M events/sec, event-sourcing architecture, and creating the KafkaFlow open-source framework (250+ stars). He also holds the Confluent Kafka certification.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -328,6 +331,9 @@
     "question": "Does the candidate have experience with Kubernetes?",
     "ground_truth": "Yes, Tal uses Kubernetes (EKS) for deploying microservices and streaming pipelines, with Terraform for infrastructure management.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -546,6 +552,42 @@
     "expected_source": "structured",
     "category": "preferences",
     "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q062",
+    "question": "How proficient is the candidate in Java?",
+    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in Java, inferred from his documents with supporting evidence. Java is a core, strongly-evidenced skill — he builds high-throughput streaming systems in Java and holds an Oracle Java SE 11 certification.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q063",
+    "question": "Rate the candidate's Kafka skills.",
+    "ground_truth": "Provides a model-estimated 1-5 proficiency level for Kafka, inferred from the documents with evidence. Kafka is central to his work — pipelines at 1.2M events/sec, the KafkaFlow library, and Confluent Kafka certification.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q064",
+    "question": "What are the candidate's strongest skills?",
+    "ground_truth": "Provides a ranked list of the candidate's assessed skills (Java, Kafka, Flink, Kubernetes, ClickHouse) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q065",
+    "question": "How strong is the candidate at Kotlin?",
+    "ground_truth": "Kotlin is not among the explicitly assessed skills, so this is answered from the documents: Kotlin is listed among Tal's programming languages and used in the microservices migration project.",
+    "expected_source": "docs",
+    "category": "proficiency",
+    "difficulty": "medium",
     "expected_route": null
   },
   {

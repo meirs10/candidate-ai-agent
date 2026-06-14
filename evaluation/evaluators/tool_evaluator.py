@@ -12,16 +12,35 @@ import pandas as pd
 def _classify_actual_tool(trajectory: list[dict]) -> str:
     """Determine the effective tool source from a tool trajectory.
 
-    Returns: "structured", "docs", or "none"
+    Returns: "project", "structured", "skill", "docs", or "none"
+
+    Precedence — the source that actually grounded the answer wins:
+      1. project — search_project was used. The project KB is a distinct domain
+                   (questions about the system itself), so it is classified first.
+      2. docs    — search_documents was used at any point. This deliberately
+                   outranks the skill tool so a *fallback* (get_skill_proficiency
+                   misses → search_documents) is scored as docs, matching the
+                   golden expectation for skills not in the assessed list.
+      3. skill   — get_skill_proficiency was used and no document search followed
+                   (a proficiency question answered straight from the estimator).
+      4. structured — only get_structured_data was used.
     """
     if not trajectory:
         return "none"
 
     tool_names = [t["tool"] for t in trajectory]
 
-    # If search_documents was used at any point, the effective source is docs
+    # search_project grounded the answer (questions about the project itself)
+    if "search_project" in tool_names:
+        return "project"
+
+    # search_documents grounded the answer (incl. skill-tool → docs fallback)
     if "search_documents" in tool_names:
         return "docs"
+
+    # Proficiency answered by the estimator, no document fallback needed
+    if "get_skill_proficiency" in tool_names:
+        return "skill"
 
     # If only get_structured_data was used
     if "get_structured_data" in tool_names:
@@ -37,7 +56,7 @@ def run_tool_evaluation(data: list[dict]) -> pd.DataFrame:
     Args:
         data: List of pipeline result dicts, each with:
             - question (str)
-            - expected_source (str): "structured", "docs", or "none"
+            - expected_source (str): "structured", "skill", "docs", or "none"
             - tool_trajectory (list[dict])
 
     Returns:
@@ -51,6 +70,12 @@ def run_tool_evaluation(data: list[dict]) -> pd.DataFrame:
         expected = d["expected_source"]
         actual = _classify_actual_tool(trajectory)
 
+        # Some questions are legitimately answerable by more than one tool — e.g.
+        # "Does the candidate have experience with Kubernetes?" when Kubernetes is
+        # an assessed skill (both get_skill_proficiency and search_documents are
+        # correct). Such questions carry accept_sources; any listed tool counts.
+        accepted = {expected} | set(d.get("accept_sources") or [])
+
         # Build a short summary of the trajectory
         traj_summary = " → ".join(t["tool"] for t in trajectory) if trajectory else "no tools"
 
@@ -60,8 +85,9 @@ def run_tool_evaluation(data: list[dict]) -> pd.DataFrame:
             "candidate_id": d.get("candidate_id", ""),
             "candidate_name": d.get("candidate_name", ""),
             "expected_tool": expected,
+            "accepted_tools": "|".join(sorted(accepted)),
             "actual_tool": actual,
-            "tool_correct": expected == actual,
+            "tool_correct": actual in accepted,
             "trajectory_summary": traj_summary,
         })
 

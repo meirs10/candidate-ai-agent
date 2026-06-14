@@ -283,6 +283,9 @@
     "question": "Does the candidate know Python?",
     "ground_truth": "Yes, Python is one of Maya's programming languages, used in her AccessiCheck capstone project for web crawling and NLP-based accessibility analysis.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -292,6 +295,9 @@
     "question": "Does the candidate have experience with React?",
     "ground_truth": "Yes, React is Maya's primary framework. She builds high-performance React applications at Fiverr, leads the React-based design system with 60+ components, and created the ReactA11y Hooks open-source library.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -546,6 +552,42 @@
     "expected_source": "structured",
     "category": "preferences",
     "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q062",
+    "question": "How proficient is the candidate in React?",
+    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in React, inferred from her documents with supporting evidence. React is a core, strongly-evidenced skill — she leads a React design system of 60+ components and built the ReactA11y Hooks library.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q063",
+    "question": "Rate the candidate's TypeScript skills.",
+    "ground_truth": "Provides a model-estimated 1-5 proficiency level for TypeScript, inferred from the documents with evidence. TypeScript is well-evidenced — used across her React applications and the Fiverr design system.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q064",
+    "question": "What are the candidate's strongest skills?",
+    "ground_truth": "Provides a ranked list of the candidate's assessed skills (React, TypeScript, CSS3, Python, Docker) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q065",
+    "question": "How strong is the candidate at PostgreSQL?",
+    "ground_truth": "PostgreSQL is not among the explicitly assessed skills, so this is answered from the documents: PostgreSQL is listed among the databases Maya has worked with.",
+    "expected_source": "docs",
+    "category": "proficiency",
+    "difficulty": "medium",
     "expected_route": null
   },
   {

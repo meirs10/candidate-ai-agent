@@ -18,5 +18,12 @@
   "preferred_location": "Tel Aviv, Israel",
   "availability": "July 2026",
   "work_type": "Hybrid",
-  "open_to_relocation": "Yes"
+  "open_to_relocation": "Yes",
+  "skills": [
+    "Python",
+    "PyTorch",
+    "AWS",
+    "Kubernetes",
+    "TensorFlow"
+  ]
 }

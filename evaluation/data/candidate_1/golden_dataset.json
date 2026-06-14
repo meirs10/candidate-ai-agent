@@ -283,6 +283,9 @@
     "question": "Does the candidate know Python?",
     "ground_truth": "Yes, Python is one of the candidate's primary programming languages, used extensively for security tooling, automation, and malware analysis.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -328,6 +331,9 @@
     "question": "Does the candidate have experience with Kubernetes?",
     "ground_truth": "Yes, Dana has Kubernetes security experience, using it in the zero-trust framework and as part of her DevSecOps skill set.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -546,6 +552,42 @@
     "expected_source": "structured",
     "category": "preferences",
     "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q062",
+    "question": "How proficient is the candidate in Python?",
+    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in Python, inferred from her documents with supporting evidence. Python is a core, well-evidenced skill used across her security tooling, automation, and malware analysis work.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q063",
+    "question": "Rate the candidate's Splunk skills.",
+    "ground_truth": "Provides a model-estimated 1-5 proficiency level for Splunk, inferred from the documents with evidence. Splunk is well-evidenced — she built SIEM correlation rules in Splunk and uses it for threat-intelligence correlation.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q064",
+    "question": "What are the candidate's strongest skills?",
+    "ground_truth": "Provides a ranked list of the candidate's assessed skills (Python, Burp Suite, AWS, Kubernetes, Splunk) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q065",
+    "question": "How strong is the candidate at Go?",
+    "ground_truth": "Go is not among the explicitly assessed skills, so this is answered from the documents: Go is listed among Dana's programming languages and used in her zero-trust framework (Envoy, SPIFFE) work.",
+    "expected_source": "docs",
+    "category": "proficiency",
+    "difficulty": "medium",
     "expected_route": null
   },
   {

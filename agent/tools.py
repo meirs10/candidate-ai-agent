@@ -7,101 +7,120 @@ from store.structured import (
 )
 
 CANDIDATE_ID = "candidate_001"  # later: dynamic per candidate
+PROJECT_ID = "project_kb"       # separate collection holding the project overview
 
 # Store the last retrieval metadata for evaluation access
 _last_retrieval_meta = {}
 
-# -- Tool schemas (sent to Ollama) ------------------------------------------
+# -- Tool schemas (provider-neutral; see agent/llm.py) ----------------------
+# Each tool is {"name", "description", "parameters": <JSON schema>}. The LLM
+# client converts this to the active provider's format (Anthropic input_schema
+# or Ollama function spec) at call time.
 
 TOOL_SCHEMAS = [
     {
-        "type": "function",
-        "function": {
-            "name": "get_structured_data",
-            "description": (
-                "Get fixed, guaranteed-accurate candidate information. "
-                "ONLY use this tool for the following fields:\n"
-                "  Personal: full_name, email_address, country_code, phone_number, linkedin, github\n"
-                "  Education: education (returns all degrees, fields of study, institutions, and GPAs)\n"
-                "  Experience: years_of_experience, current_role, desired_job_title, job_description\n"
-                "  Preferences: monthly_salary_expectation, preferred_location, availability, work_type, open_to_relocation\n"
-                "If the question does not match one of these fields, "
-                "use search_documents instead."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "field": {
-                        "type": "string",
-                        "description": (
-                            "One of: full_name, email_address, country_code, "
-                            "phone_number, linkedin, github, education, "
-                            "years_of_experience, current_role, desired_job_title, "
-                            "job_description, monthly_salary_expectation, "
-                            "preferred_location, availability, work_type, open_to_relocation"
-                        )
-                    }
-                },
-                "required": ["field"]
-            }
+        "name": "get_structured_data",
+        "description": (
+            "Get fixed, guaranteed-accurate candidate information. "
+            "ONLY use this tool for the following fields:\n"
+            "  Personal: full_name, email_address, country_code, phone_number, linkedin, github\n"
+            "  Education: education (returns all degrees, fields of study, institutions, and GPAs)\n"
+            "  Experience: years_of_experience, current_role, desired_job_title, job_description\n"
+            "  Preferences: monthly_salary_expectation, preferred_location, availability, work_type, open_to_relocation\n"
+            "If the question does not match one of these fields, "
+            "use search_documents instead."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string",
+                    "description": (
+                        "One of: full_name, email_address, country_code, "
+                        "phone_number, linkedin, github, education, "
+                        "years_of_experience, current_role, desired_job_title, "
+                        "job_description, monthly_salary_expectation, "
+                        "preferred_location, availability, work_type, open_to_relocation"
+                    )
+                }
+            },
+            "required": ["field"]
         }
     },
     {
-        "type": "function",
-        "function": {
-            "name": "get_skill_proficiency",
-            "description": (
-                "Get the candidate's proficiency LEVEL in a skill, on a 1-5 scale "
-                "(1=awareness, 2=working familiarity, 3=competent, 4=strong, 5=expert), "
-                "together with the document evidence behind it. The level is inferred "
-                "from the candidate's uploaded documents by a trained scoring model — "
-                "it is verified, not self-reported.\n"
-                "USE THIS for any question about HOW GOOD / HOW STRONG / HOW PROFICIENT / "
-                "HOW SKILLED / HOW EXPERIENCED the candidate is in a specific technology, "
-                "tool, or skill; to rate or score a skill; or to rank/compare their skills "
-                "(e.g. 'How good is she at Python?', 'Rate their AWS', 'What are their "
-                "strongest skills?'). Pass the skill name; omit it to list every assessed "
-                "skill with its level. If the skill was not assessed, this tool says so — "
-                "then fall back to search_documents."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "skill": {
-                        "type": "string",
-                        "description": (
-                            "The skill/technology to get the proficiency level for "
-                            "(e.g. 'Python', 'AWS'). Leave empty to list all assessed "
-                            "skills with their levels."
-                        )
-                    }
-                },
-                "required": []
-            }
+        "name": "get_skill_proficiency",
+        "description": (
+            "Get the candidate's proficiency LEVEL in a skill, on a 1-5 scale "
+            "(1=awareness, 2=working familiarity, 3=competent, 4=strong, 5=expert), "
+            "together with the document evidence behind it. The level is inferred "
+            "from the candidate's uploaded documents by a trained scoring model — "
+            "it is verified, not self-reported.\n"
+            "USE THIS for any question about HOW GOOD / HOW STRONG / HOW PROFICIENT / "
+            "HOW SKILLED / HOW EXPERIENCED the candidate is in a specific technology, "
+            "tool, or skill; to rate or score a skill; or to rank/compare their skills "
+            "(e.g. 'How good is she at Python?', 'Rate their AWS', 'What are their "
+            "strongest skills?'). Pass the skill name; omit it to list every assessed "
+            "skill with its level. If the skill was not assessed, this tool says so — "
+            "then fall back to search_documents."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "skill": {
+                    "type": "string",
+                    "description": (
+                        "The skill/technology to get the proficiency level for "
+                        "(e.g. 'Python', 'AWS'). Leave empty to list all assessed "
+                        "skills with their levels."
+                    )
+                }
+            },
+            "required": []
         }
     },
     {
-        "type": "function",
-        "function": {
-            "name": "search_documents",
-            "description": (
-                "Search the candidate's uploaded documents (CV, grades, certificates). "
-                "Use this for ANY question about the candidate that is not covered "
-                "by get_structured_data or get_skill_proficiency — including projects, "
-                "detailed experience, what they did with a technology, achievements, "
-                "certifications, and more. Also use this as a fallback when a skill was "
-                "not among the assessed proficiencies."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {
-                        "type": "string",
-                        "description": "The question or topic to search for"
-                    }
-                },
-                "required": ["query"]
-            }
+        "name": "search_documents",
+        "description": (
+            "Search the candidate's uploaded documents (CV, grades, certificates). "
+            "Use this for ANY question ABOUT THE CANDIDATE that is not covered "
+            "by get_structured_data or get_skill_proficiency — including projects, "
+            "detailed experience, what they did with a technology, achievements, "
+            "certifications, and more. Also use this as a fallback when a skill was "
+            "not among the assessed proficiencies. Do NOT use this for questions "
+            "about how THIS app/system was built — use search_project for that."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The question or topic to search for"
+                }
+            },
+            "required": ["query"]
+        }
+    },
+    {
+        "name": "search_project",
+        "description": (
+            "Search documentation about THIS software project / system itself — "
+            "how the app was built, its architecture, technology stack, RAG "
+            "pipeline, the skill-proficiency model, the evaluation suite, "
+            "deployment, and design decisions. Use this ONLY for questions about "
+            "the project/system/app/tool itself (e.g. 'How does the RAG pipeline "
+            "work?', 'What reranker does this project use?', 'How is skill "
+            "proficiency estimated?', 'What is this system?'), NOT for questions "
+            "about the candidate or their experience — those use search_documents."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The question or topic about the project to search for"
+                }
+            },
+            "required": ["query"]
         }
     }
 ]
@@ -127,6 +146,27 @@ def search_documents(**kwargs) -> str:
     }
     if not chunks:
         return "No relevant information found in documents."
+    return "\n\n".join(chunks)
+
+
+def search_project(**kwargs) -> str:
+    """RAG over the project-overview collection (the app/system itself), kept
+    separate from the candidate's documents. Mirrors search_documents but targets
+    PROJECT_ID, and records retrieval metadata the same way for evaluation."""
+    global _last_retrieval_meta
+    query = kwargs.get("query", next(iter(kwargs.values()), ""))
+    if isinstance(query, dict):
+        query = query.get("query", query.get("description", str(query)))
+    result = retrieve(str(query), PROJECT_ID)
+    chunks = result["chunks"]
+    _last_retrieval_meta = {
+        "route": result["route"],
+        "expanded_queries": result["expanded_queries"],
+        "chunks": chunks,
+        "fused_pool": result.get("fused_pool"),
+    }
+    if not chunks:
+        return "No relevant information found about the project."
     return "\n\n".join(chunks)
 
 
@@ -193,6 +233,7 @@ def get_last_retrieval_meta() -> dict:
 
 TOOL_FUNCTIONS = {
     "search_documents": search_documents,
+    "search_project": search_project,
     "get_structured_data": get_structured_data,
     "get_skill_proficiency": get_skill_proficiency,
 }

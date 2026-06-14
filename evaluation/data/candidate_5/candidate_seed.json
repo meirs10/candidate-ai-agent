@@ -18,5 +18,12 @@
   "preferred_location": "Tel Aviv, Israel",
   "availability": "October 2026",
   "work_type": "Onsite",
-  "open_to_relocation": "Yes"
+  "open_to_relocation": "Yes",
+  "skills": [
+    "SQL",
+    "Python",
+    "Tableau",
+    "Amplitude",
+    "Mixpanel"
+  ]
 }

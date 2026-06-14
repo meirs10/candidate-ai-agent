@@ -1,13 +1,16 @@
 import chromadb
-import ollama
 from rank_bm25 import BM25Okapi
 from rag.embedder import embedder
 from rag.reranker import reranker
+from agent.llm import LLMClient
 
 CHROMA_PATH = "./chroma_db"
-ROUTER_LLM = "qwen3"
 
 client = chromadb.PersistentClient(path=CHROMA_PATH)
+
+# Provider-pluggable LLM for the auxiliary retrieval calls (query expansion +
+# BROAD/SPECIFIC routing). Uses config.ROUTER_MODEL under the hood.
+_llm = LLMClient()
 
 
 # ---------------------------------------------------------------------------
@@ -30,11 +33,7 @@ def expand_query(original_query: str, n_variations: int = 3) -> list[str]:
         f"Return ONLY the queries, one per line, no numbering, no explanation."
     )
 
-    response = ollama.chat(
-        model=ROUTER_LLM,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    raw = response["message"]["content"].strip()
+    raw = _llm.complete(prompt).strip()
     variations = [line.strip() for line in raw.splitlines() if line.strip()]
     return [original_query] + variations[:n_variations]
 
@@ -67,12 +66,7 @@ def is_broad_query_llm(query: str) -> bool:
         f"Return ONLY the word BROAD or SPECIFIC. No other text."
     )
 
-    response = ollama.chat(
-        model=ROUTER_LLM,
-        messages=[{"role": "user", "content": prompt}],
-    )
-
-    classification = response["message"]["content"].strip().upper()
+    classification = _llm.complete(prompt).strip().upper()
     print(f"[Router] LLM classified query '{query}' as: {classification}")
     return "BROAD" in classification
 

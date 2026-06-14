@@ -18,11 +18,17 @@ if user_input:
     st.chat_message("user").write(user_input)
     
     # 2. Run the agent while showing a spinner
-    with st.spinner("Thinking..."):
-        answer, updated_history, _ = run(st.session_state.history.copy(), user_input)
-        
-    # 3. Show the agent's answer immediately
-    st.chat_message("assistant").write(answer)
-    
-    # 4. Save to state (no st.rerun needed, it will redraw naturally next turn)
-    st.session_state.history = updated_history
+    try:
+        with st.spinner("Thinking..."):
+            answer, updated_history, _ = run(st.session_state.history.copy(), user_input)
+    except Exception as exc:  # surface a friendly message instead of a stack trace
+        st.chat_message("assistant").error(
+            "Sorry — I couldn't answer that just now. Please try again in a moment."
+        )
+        st.caption(f"(details: {type(exc).__name__})")
+    else:
+        # 3. Show the agent's answer immediately
+        st.chat_message("assistant").write(answer)
+
+        # 4. Save to state (no st.rerun needed, it will redraw naturally next turn)
+        st.session_state.history = updated_history

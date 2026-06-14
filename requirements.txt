@@ -1,41 +1,17 @@
-# Core agent
+# ─────────────────────────────────────────────────────────────────────────────
+# PRODUCTION RUNTIME (Option A: all-API serve path) — what the hosting platform
+# installs. Deliberately lean: NO torch / transformers / sentence-transformers /
+# ollama / unstructured, so the recruiter chat fits free hosting tiers.
+#
+# The recruiter chat only does retrieval (Voyage embeddings + rerank, ChromaDB,
+# BM25) and LLM calls (Claude). Building the profile (ingestion, the DeBERTa
+# skill scorer, the eval suite) is a LOCAL activity — see requirements-dev.txt.
+# ─────────────────────────────────────────────────────────────────────────────
+
 streamlit
 chromadb
-sentence-transformers
-ollama
-langchain-text-splitters
-langchain-ollama
-langchain-huggingface
-einops
-
-# Document parsing
-PyMuPDF
-python-docx
-pytesseract
-Pillow
-unstructured[md,pdf,docx]
-
-# Evaluation
-ragas
-deepeval
-pandas
-pytest
-jinja2
-
-# SPE dataset generation
-aiohttp
-scikit-learn
-scipy
-numpy
-
-# RAG Fusion
 rank_bm25
 
-# Skill-proficiency scoring model (skill_proficiency_estimator/scoring_model)
-torch
-transformers
-coral_pytorch     # CORAL ordinal head decode/loss
-accelerate        # Qwen3-Reranker (CausalLM) device placement
-tiktoken          # DeBERTa-v3 tokenizer conversion (transformers 5.x)
-sentencepiece     # DeBERTa-v3 tokenizer (SentencePiece-based)
-protobuf          # needed when converting the DeBERTa-v3 tokenizer
+# LLM + embeddings + reranker, all via API
+anthropic
+voyageai

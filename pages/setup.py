@@ -333,4 +333,7 @@ if st.button("Save Profile", type="primary", use_container_width=True):
         st.error(f"Please fill in the following required fields: **{', '.join(missing)}**")
     else:
         save(data)
-        st.success("Profile saved! Share this link with recruiters: http://localhost:8501/recruiter")
+        st.success(
+            "Profile saved. Deploy the app (see DEPLOY.md) and share the hosted "
+            "Recruiter Chat link + access code with recruiters."
+        )

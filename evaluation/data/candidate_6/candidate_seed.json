@@ -18,5 +18,12 @@
   "preferred_location": "Herzliya, Israel",
   "availability": "August 2026",
   "work_type": "Hybrid",
-  "open_to_relocation": "No"
+  "open_to_relocation": "No",
+  "skills": [
+    "Java",
+    "Kafka",
+    "Flink",
+    "Kubernetes",
+    "ClickHouse"
+  ]
 }

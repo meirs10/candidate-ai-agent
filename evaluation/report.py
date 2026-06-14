@@ -24,7 +24,7 @@ def select_rag_results(pipeline_results: list[dict]) -> list[dict]:
     """
     return [
         r for r in pipeline_results
-        if r.get("final_tool") == "search_documents"
+        if r.get("final_tool") in ("search_documents", "search_project")
         and r.get("contexts")
         and r.get("category") != "negative"
     ]
@@ -226,7 +226,7 @@ def _build_rag_section(ragas_df, pipeline_results) -> str:
         </tr>"""
 
     return f"""
-    <p style="color:#94a3b8;margin-bottom:1rem">Showing only questions routed through search_documents ({len(rag_results)} questions)</p>
+    <p style="color:#94a3b8;margin-bottom:1rem">Showing only questions routed through RAG — search_documents or search_project ({len(rag_results)} questions)</p>
     {means_html}
     <table>
       <thead><tr><th>ID</th><th>Question</th><th>Route</th><th>Answer</th><th>Scores</th><th>Latency</th></tr></thead>

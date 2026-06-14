@@ -1,15 +1,17 @@
 import chromadb
-import ollama
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from unstructured.partition.auto import partition
 from rag.embedder import embedder
+from agent.llm import LLMClient
 import os
 import re
 
 CHROMA_PATH = "./chroma_db"
-SUMMARY_LLM = "qwen3"
 
 client = chromadb.PersistentClient(path=CHROMA_PATH)
+
+# Build-time summaries use the same pluggable LLM as the rest of the app.
+_llm = LLMClient()
 
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=1000,
@@ -107,7 +109,26 @@ def extract_sections(file_path: str) -> list[dict]:
 # -- Summary generation ------------------------------------------------------
 
 def generate_summary(full_text: str, doc_type: str) -> str:
-    """Ask the LLM to summarize the document in 5-6 sentences."""
+    """Ask the LLM to summarize the document in 5-6 sentences.
+
+    The "project" doc_type summarizes the software project itself; every other
+    doc_type is treated as a candidate document.
+    """
+    if doc_type == "project":
+        prompt = (
+            "You are summarizing the documentation of a software project for a "
+            "recruiter who wants a quick overview of the system.\n"
+            "Write a concise 5-6 sentence summary that must cover:\n"
+            "1. What the project is and what problem it solves\n"
+            "2. Its overall architecture (agentic tool-calling + RAG pipeline)\n"
+            "3. The standout feature (the trained skill-proficiency scorer)\n"
+            "4. The main technology stack\n"
+            "5. How it is evaluated and deployed\n"
+            "Be factual, no opinions.\n\n"
+            f"Document:\n{full_text[:3000]}"
+        )
+        return _llm.complete(prompt).strip()
+
     prompt = (
         f"You are summarizing a {doc_type} document for a recruiter.\n"
         f"Write a concise 5-6 sentence summary that must cover:\n"
@@ -120,11 +141,7 @@ def generate_summary(full_text: str, doc_type: str) -> str:
         f"Document:\n{full_text[:3000]}"
     )
 
-    response = ollama.chat(
-        model=SUMMARY_LLM,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return response["message"]["content"].strip()
+    return _llm.complete(prompt).strip()
 
 
 # -- In-memory ingestion (raw text, no file, no summary) ---------------------

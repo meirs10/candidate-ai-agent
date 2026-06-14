@@ -18,5 +18,12 @@
   "preferred_location": "Tel Aviv, Israel",
   "availability": "September 2026",
   "work_type": "Remote",
-  "open_to_relocation": "Yes"
+  "open_to_relocation": "Yes",
+  "skills": [
+    "Kubernetes",
+    "Terraform",
+    "AWS",
+    "Go",
+    "Prometheus"
+  ]
 }

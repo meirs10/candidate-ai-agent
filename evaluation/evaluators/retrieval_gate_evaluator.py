@@ -83,9 +83,10 @@ def run_retrieval_gate_evaluation(
     Returns:
         DataFrame with one row per analyzed question.
     """
+    _RAG_TOOLS = ("search_documents", "search_project")
     eligible = [
         r for r in data
-        if r.get("final_tool") == "search_documents"
+        if r.get("final_tool") in _RAG_TOOLS
         and r.get("route") == "specific"
         and r.get("category") != "negative"
         and r.get("fused_pool") is not None
@@ -94,7 +95,7 @@ def run_retrieval_gate_evaluation(
 
     skipped_no_trace = sum(
         1 for r in data
-        if r.get("final_tool") == "search_documents"
+        if r.get("final_tool") in _RAG_TOOLS
         and r.get("route") == "specific"
         and r.get("category") != "negative"
         and r.get("fused_pool") is None

@@ -18,5 +18,12 @@
   "preferred_location": "Tel Aviv, Israel",
   "availability": "July 2026",
   "work_type": "Hybrid",
-  "open_to_relocation": "No"
+  "open_to_relocation": "No",
+  "skills": [
+    "React",
+    "TypeScript",
+    "CSS3",
+    "Python",
+    "Docker"
+  ]
 }

@@ -283,6 +283,9 @@
     "question": "Does the candidate know Python?",
     "ground_truth": "Yes, Python is the candidate's primary programming language, used extensively across all roles and projects.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -292,6 +295,9 @@
     "question": "Does the candidate have experience with PyTorch?",
     "ground_truth": "Yes, the candidate uses PyTorch extensively for deep learning projects including the recommendation engine, fraud detection pipeline, and the capstone drone navigation project.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -328,6 +334,9 @@
     "question": "Does the candidate have experience with Kubernetes?",
     "ground_truth": "Yes, the candidate has experience with Kubernetes, using it in the real-time fraud detection pipeline and as part of their MLOps/DevOps skill set.",
     "expected_source": "docs",
+    "accept_sources": [
+      "skill"
+    ],
     "category": "skills",
     "difficulty": "easy",
     "expected_route": "specific"
@@ -546,6 +555,42 @@
     "expected_source": "structured",
     "category": "preferences",
     "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q062",
+    "question": "How proficient is the candidate in PyTorch?",
+    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in PyTorch, inferred from his documents with supporting evidence. PyTorch is a core, well-evidenced skill used in the recommendation engine, fraud detection pipeline, and the capstone drone-navigation project.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "easy",
+    "expected_route": null
+  },
+  {
+    "id": "q063",
+    "question": "Rate the candidate's Python skills.",
+    "ground_truth": "Provides a model-estimated 1-5 proficiency level for Python, inferred from the documents with evidence. Python is the candidate's primary language, used across all roles and projects.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q064",
+    "question": "What are the candidate's strongest skills?",
+    "ground_truth": "Provides a ranked list of the candidate's assessed skills (Python, PyTorch, AWS, Kubernetes, TensorFlow) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "expected_source": "skill",
+    "category": "proficiency",
+    "difficulty": "medium",
+    "expected_route": null
+  },
+  {
+    "id": "q065",
+    "question": "How strong is the candidate at Kafka?",
+    "ground_truth": "Kafka is not among the explicitly assessed skills, so this is answered from the documents: Apache Kafka is listed among the candidate's data-engineering tools and used in the real-time fraud detection pipeline.",
+    "expected_source": "docs",
+    "category": "proficiency",
+    "difficulty": "medium",
     "expected_route": null
   },
   {

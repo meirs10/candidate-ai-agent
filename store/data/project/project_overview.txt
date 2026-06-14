@@ -1,0 +1,274 @@
+CANDIDATE AI AGENT — PROJECT OVERVIEW
+
+This document describes the software project itself (its purpose, architecture,
+and engineering), so that a recruiter can ask questions about how the system was
+built. It contains no private data, no personal information, and no API keys or
+secrets.
+
+
+WHAT THE PROJECT IS
+
+The Candidate AI Agent is an AI-powered digital representative for a job
+candidate. A recruiter opens a secured, always-available chat link and asks
+natural-language questions about the candidate; the agent answers accurately and
+professionally, grounded in the candidate's own documents and a trained scoring
+model. It goes well beyond a standard "chat with your PDF" demo: it combines an
+agentic ReAct-style architecture with an advanced Retrieval-Augmented Generation
+(RAG) pipeline and a purpose-built machine-learning model for skill scoring.
+
+The whole system can run on either a 100% local open-source stack or an all-API
+cloud stack, selected purely through configuration. The cloud configuration is
+what makes it deployable as an always-on, secured service.
+
+
+HIGH-LEVEL ARCHITECTURE: BUILD VS SERVE
+
+The project is split into two phases.
+
+Build phase (run locally, occasionally): the candidate uploads documents; the
+system parses them, chunks them, embeds them into a vector store, and runs a
+trained model to estimate skill proficiency. This produces two artifacts — a
+ChromaDB vector index and a small JSON structured store of verified facts plus
+precomputed skill scores. The heavyweight models (document parsing, the skill
+scorer) only run here, on the candidate's own machine.
+
+Serve phase (hosted, always on): the recruiter chat. It only reads the prebuilt
+artifacts and performs retrieval plus LLM calls. It deliberately avoids any
+heavy local model so it fits free or low-cost hosting tiers. This separation is
+the key design decision that makes the project cheap and simple to host.
+
+
+THE TWO USER FLOWS
+
+Candidate Setup page: the candidate uploads supporting documents (CV,
+transcripts, certificates, recommendation letters) in PDF, DOCX, TXT, MD, PNG, or
+JPG form, fills in structured profile fields (contact details, education,
+experience, job preferences), lists the skills they want assessed, and triggers
+skill-proficiency estimation. In production this page is hidden so recruiters can
+never edit the profile or trigger ingestion.
+
+Recruiter Chat page: a clean conversational interface. The recruiter types a
+question; the agent decides which tools to call, gathers grounded evidence, and
+returns a concise professional answer in the same language the recruiter used.
+
+
+AGENTIC TOOL CALLING (ReAct STYLE)
+
+The system does not blindly query a vector database. An LLM agent reasons about
+each question and chooses among several tools, and it can chain multiple tools in
+one turn with fallbacks. The tools are:
+
+- get_structured_data: returns fixed, verified facts from a structured JSON store
+  (full name, email, phone, links, education, years of experience, current and
+  desired role, salary expectation, location, availability, work type, relocation).
+
+- get_skill_proficiency: returns the candidate's proficiency LEVEL (1 to 5) in a
+  given skill, inferred by a trained scoring model from the candidate's documents,
+  together with the supporting evidence. It can also list all assessed skills
+  ranked by level.
+
+- search_documents: runs the full RAG pipeline over the candidate's unstructured
+  documents for anything not covered by the other tools — projects, detailed
+  experience, achievements, certifications.
+
+- search_project: answers questions about THIS software project/system itself
+  (its architecture, technology stack, features, evaluation, and how it works),
+  using RAG over this very overview document rather than the candidate's data.
+
+The agent chains tools intelligently. For example, if get_skill_proficiency
+reports that a skill was not assessed, the agent falls back to search_documents.
+A safety cap limits the number of tool rounds per turn to prevent loops.
+
+
+THE RAG PIPELINE — INGESTION
+
+Documents are parsed with the Unstructured library (with PyMuPDF for PDFs,
+python-docx for Word, and OCR via Tesseract/Pillow for images). The parser
+performs section-aware extraction: it detects section headers (including
+spaced-letter headers like "T E C H N I C A L  S K I L L S") and merges
+consecutive elements under the same heading. Each section is then split with a
+recursive character text splitter (about 1000 characters per chunk with 150
+characters of overlap). Every chunk is prefixed with its section name for context
+and stored with provenance metadata (source file and document id) so retrieved
+chunks can always be traced back to their origin — which is what makes retrieval
+evaluation against ground-truth evidence possible.
+
+In addition to the per-chunk index, a separate summary index is built: the LLM
+writes a short factual summary of each document, which is embedded and stored in
+its own collection. This powers the "broad" retrieval path.
+
+
+THE RAG PIPELINE — RETRIEVAL
+
+Retrieval is an advanced, multi-stage pipeline:
+
+1. Query routing. An LLM router classifies each query as BROAD (a general
+   overview / "who is this person" question) or SPECIFIC (any particular fact,
+   skill, project, or detail). Broad queries are answered from the summary index;
+   specific queries go through the full fusion path.
+
+2. Query expansion. For specific queries, the LLM generates several query
+   variations — a mix of short keyword-style queries (good for BM25) and natural
+   language queries (good for vector search) — to maximize recall.
+
+3. Hybrid fusion retrieval. The system runs both dense vector search (semantic
+   similarity over embeddings in ChromaDB) and sparse keyword search (BM25 Okapi)
+   for every query variation, then merges all ranked lists with Reciprocal Rank
+   Fusion (RRF). RRF scores each list independently so rank-0 in any list gets
+   equal weight regardless of list length or origin.
+
+4. Re-ranking. A cross-encoder reranker rescores the fused candidate pool against
+   the original query and keeps the best top-k chunks.
+
+The pipeline exposes the fused candidate pool before re-ranking, so evaluation can
+tell whether a relevant chunk was lost at recall (never entered the pool) or at
+re-ranking (entered the pool but was cut from the final top-k).
+
+
+SKILL PROFICIENCY ESTIMATION — THE FLAGSHIP FEATURE
+
+Instead of leaving "how good is the candidate at X?" to keyword matching, the
+project trains a dedicated NLP model to score each skill from 1 to 5 directly from
+the candidate's own documents. The levels mean: 1 awareness (a passing mention),
+2 working familiarity, 3 competent / day-to-day use, 4 strong / leads work in it,
+5 expert / authority.
+
+At setup time, for each skill the candidate lists, the system retrieves the
+supporting evidence chunks from their documents and runs the trained scorer. The
+result — a level plus the evidence it was based on — is saved into the structured
+store, so the recruiter chat can later surface a verified, model-grounded level
+quickly instead of guessing.
+
+The scorer is a fine-tuned DeBERTa-v3 transformer with a CORAL ordinal regression
+head (ordinal because the 1 to 5 levels are ordered, not arbitrary categories).
+The model reads the skill plus its evidence chunks, serialized in the same format
+it saw during training. The best configuration fine-tunes the top transformer
+layers; head-only and softmax-classifier variants were trained and compared.
+Because the scorer and the document parsing only run at setup time, they never
+need to be deployed to the always-on service.
+
+
+SYNTHETIC TRAINING DATA GENERATION
+
+Training the skill scorer required labeled data that does not exist publicly, so
+the project includes a synthetic data generation system. It builds realistic
+candidate personas and archetypes, generates documents with controlled skill
+evidence at known proficiency levels, tracks phrase usage to avoid repetition,
+sanitizes the output, and validates the result with statistical checks,
+cross-validation, and shortcut-detection (to ensure the model learns from real
+evidence rather than spurious cues). The generator uses async LLM calls for
+throughput.
+
+
+PLUGGABLE PROVIDERS
+
+Three layers are pluggable through configuration, with no code changes:
+
+- LLM: Claude via the Anthropic API (production default) or a local Ollama model.
+  The agent loop, the query router, query expansion, and build-time summaries all
+  go through one provider-neutral client. Prompt caching is applied to the frozen
+  system prompt and tool definitions to reduce cost.
+
+- Embeddings: Voyage AI API (production default, no local model) or local
+  nomic-embed-text via sentence-transformers. Both are asymmetric — documents and
+  queries are embedded differently — so switching providers requires rebuilding
+  the vector index.
+
+- Reranker: Voyage rerank API (production default) or a local Qwen3-Reranker. The
+  Qwen3 reranker is a causal language model scored, per its model card, by reading
+  the probability of the "yes" token over a query/document relevance prompt — not
+  a naive classification head. A "none" option skips reranking.
+
+This pluggability preserves the original "built entirely from local open-source
+models" story while enabling a lean, always-on cloud deployment.
+
+
+STRUCTURED STORE AND VECTOR STORE
+
+The structured store is a small JSON file holding verified profile fields plus
+the precomputed skill scores and their evidence. The vector store is ChromaDB,
+used as a persistent on-disk index with cosine similarity. Each candidate's
+chunks live in their own collection; this project overview lives in a separate
+collection of its own, queried by the search_project tool.
+
+
+THE EVALUATION SUITE
+
+The project ships a rigorous, component-based evaluation harness rather than
+ad-hoc spot checks. It runs the full agent over golden datasets and scores
+several independent dimensions:
+
+- Tool Selection: did the agent pick the correct tool (structured facts vs skill
+  scorer vs document search vs project search) for each question?
+
+- RAG Quality: RAGAS metrics (faithfulness, context precision and recall, answer
+  relevancy) on the RAG-routed questions.
+
+- Answer Correctness: DeepEval's GEval LLM-as-judge on every question, including
+  whether refusals are worded correctly.
+
+- Refusal Accuracy: a confusion matrix checking that the agent refuses
+  out-of-scope or inappropriate questions and does NOT refuse legitimate ones.
+
+- Router Accuracy: did the broad/specific router classify each query correctly?
+
+- Per-gate Retrieval Analysis: for specific document questions, it localizes
+  exactly where a relevant chunk was lost — at ingestion, at recall, or at
+  re-ranking — turning a single aggregate recall number into an actionable
+  diagnosis.
+
+- Ingestion Quality: chunk statistics, coverage, and summary quality.
+
+The judges can run on a free local model, so a full evaluation costs nothing to
+run. The harness seeds each candidate's data, runs the pipeline, scores every
+component on the combined result set, and generates an HTML report with both
+per-candidate and aggregate breakdowns. It supports checkpointing and resuming.
+
+
+THE EVALUATION DATA
+
+Evaluation uses six synthetic candidates with varied document formats (PDF, DOCX,
+TXT, Markdown, and image/PNG to exercise OCR). Each candidate has a golden dataset
+of 75 questions spanning personal facts, education, experience, preferences,
+skills, proficiency, projects, certifications, complex multi-tool questions, and
+deliberately out-of-scope "negative" questions. Project-knowledge questions about
+this system are evaluated the same way as the candidate document questions.
+
+
+DEPLOYMENT AND SECURITY
+
+The recruiter chat deploys to a Streamlit-based host (such as Streamlit Community
+Cloud or Hugging Face Spaces) over HTTPS. Access is gated by a single shared
+access code suited to a single-candidate app. In production only the recruiter
+chat is served; the setup page is hidden. The candidate's private data is kept out
+of any public repository. Running costs are minimal: the all-API serve path uses a
+fast, inexpensive Claude model for the agent and a low-cost Voyage tier for
+embeddings and reranking, typically only a few dollars per month, and the hosting
+itself can be free.
+
+
+TECHNOLOGY STACK
+
+- Frontend and app framework: Streamlit (multi-page).
+- LLM and orchestration: Anthropic Claude API (or local Ollama), ReAct-style tool
+  calling, prompt caching.
+- Embeddings: Voyage AI (or local nomic-embed via sentence-transformers).
+- Retrieval: ChromaDB for dense vectors, BM25 Okapi for sparse search, Reciprocal
+  Rank Fusion, and a cross-encoder reranker (Voyage rerank or Qwen3-Reranker).
+- Skill scoring: DeBERTa-v3 with a CORAL ordinal head, in PyTorch / Transformers.
+- Ingestion: Unstructured, PyMuPDF, python-docx, Tesseract OCR, section-aware
+  chunking via LangChain text splitters.
+- Evaluation: RAGAS and DeepEval (GEval), plus custom tool, router, refusal, and
+  per-gate retrieval evaluators, with HTML/JSON/CSV reports.
+
+
+DESIGN PRINCIPLES AND WHAT MAKES IT NOTABLE
+
+The standout engineering choices are: a trained, evidence-grounded skill scorer
+instead of keyword guessing; an agent that routes between verified facts, the
+scorer, and document search with intelligent fallbacks; a hybrid, fused, re-ranked
+retrieval pipeline with a broad/specific router; a serious multi-dimensional
+evaluation suite including per-gate retrieval failure localization; a fully
+synthetic, validated training-data pipeline; and a clean build-vs-serve split with
+pluggable providers that lets the same codebase run fully local or deploy as a
+cheap, secured, always-on cloud service.
