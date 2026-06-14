@@ -122,17 +122,20 @@ Recruiters interact with the AI agent through a clean conversational UI, asking 
 graph TD;
     A[Recruiter] -->|Questions| B(Streamlit Chat Interface);
     B --> C{LangChain Agent};
-    D[(Structured Store)] --> C;
-    C -->|Fetch Exact Facts| D;
+    
+    C -->|Fetch Exact Facts| D[(Structured Store)];
     C -->|Fetch Skill Proficiency| P[get_skill_proficiency];
     C -->|Search Context| E[Advanced RAG Pipeline];
+    D --> C;
     
     P --> D;
 
     E --> F{Query Router};
+    
     F -->|Broad| G[Fetch Summary Collection];
+    G --> C;
+    
     F -->|Specific| H[Query Expansion];
-
     H --> I[Vector Search ChromaDB];
     H --> J[BM25 Keyword Search];
 
