@@ -13,17 +13,16 @@ Run:
     pytest tests/test_ingest.py -v -m "not integration"   # skip LLM tests
 """
 
-import json
-import pytest
-import chromadb
+import contextlib
 from pathlib import Path
+
+import chromadb
+import pytest
 
 from rag.ingest import (
     extract_sections,
-    text_splitter,
     ingest_document,
-    get_collection,
-    get_summary_collection,
+    text_splitter,
 )
 
 # ── Test fixtures ────────────────────────────────────────────────────────────
@@ -47,16 +46,12 @@ def cleanup_test_collection():
     """Clean up test ChromaDB collection before and after each test."""
     client = chromadb.PersistentClient(path=CHROMA_PATH)
     for name in [TEST_COLLECTION, f"{TEST_COLLECTION}_summaries"]:
-        try:
+        with contextlib.suppress(Exception):
             client.delete_collection(name=name)
-        except Exception:
-            pass
     yield
     for name in [TEST_COLLECTION, f"{TEST_COLLECTION}_summaries"]:
-        try:
+        with contextlib.suppress(Exception):
             client.delete_collection(name=name)
-        except Exception:
-            pass
 
 
 # ── Section Extraction Tests ─────────────────────────────────────────────────
@@ -71,8 +66,7 @@ class TestExtractSections:
         sections = extract_sections(str(cv_path))
 
         assert len(sections) > 0, "No sections extracted from TXT file"
-        assert all("text" in s and "section" in s for s in sections), \
-            "Each section must have 'text' and 'section' keys"
+        assert all("text" in s and "section" in s for s in sections), "Each section must have 'text' and 'section' keys"
 
     def test_md_returns_sections(self):
         """Markdown file with # headers should produce multiple sections."""
@@ -90,8 +84,7 @@ class TestExtractSections:
         section_names = set(s["section"] for s in sections)
         # Should have more than just "general" — headers like
         # "Work Experience", "Education", "Technical Skills" etc.
-        assert len(section_names) > 1, \
-            f"Expected multiple section names, got only: {section_names}"
+        assert len(section_names) > 1, f"Expected multiple section names, got only: {section_names}"
 
     def test_no_empty_section_text(self):
         """No section should have empty or whitespace-only text."""
@@ -99,8 +92,7 @@ class TestExtractSections:
         sections = extract_sections(str(cv_path))
 
         for s in sections:
-            assert s["text"].strip(), \
-                f"Section '{s['section']}' has empty text"
+            assert s["text"].strip(), f"Section '{s['section']}' has empty text"
 
     def test_pdf_returns_sections(self):
         """PDF file should also produce sections."""
@@ -139,8 +131,9 @@ class TestChunkQuality:
         for section in sections:
             chunks = text_splitter.split_text(section["text"])
             for chunk in chunks:
-                assert len(chunk) <= max_allowed, \
+                assert len(chunk) <= max_allowed, (
                     f"Chunk exceeds max size ({len(chunk)} > {max_allowed}): {chunk[:80]}..."
+                )
 
     def test_no_tiny_chunks(self):
         """Chunks should not be extremely small (< 10 chars) — indicates bad splitting.
@@ -164,9 +157,11 @@ class TestChunkQuality:
         max_acceptable = max(5, int(total_chunks * 0.05))  # allow 5 or 5%
         if tiny_chunks:
             import warnings
-            warnings.warn(f"Found {len(tiny_chunks)} tiny chunks (parser artifacts): {tiny_chunks}")
-        assert len(tiny_chunks) <= max_acceptable, \
+
+            warnings.warn(f"Found {len(tiny_chunks)} tiny chunks (parser artifacts): {tiny_chunks}", stacklevel=2)
+        assert len(tiny_chunks) <= max_acceptable, (
             f"Too many tiny chunks ({len(tiny_chunks)}/{total_chunks}): {tiny_chunks}"
+        )
 
     def test_no_duplicate_chunks_in_section(self):
         """Within a single section, there should be no exact duplicate chunks."""
@@ -176,8 +171,9 @@ class TestChunkQuality:
         for section in sections:
             chunks = text_splitter.split_text(section["text"])
             unique = set(chunks)
-            assert len(chunks) == len(unique), \
+            assert len(chunks) == len(unique), (
                 f"Section '{section['section']}' has {len(chunks) - len(unique)} duplicate chunks"
+            )
 
 
 # ── Ingestion Integration Tests ──────────────────────────────────────────────
@@ -227,8 +223,7 @@ class TestIngestionIntegration:
         data = collection.get(include=["metadatas"])
 
         for meta in data["metadatas"]:
-            assert meta["doc_type"] == "cv", \
-                f"Expected doc_type='cv', got '{meta['doc_type']}'"
+            assert meta["doc_type"] == "cv", f"Expected doc_type='cv', got '{meta['doc_type']}'"
 
     @pytest.mark.integration
     def test_summary_created(self):
@@ -241,13 +236,12 @@ class TestIngestionIntegration:
         data = summary_col.get(include=["documents"])
 
         assert len(data["documents"]) > 0, "No summary stored after ingestion"
-        assert len(data["documents"][0]) > 50, \
-            f"Summary too short: '{data['documents'][0][:100]}'"
+        assert len(data["documents"][0]) > 50, f"Summary too short: '{data['documents'][0][:100]}'"
 
     @pytest.mark.integration
     def test_multiple_docs_different_types(self):
         """Ingesting cv + readme + recommendation should store all with correct doc_types."""
-        cand_dir = DATA_DIR / "candidate_3"
+        DATA_DIR / "candidate_3"
         cv_path = _get_candidate_file(3, "cv_")
         readme_path = _get_candidate_file(3, "readme_")
         rec_path = _get_candidate_file(3, "recommendation_")
@@ -261,8 +255,7 @@ class TestIngestionIntegration:
         data = collection.get(include=["metadatas"])
 
         doc_types = set(m["doc_type"] for m in data["metadatas"])
-        assert doc_types == {"cv", "readme", "recommendation"}, \
-            f"Expected all 3 doc_types, got: {doc_types}"
+        assert doc_types == {"cv", "readme", "recommendation"}, f"Expected all 3 doc_types, got: {doc_types}"
 
     @pytest.mark.integration
     def test_chunks_contain_section_prefix(self):
@@ -275,8 +268,7 @@ class TestIngestionIntegration:
         data = collection.get(include=["documents"])
 
         for doc in data["documents"]:
-            assert doc.startswith("Section:"), \
-                f"Chunk missing 'Section:' prefix: {doc[:80]}..."
+            assert doc.startswith("Section:"), f"Chunk missing 'Section:' prefix: {doc[:80]}..."
 
     @pytest.mark.integration
     def test_no_exact_duplicate_chunks_in_collection(self):
@@ -290,5 +282,4 @@ class TestIngestionIntegration:
 
         docs = data["documents"]
         unique = set(docs)
-        assert len(docs) == len(unique), \
-            f"Found {len(docs) - len(unique)} duplicate chunks out of {len(docs)}"
+        assert len(docs) == len(unique), f"Found {len(docs) - len(unique)} duplicate chunks out of {len(docs)}"

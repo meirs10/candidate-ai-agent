@@ -16,10 +16,7 @@ Usage:
 """
 
 import re
-import math
 from collections import Counter
-from typing import Optional
-
 
 # Baseline frequencies of common English n-grams (4-grams).
 # These are naturally frequent in professional writing and should NOT
@@ -95,11 +92,11 @@ LLM_ISM_SEEDS = [
 
 class PhraseTracker:
     """Tracks n-gram frequencies across documents and identifies overused phrases.
-    
+
     Uses TF-IDF-style scoring: phrases that are common in general English
     (high baseline frequency) are not penalized, while phrases that spike
     in the generated corpus but are rare in natural writing are flagged.
-    
+
     Thread-safe for asyncio (single-threaded event loop, no mutex needed).
     """
 
@@ -112,8 +109,8 @@ class PhraseTracker:
     def _normalize(text: str) -> str:
         """Normalize text for n-gram extraction."""
         text = text.lower()
-        text = re.sub(r'[^a-z\s]', ' ', text)
-        text = re.sub(r'\s+', ' ', text).strip()
+        text = re.sub(r"[^a-z\s]", " ", text)
+        text = re.sub(r"\s+", " ", text).strip()
         return text
 
     def _extract_ngrams(self, text: str) -> list[str]:
@@ -123,13 +120,13 @@ class PhraseTracker:
         ngrams = []
         for n in self._ngram_sizes:
             for i in range(len(words) - n + 1):
-                ngram = " ".join(words[i:i + n])
+                ngram = " ".join(words[i : i + n])
                 ngrams.append(ngram)
         return ngrams
 
     def ingest(self, document_text: str) -> None:
         """Ingest a generated document and update n-gram frequencies.
-        
+
         Call this after each successful document generation.
         """
         ngrams = self._extract_ngrams(document_text)
@@ -140,9 +137,9 @@ class PhraseTracker:
 
     def _score_ngram(self, ngram: str, doc_freq: int) -> float:
         """Score an n-gram using TF-IDF-style logic.
-        
+
         Returns a suspicion score. Higher = more likely an LLM-ism.
-        
+
         Score = doc_frequency_ratio / baseline_frequency
         - High doc frequency + low baseline = LLM-ism (high score)
         - High doc frequency + high baseline = common English (low score)
@@ -173,12 +170,12 @@ class PhraseTracker:
         min_score: float = 0.3,
     ) -> list[str]:
         """Get the top-K most overused phrases to ban in the next generation.
-        
+
         Args:
             top_k: Maximum number of phrases to return.
             min_doc_freq: Minimum number of documents a phrase must appear in.
             min_score: Minimum suspicion score to be considered.
-            
+
         Returns:
             List of phrase strings to inject into the prompt as banned phrases.
         """
@@ -201,7 +198,7 @@ class PhraseTracker:
 
     def format_for_prompt(self, top_k: int = 10) -> str:
         """Format banned phrases as a prompt-ready string.
-        
+
         Returns:
             A string like:
             'Avoid these overused phrases: "rare blend of", "instrumental in", ...'

@@ -7,11 +7,10 @@ import argparse
 import json
 import os
 
-import torch
-
 import config
 import heads
 import metrics
+import torch
 from dataset import load_data
 from model import ScoringModel
 
@@ -31,9 +30,11 @@ def train(subset: float | None = None, epochs: int | None = None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     amp_enabled = config.USE_AMP and device.type == "cuda"
     print(f"[{config.EXPERIMENT}] {config.EXPERIMENTS[config.EXPERIMENT]['desc']}")
-    print(f"Using device: {device}  |  head={config.HEAD_TYPE}  |  "
-          f"unfreeze_last_n={config.UNFREEZE_LAST_N}  |  epochs={epochs}  |  "
-          f"amp={amp_enabled}{f'  |  subset={subset}' if subset else ''}")
+    print(
+        f"Using device: {device}  |  head={config.HEAD_TYPE}  |  "
+        f"unfreeze_last_n={config.UNFREEZE_LAST_N}  |  epochs={epochs}  |  "
+        f"amp={amp_enabled}{f'  |  subset={subset}' if subset else ''}"
+    )
 
     # ── data ────────────────────────────────────────────────
     train_loader, val_loader, _ = load_data(subset=subset)
@@ -55,7 +56,7 @@ def train(subset: float | None = None, epochs: int | None = None):
     epochs_no_improve = 0
     patience = config.EARLY_STOP_PATIENCE
     ckpt = config.checkpoint_path()
-    history = []   # per-epoch metrics for the learning-curve graph
+    history = []  # per-epoch metrics for the learning-curve graph
 
     # ── training loop ───────────────────────────────────────
     for epoch in range(1, epochs + 1):
@@ -63,9 +64,9 @@ def train(subset: float | None = None, epochs: int | None = None):
         total_loss = 0.0
 
         for batch in train_loader:
-            input_ids      = batch["input_ids"].to(device)
-            attention_mask  = batch["attention_mask"].to(device)
-            labels          = batch["label"].to(device)
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch["attention_mask"].to(device)
+            labels = batch["label"].to(device)
 
             with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=amp_enabled):
                 logits = model(input_ids, attention_mask)
@@ -86,9 +87,9 @@ def train(subset: float | None = None, epochs: int | None = None):
 
         with torch.no_grad():
             for batch in val_loader:
-                input_ids      = batch["input_ids"].to(device)
-                attention_mask  = batch["attention_mask"].to(device)
-                labels          = batch["label"].to(device)
+                input_ids = batch["input_ids"].to(device)
+                attention_mask = batch["attention_mask"].to(device)
+                labels = batch["label"].to(device)
 
                 with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=amp_enabled):
                     logits = model(input_ids, attention_mask)
@@ -97,23 +98,27 @@ def train(subset: float | None = None, epochs: int | None = None):
                 all_preds.append(preds)
                 all_labels.append(labels)
 
-        all_preds  = torch.cat(all_preds).cpu().numpy()
+        all_preds = torch.cat(all_preds).cpu().numpy()
         all_labels = torch.cat(all_labels).cpu().numpy()
         val = metrics.ordinal_metrics(all_labels, all_preds)
         val_mae = val["mae"]
 
-        print(f"Epoch {epoch:>2}/{epochs}  |  "
-              f"train_loss={avg_train_loss:.4f}  |  "
-              f"val_MAE={val_mae:.4f}  |  val_QWK={val['qwk']:.4f}  |  "
-              f"val_+-1={val['off_by_one']:.4f}")
+        print(
+            f"Epoch {epoch:>2}/{epochs}  |  "
+            f"train_loss={avg_train_loss:.4f}  |  "
+            f"val_MAE={val_mae:.4f}  |  val_QWK={val['qwk']:.4f}  |  "
+            f"val_+-1={val['off_by_one']:.4f}"
+        )
 
-        history.append({
-            "epoch": epoch,
-            "train_loss": float(avg_train_loss),
-            "val_mae": val["mae"],
-            "val_qwk": val["qwk"],
-            "val_off_by_one": val["off_by_one"],
-        })
+        history.append(
+            {
+                "epoch": epoch,
+                "train_loss": float(avg_train_loss),
+                "val_mae": val["mae"],
+                "val_qwk": val["qwk"],
+                "val_off_by_one": val["off_by_one"],
+            }
+        )
 
         if val_mae < best_val_mae - 1e-4:
             best_val_mae = val_mae
@@ -138,16 +143,22 @@ def train(subset: float | None = None, epochs: int | None = None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train a skill-scoring experiment")
     parser.add_argument(
-        "--experiment", choices=list(config.EXPERIMENTS), default=None,
+        "--experiment",
+        choices=list(config.EXPERIMENTS),
+        default=None,
         help=f"Which variant to train (default: config.EXPERIMENT = {config.EXPERIMENT}).",
     )
     parser.add_argument(
-        "--subset", type=float, default=None,
+        "--subset",
+        type=float,
+        default=None,
         help="Train on a subset to sanity-check learning before a full run. "
-             "Fraction in (0,1) e.g. 0.05, or an absolute row count e.g. 200.",
+        "Fraction in (0,1) e.g. 0.05, or an absolute row count e.g. 200.",
     )
     parser.add_argument(
-        "--epochs", type=int, default=None,
+        "--epochs",
+        type=int,
+        default=None,
         help="Override config.EPOCHS (useful for quick subset runs).",
     )
     args = parser.parse_args()

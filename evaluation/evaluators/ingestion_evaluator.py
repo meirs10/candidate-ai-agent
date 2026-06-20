@@ -8,6 +8,7 @@ import re
 import chromadb
 import numpy as np
 import ollama
+
 from rag.embedder import embedder
 
 CHROMA_PATH = "./chroma_db"
@@ -64,7 +65,7 @@ def run_ingestion_evaluation(
 
     # ── 1b. Per-doc-type breakdown ───────────────────────────────────
     doc_type_groups = {}
-    for doc, meta in zip(documents, metadatas):
+    for doc, meta in zip(documents, metadatas, strict=False):
         dt = meta.get("doc_type", "unknown") if meta else "unknown"
         doc_type_groups.setdefault(dt, []).append(len(doc))
 
@@ -81,8 +82,15 @@ def run_ingestion_evaluation(
 
     # ── 2. Section Coverage ──────────────────────────────────────────
     expected_sections = {
-        "Personal Information", "Summary", "Work Experience", "Education",
-        "Technical Skills", "Projects", "Certifications", "Languages", "Interests",
+        "Personal Information",
+        "Summary",
+        "Work Experience",
+        "Education",
+        "Technical Skills",
+        "Projects",
+        "Certifications",
+        "Languages",
+        "Interests",
     }
 
     found_sections = set()
@@ -105,9 +113,7 @@ def run_ingestion_evaluation(
         "found": sorted(found_sections),
         "missing": sorted(missing_sections),
         "extra": sorted(extra_sections),
-        "coverage_pct": round(
-            len(matched) / len(expected_sections) * 100, 1
-        ) if expected_sections else 0,
+        "coverage_pct": round(len(matched) / len(expected_sections) * 100, 1) if expected_sections else 0,
         "has_section_metadata": len(found_sections) > 0,
     }
     print(f"[Ingestion Eval] Section coverage: {report['section_coverage']['coverage_pct']}%")
@@ -125,7 +131,7 @@ def run_ingestion_evaluation(
             if shorter == 0:
                 continue
             # Simple character overlap ratio
-            common = sum(1 for a, b in zip(doc_list[i], doc_list[j]) if a == b)
+            common = sum(1 for a, b in zip(doc_list[i], doc_list[j], strict=False) if a == b)
             overlap = common / shorter
             if overlap > 0.9:
                 near_duplicates += 1
@@ -151,8 +157,11 @@ def run_ingestion_evaluation(
     if summaries:
         summary_text = summaries[0]
         checklist = [
-            "candidate name", "current role/job title", "key technical skills",
-            "education/degree", "years of experience",
+            "candidate name",
+            "current role/job title",
+            "key technical skills",
+            "education/degree",
+            "years of experience",
         ]
         prompt = (
             f"You are evaluating the quality of a candidate profile summary.\n\n"
@@ -160,14 +169,14 @@ def run_ingestion_evaluation(
             f"Check if the summary mentions each of these key facts:\n"
             + "\n".join(f"  - {item}" for item in checklist)
             + "\n\nFor each item, respond with YES or NO. "
-            f"Then give an overall quality score from 0.0 to 1.0.\n\n"
-            f"Format your response EXACTLY as:\n"
-            f"candidate name: YES/NO\n"
-            f"current role/job title: YES/NO\n"
-            f"key technical skills: YES/NO\n"
-            f"education/degree: YES/NO\n"
-            f"years of experience: YES/NO\n"
-            f"SCORE: 0.X"
+            "Then give an overall quality score from 0.0 to 1.0.\n\n"
+            "Format your response EXACTLY as:\n"
+            "candidate name: YES/NO\n"
+            "current role/job title: YES/NO\n"
+            "key technical skills: YES/NO\n"
+            "education/degree: YES/NO\n"
+            "years of experience: YES/NO\n"
+            "SCORE: 0.X"
         )
         response = ollama.chat(
             model=judge_model,
@@ -216,12 +225,26 @@ def run_ingestion_evaluation(
     def _extract_probe_terms(docs: list[str], n_terms: int = 10) -> list[str]:
         """Extract real terms from ingested docs for probing."""
         term_counts = {}
-        skip = {"Section", "The", "This", "And", "For", "With", "From", "That",
-                "Not", "Has", "Was", "Are", "His", "Her", "Its", "Our"}
+        skip = {
+            "Section",
+            "The",
+            "This",
+            "And",
+            "For",
+            "With",
+            "From",
+            "That",
+            "Not",
+            "Has",
+            "Was",
+            "Are",
+            "His",
+            "Her",
+            "Its",
+            "Our",
+        }
         for doc in docs:
-            for match in re.finditer(
-                r'\b[A-Z][a-zA-Z+#.]{2,}(?:\s+[A-Z][a-zA-Z+#.]+)*\b', doc
-            ):
+            for match in re.finditer(r"\b[A-Z][a-zA-Z+#.]{2,}(?:\s+[A-Z][a-zA-Z+#.]+)*\b", doc):
                 term = match.group()
                 if term not in skip:
                     term_counts[term] = term_counts.get(term, 0) + 1
@@ -236,17 +259,19 @@ def run_ingestion_evaluation(
         results = collection.query(query_embeddings=q_embedding, n_results=1)
         top_doc = results["documents"][0][0] if results["documents"] and results["documents"][0] else ""
         found = term.lower() in top_doc.lower()
-        probe_results.append({
-            "term": term,
-            "found_in_top1": found,
-            "top1_preview": top_doc[:100],
-        })
+        probe_results.append(
+            {
+                "term": term,
+                "found_in_top1": found,
+                "top1_preview": top_doc[:100],
+            }
+        )
 
     hit_rate = sum(1 for p in probe_results if p["found_in_top1"]) / len(probe_results)
     report["embedding_probes"] = {
         "probes": probe_results,
         "hit_rate": round(hit_rate, 3),
     }
-    print(f"[Ingestion Eval] Embedding probe hit rate: {hit_rate*100:.1f}%")
+    print(f"[Ingestion Eval] Embedding probe hit rate: {hit_rate * 100:.1f}%")
 
     return report

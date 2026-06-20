@@ -1,7 +1,9 @@
-import streamlit as st
 import os
+
+import streamlit as st
+
 from rag.ingest import ingest_document
-from store.structured import save, load, save_skill_results, DEFAULT_EDUCATION
+from store.structured import DEFAULT_EDUCATION, load, save, save_skill_results
 
 CANDIDATE_ID = "candidate_001"  # later: dynamic per candidate
 
@@ -18,6 +20,7 @@ def parse_skills(raw: str) -> list[str]:
             out.append(s)
     return out
 
+
 # -- Required fields definition -----------------------------------------------
 
 REQUIRED_FIELDS = {
@@ -30,7 +33,16 @@ REQUIRED_FIELDS = {
 }
 
 NO_EDUCATION_DETAILS = {"", "No Formal Education", "High School Diploma"}
-DEGREE_OPTIONS = ["", "No Formal Education", "High School Diploma", "Associate", "Bachelor's", "Master's", "PhD", "Other"]
+DEGREE_OPTIONS = [
+    "",
+    "No Formal Education",
+    "High School Diploma",
+    "Associate",
+    "Bachelor's",
+    "Master's",
+    "PhD",
+    "Other",
+]
 
 
 def required_label(label: str) -> str:
@@ -105,13 +117,17 @@ st.divider()
 st.header("Personal Details")
 
 data["full_name"] = st.text_input(required_label("Full Name"), value=data.get("full_name", ""), key="full_name")
-data["email_address"] = st.text_input(required_label("Email Address"), value=data.get("email_address", ""), key="email_address")
+data["email_address"] = st.text_input(
+    required_label("Email Address"), value=data.get("email_address", ""), key="email_address"
+)
 
 col1, col2 = st.columns([1, 3])
 with col1:
     data["country_code"] = st.text_input("Country Code", value=data.get("country_code", "+"))
 with col2:
-    data["phone_number"] = st.text_input(required_label("Phone Number"), value=data.get("phone_number", ""), key="phone_number")
+    data["phone_number"] = st.text_input(
+        required_label("Phone Number"), value=data.get("phone_number", ""), key="phone_number"
+    )
 
 col3, col4 = st.columns(2)
 with col3:
@@ -173,10 +189,9 @@ for i, edu in enumerate(st.session_state.education):
                 key=f"gpa_{i}",
             )
 
-    if i > 0:
-        if st.button("Remove", key=f"remove_edu_{i}"):
-            st.session_state.education.pop(i)
-            st.rerun()
+    if i > 0 and st.button("Remove", key=f"remove_edu_{i}"):
+        st.session_state.education.pop(i)
+        st.rerun()
 
 if st.button("+ Add Education"):
     st.session_state.education.append(DEFAULT_EDUCATION.copy())
@@ -302,8 +317,7 @@ if st.button("Estimate Skill Proficiency"):
 skill_results = st.session_state.get("skill_scores", data.get("skill_scores", []))
 if skill_results:
     st.subheader("Estimated proficiency")
-    SCALE = {1: "awareness", 2: "working familiarity", 3: "competent",
-             4: "strong", 5: "expert"}
+    SCALE = {1: "awareness", 2: "working familiarity", 3: "competent", 4: "strong", 5: "expert"}
     for r in sorted(skill_results, key=lambda x: x.get("level", 0), reverse=True):
         level = r.get("level", 0)
         st.markdown(f"**{r['skill']}** — {level}/5 · _{SCALE.get(level, '')}_")

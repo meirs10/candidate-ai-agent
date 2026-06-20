@@ -22,9 +22,9 @@ import chromadb
 import pandas as pd
 
 from evaluation.pipeline import (
+    restore_candidate_id,
     run_full_pipeline,
     set_candidate_id,
-    restore_candidate_id,
 )
 from rag.ingest import ingest_document
 from store.structured import DATA_PATH as STRUCTURED_DATA_PATH
@@ -62,15 +62,17 @@ def _discover_candidates(candidates_filter: list[int] | None = None) -> list[dic
         seed_path = d / "candidate_seed.json"
         if not seed_path.exists():
             continue
-        with open(seed_path, "r", encoding="utf-8") as f:
+        with open(seed_path, encoding="utf-8") as f:
             seed = json.load(f)
 
-        candidates.append({
-            "idx": idx,
-            "dir": d,
-            "name": seed.get("full_name", f"Candidate {idx}"),
-            "eval_id": f"eval_cand_{idx}",
-        })
+        candidates.append(
+            {
+                "idx": idx,
+                "dir": d,
+                "name": seed.get("full_name", f"Candidate {idx}"),
+                "eval_id": f"eval_cand_{idx}",
+            }
+        )
 
     return candidates
 
@@ -111,7 +113,7 @@ def _load_golden_dataset(
 ) -> list[dict]:
     """Load golden_dataset.json from the candidate's directory."""
     path = candidate_dir / "golden_dataset.json"
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         dataset = json.load(f)
     if category_filter:
         dataset = [q for q in dataset if q["category"] == category_filter]
@@ -197,7 +199,7 @@ def _run_pipeline_on_dataset(
 
     for i, item in enumerate(dataset):
         question = item["question"]
-        print(f"\n[Harness] ({i+1}/{total}) [{candidate_name}] {question[:80]}...")
+        print(f"\n[Harness] ({i + 1}/{total}) [{candidate_name}] {question[:80]}...")
 
         start = time.time()
         try:
@@ -220,24 +222,26 @@ def _run_pipeline_on_dataset(
             }
             elapsed = time.time() - start
 
-        results.append({
-            "id": item["id"],
-            "question": question,
-            "answer": pipeline_result["answer"],
-            "contexts": pipeline_result["contexts"],
-            "fused_pool": pipeline_result.get("fused_pool"),
-            "ground_truth": item["ground_truth"],
-            "category": item["category"],
-            "expected_source": item["expected_source"],
-            "difficulty": item["difficulty"],
-            "expected_route": item.get("expected_route"),
-            "tool_trajectory": pipeline_result["tool_trajectory"],
-            "final_tool": pipeline_result["final_tool"],
-            "route": pipeline_result["route"],
-            "latency_s": round(elapsed, 2),
-            "candidate_id": eval_candidate_id,
-            "candidate_name": candidate_name,
-        })
+        results.append(
+            {
+                "id": item["id"],
+                "question": question,
+                "answer": pipeline_result["answer"],
+                "contexts": pipeline_result["contexts"],
+                "fused_pool": pipeline_result.get("fused_pool"),
+                "ground_truth": item["ground_truth"],
+                "category": item["category"],
+                "expected_source": item["expected_source"],
+                "difficulty": item["difficulty"],
+                "expected_route": item.get("expected_route"),
+                "tool_trajectory": pipeline_result["tool_trajectory"],
+                "final_tool": pipeline_result["final_tool"],
+                "route": pipeline_result["route"],
+                "latency_s": round(elapsed, 2),
+                "candidate_id": eval_candidate_id,
+                "candidate_name": candidate_name,
+            }
+        )
 
     return results
 
@@ -248,6 +252,7 @@ def _run_pipeline_on_dataset(
 def _run_tool_selection(pipeline_results: list[dict]) -> pd.DataFrame | None:
     """Evaluate whether the agent picked the expected tool."""
     from evaluation.evaluators.tool_evaluator import run_tool_evaluation
+
     df = run_tool_evaluation(pipeline_results)
     df.to_csv(REPORTS_DIR / "tool_selection_scores.csv", index=False)
     return df
@@ -267,6 +272,7 @@ def _run_rag_quality(pipeline_results: list[dict], judge_model: str) -> pd.DataF
     redundant noise.
     """
     from evaluation.report import select_rag_results
+
     rag_data = select_rag_results(pipeline_results)
     print(f"[Harness] {len(rag_data)} questions routed through RAG (negatives excluded)")
 
@@ -275,6 +281,7 @@ def _run_rag_quality(pipeline_results: list[dict], judge_model: str) -> pd.DataF
         return None
 
     from evaluation.evaluators.ragas_evaluator import run_ragas_evaluation
+
     ragas_df = run_ragas_evaluation(rag_data, judge_model=judge_model)
     ragas_df.to_csv(REPORTS_DIR / "ragas_scores.csv", index=False)
 
@@ -293,6 +300,7 @@ def _run_geval(pipeline_results: list[dict], judge_model: str) -> pd.DataFrame |
         return None
 
     from evaluation.evaluators.deepeval_evaluator import run_deepeval_geval
+
     df = run_deepeval_geval(pipeline_results, judge_model=judge_model)
     df.to_csv(REPORTS_DIR / "geval_scores.csv", index=False)
     return df
@@ -301,6 +309,7 @@ def _run_geval(pipeline_results: list[dict], judge_model: str) -> pd.DataFrame |
 def _run_retrieval_gates(pipeline_results: list[dict]) -> pd.DataFrame | None:
     """Localize retrieval failures (ingestion vs recall vs rerank) per question."""
     from evaluation.evaluators.retrieval_gate_evaluator import run_retrieval_gate_evaluation
+
     df = run_retrieval_gate_evaluation(pipeline_results)
     if df is not None and not df.empty:
         df.to_csv(REPORTS_DIR / "retrieval_gate_scores.csv", index=False)
@@ -319,6 +328,7 @@ def _run_refusal(pipeline_results: list[dict]) -> pd.DataFrame | None:
         return None
 
     from evaluation.evaluators.refusal_evaluator import run_refusal_evaluation
+
     df = run_refusal_evaluation(pipeline_results)
     df.to_csv(REPORTS_DIR / "refusal_scores.csv", index=False)
     return df
@@ -331,6 +341,7 @@ def _run_ingestion(candidates_info: list[dict], judge_model: str) -> dict | None
     Returns a dict keyed by eval_id with per-candidate reports.
     """
     from evaluation.evaluators.ingestion_evaluator import run_ingestion_evaluation
+
     reports = {}
     for cand in candidates_info:
         print(f"[Harness] Ingestion eval for {cand['name']} ({cand['eval_id']})")
@@ -354,6 +365,7 @@ def _run_router(pipeline_results: list[dict]) -> pd.DataFrame | None:
         return None
 
     from evaluation.evaluators.router_evaluator import run_router_evaluation
+
     df = run_router_evaluation(router_data)
     df.to_csv(REPORTS_DIR / "router_scores.csv", index=False)
     return df
@@ -365,6 +377,7 @@ ALL_COMPONENTS = ["tool_selection", "rag", "retrieval_gates", "geval", "refusal"
 
 
 # ── Main entry point ────────────────────────────────────────────────────────
+
 
 def run_evaluation(
     candidates: list[int] | None = None,
@@ -417,13 +430,10 @@ def run_evaluation(
 
     if reuse_results:
         raw_path = REPORTS_DIR / "pipeline_results.json"
-        with open(raw_path, "r", encoding="utf-8") as f:
+        with open(raw_path, encoding="utf-8") as f:
             all_pipeline_results = json.load(f)
         if category_filter:
-            all_pipeline_results = [
-                r for r in all_pipeline_results
-                if r["category"] == category_filter
-            ]
+            all_pipeline_results = [r for r in all_pipeline_results if r["category"] == category_filter]
         # Reconstruct candidates_info from results
         seen = {}
         for r in all_pipeline_results:
@@ -461,14 +471,15 @@ def run_evaluation(
             cached = None
             if resume and partial_path.exists():
                 try:
-                    with open(partial_path, "r", encoding="utf-8") as f:
+                    with open(partial_path, encoding="utf-8") as f:
                         payload = json.load(f)
-                    if (payload.get("top_k") == top_k
-                            and payload.get("category_filter") == category_filter):
+                    if payload.get("top_k") == top_k and payload.get("category_filter") == category_filter:
                         cached = payload["results"]
                     else:
-                        print(f"[Harness] Checkpoint for {cand['name']} has different "
-                              f"config (top_k/category) — re-running.")
+                        print(
+                            f"[Harness] Checkpoint for {cand['name']} has different "
+                            f"config (top_k/category) — re-running."
+                        )
                 except Exception as e:
                     print(f"[Harness] Could not read checkpoint for {cand['name']}: {e}")
 
@@ -480,8 +491,7 @@ def run_evaluation(
                     _cleanup_eval_collections(eval_id)
                     _seed_documents(cand["dir"], eval_id)
                 results = cached
-                print(f"[Harness] ↳ Resumed {cand['name']} from checkpoint "
-                      f"({len(results)} cached results)")
+                print(f"[Harness] ↳ Resumed {cand['name']} from checkpoint ({len(results)} cached results)")
             else:
                 # Seed structured data
                 backup_path = _seed_structured_data(cand["dir"])
@@ -496,9 +506,7 @@ def run_evaluation(
                 print(f"[Harness] {len(dataset)} questions for {cand['name']}")
 
                 # Run pipeline
-                results = _run_pipeline_on_dataset(
-                    dataset, eval_id, cand["name"], top_k
-                )
+                results = _run_pipeline_on_dataset(dataset, eval_id, cand["name"], top_k)
 
                 # Restore structured data, then checkpoint immediately so a later
                 # crash never loses this candidate's answers.
@@ -506,11 +514,15 @@ def run_evaluation(
                 backup_path = None
                 try:
                     with open(partial_path, "w", encoding="utf-8") as f:
-                        json.dump({
-                            "results": results,
-                            "top_k": top_k,
-                            "category_filter": category_filter,
-                        }, f, ensure_ascii=False)
+                        json.dump(
+                            {
+                                "results": results,
+                                "top_k": top_k,
+                                "category_filter": category_filter,
+                            },
+                            f,
+                            ensure_ascii=False,
+                        )
                     print(f"[Harness] ✔ Checkpointed {cand['name']} → {partial_path.name}")
                 except Exception as e:
                     print(f"[Harness] WARNING: failed to checkpoint {cand['name']}: {e}")
@@ -519,20 +531,21 @@ def run_evaluation(
 
             # Track candidate info
             doc_files = _get_doc_files(cand["dir"])
-            candidates_info.append({
-                "idx": cand["idx"],
-                "eval_id": eval_id,
-                "name": cand["name"],
-                "doc_count": len(doc_files),
-                "question_count": len(dataset),
-                "doc_files": [(str(f), dt) for f, dt in doc_files],
-            })
+            candidates_info.append(
+                {
+                    "idx": cand["idx"],
+                    "eval_id": eval_id,
+                    "name": cand["name"],
+                    "doc_count": len(doc_files),
+                    "question_count": len(dataset),
+                    "doc_files": [(str(f), dt) for f, dt in doc_files],
+                }
+            )
 
             print(f"[Harness] ✓ {cand['name']}: {len(results)} results collected")
 
         pipeline_elapsed = time.time() - start_time
-        print(f"\n[Harness] Pipeline completed in {pipeline_elapsed:.1f}s "
-              f"({len(all_pipeline_results)} total results)")
+        print(f"\n[Harness] Pipeline completed in {pipeline_elapsed:.1f}s ({len(all_pipeline_results)} total results)")
 
         # Save combined results
         raw_path = REPORTS_DIR / "pipeline_results.json"
@@ -579,9 +592,7 @@ def run_evaluation(
                     eval_results["refusal_df"] = _run_refusal(all_pipeline_results)
 
                 elif component == "ingestion":
-                    eval_results["ingestion_report"] = _run_ingestion(
-                        candidates_info, judge_model
-                    )
+                    eval_results["ingestion_report"] = _run_ingestion(candidates_info, judge_model)
 
                 elif component == "router":
                     eval_results["router_df"] = _run_router(all_pipeline_results)
@@ -589,6 +600,7 @@ def run_evaluation(
         # ── Generate report ─────────────────────────────────────────
         if not dry_run:
             from evaluation.report import generate_report
+
             report_path = generate_report(
                 pipeline_results=all_pipeline_results,
                 eval_results=eval_results,

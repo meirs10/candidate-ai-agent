@@ -2,8 +2,8 @@
 Phase 6: Anti-shortcut sanitization for generated documents.
 """
 
-import re
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -65,8 +65,6 @@ def sanitize_document(text: str, skill_evidence: dict) -> list[str]:
             if len(skill_words) > 2:  # Skip very short names that cause false positives
                 escaped = re.escape(skill_words)
                 if re.search(rf"\b{escaped}\b", text, re.IGNORECASE):
-                    issues.append(
-                        f"Level-1 skill '{skill}' found in document text"
-                    )
+                    issues.append(f"Level-1 skill '{skill}' found in document text")
 
     return issues

@@ -19,3 +19,4 @@ uploads
 .pytest_cache/
 .deepeval/
 .streamlit/
+.ruff_cache/

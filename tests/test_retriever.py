@@ -14,19 +14,20 @@ Run:
     pytest tests/test_retriever.py -v -m "not integration"   # skip LLM tests
 """
 
-import pytest
+import contextlib
 from pathlib import Path
 
+import chromadb
+import pytest
+
+from rag.ingest import ingest_document
 from rag.retriever import (
     bm25_search,
-    rrf_fusion,
-    rerank,
     is_broad_query_llm,
+    rerank,
     retrieve,
+    rrf_fusion,
 )
-from rag.ingest import ingest_document
-
-import chromadb
 
 DATA_DIR = Path(__file__).parent.parent / "evaluation" / "data"
 TEST_COLLECTION = "test_retriever_unit"
@@ -47,10 +48,8 @@ def ingested_collection():
     """Ingest candidate_3's CV once for all retrieval tests in this module."""
     client = chromadb.PersistentClient(path=CHROMA_PATH)
     for name in [TEST_COLLECTION, f"{TEST_COLLECTION}_summaries"]:
-        try:
+        with contextlib.suppress(Exception):
             client.delete_collection(name=name)
-        except Exception:
-            pass
 
     cv_path = _get_candidate_file(3, "cv_")
     ingest_document(str(cv_path), TEST_COLLECTION, doc_type="cv")
@@ -58,10 +57,8 @@ def ingested_collection():
     yield TEST_COLLECTION
 
     for name in [TEST_COLLECTION, f"{TEST_COLLECTION}_summaries"]:
-        try:
+        with contextlib.suppress(Exception):
             client.delete_collection(name=name)
-        except Exception:
-            pass
 
 
 # ── BM25 Unit Tests ──────────────────────────────────────────────────────────
@@ -80,8 +77,7 @@ class TestBM25Search:
         results = bm25_search("Python", chunks, top_k=3)
 
         assert len(results) > 0
-        assert "Python" in results[0], \
-            f"Expected 'Python' in top result, got: {results[0][:80]}"
+        assert "Python" in results[0], f"Expected 'Python' in top result, got: {results[0][:80]}"
 
     def test_returns_empty_for_no_match(self):
         """BM25 should return empty list when no chunks match."""
@@ -93,7 +89,7 @@ class TestBM25Search:
 
         # BM25 may still return results with score 0, but our implementation
         # filters those out
-        for r in results:
+        for _r in results:
             # If results are returned, they shouldn't strongly match
             pass  # BM25 may return low-score results; this is acceptable
 
@@ -133,8 +129,7 @@ class TestRRFFusion:
 
         fused = rrf_fusion(vector, bm25)
 
-        assert fused[0] == "shared", \
-            f"Expected 'shared' as top result, got '{fused[0]}'"
+        assert fused[0] == "shared", f"Expected 'shared' as top result, got '{fused[0]}'"
 
     def test_empty_inputs(self):
         """RRF should handle empty lists."""
@@ -166,8 +161,9 @@ class TestReranker:
         ]
         ranked = rerank(query, chunks, top_k=3)
 
-        assert "Programming Languages" in ranked[0], \
+        assert "Programming Languages" in ranked[0], (
             f"Expected programming languages chunk first, got: {ranked[0][:80]}"
+        )
 
     def test_empty_chunks(self):
         """Reranker should handle empty input gracefully."""
@@ -191,31 +187,35 @@ class TestRouter:
     """
 
     @pytest.mark.integration
-    @pytest.mark.parametrize("query", [
-        "Tell me about the candidate",
-        "Summarize this person's profile",
-        "Who is this person?",
-        "Give me an overview of the candidate",
-    ])
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "Tell me about the candidate",
+            "Summarize this person's profile",
+            "Who is this person?",
+            "Give me an overview of the candidate",
+        ],
+    )
     def test_broad_queries_classified_as_broad(self, query):
         """General overview questions should be classified as BROAD."""
-        assert is_broad_query_llm(query) is True, \
-            f"Expected BROAD for '{query}'"
+        assert is_broad_query_llm(query) is True, f"Expected BROAD for '{query}'"
 
     @pytest.mark.integration
-    @pytest.mark.parametrize("query", [
-        "What programming languages does the candidate know?",
-        "Does the candidate have experience with Kubernetes?",
-        "What certifications does the candidate have?",
-        "Where did the candidate study?",
-        "What was the candidate's GPA?",
-        "Has the candidate led a team?",
-        "What databases has the candidate worked with?",
-    ])
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "What programming languages does the candidate know?",
+            "Does the candidate have experience with Kubernetes?",
+            "What certifications does the candidate have?",
+            "Where did the candidate study?",
+            "What was the candidate's GPA?",
+            "Has the candidate led a team?",
+            "What databases has the candidate worked with?",
+        ],
+    )
     def test_specific_queries_classified_as_specific(self, query):
         """Topic-specific questions should be classified as SPECIFIC."""
-        assert is_broad_query_llm(query) is False, \
-            f"Expected SPECIFIC for '{query}'"
+        assert is_broad_query_llm(query) is False, f"Expected SPECIFIC for '{query}'"
 
 
 # ── End-to-End Retrieval Tests ───────────────────────────────────────────────
@@ -235,8 +235,7 @@ class TestEndToEndRetrieval:
         assert len(result["chunks"]) > 0, "No chunks returned"
         # At least one chunk should mention TypeScript
         found = any("typescript" in c.lower() for c in result["chunks"])
-        assert found, \
-            f"No chunk mentions TypeScript. Got: {[c[:80] for c in result['chunks']]}"
+        assert found, f"No chunk mentions TypeScript. Got: {[c[:80] for c in result['chunks']]}"
 
     @pytest.mark.integration
     def test_retrieve_finds_known_company(self, ingested_collection):
@@ -245,35 +244,28 @@ class TestEndToEndRetrieval:
 
         assert len(result["chunks"]) > 0
         found = any("fiverr" in c.lower() for c in result["chunks"])
-        assert found, \
-            f"No chunk mentions Fiverr. Got: {[c[:80] for c in result['chunks']]}"
+        assert found, f"No chunk mentions Fiverr. Got: {[c[:80] for c in result['chunks']]}"
 
     @pytest.mark.integration
     def test_retrieve_returns_route(self, ingested_collection):
         """Result should include a route classification."""
         result = retrieve("What skills?", ingested_collection, top_k=3)
 
-        assert result["route"] in ("broad", "specific"), \
-            f"Unexpected route: {result['route']}"
+        assert result["route"] in ("broad", "specific"), f"Unexpected route: {result['route']}"
 
     @pytest.mark.integration
     def test_broad_query_uses_summary(self, ingested_collection):
         """A broad query should route to the summary index."""
         result = retrieve("Tell me about this candidate", ingested_collection, top_k=3)
 
-        assert result["route"] == "broad", \
-            f"Expected broad route, got: {result['route']}"
-        assert result["expanded_queries"] is None, \
-            "Broad queries should not have expanded queries"
+        assert result["route"] == "broad", f"Expected broad route, got: {result['route']}"
+        assert result["expanded_queries"] is None, "Broad queries should not have expanded queries"
 
     @pytest.mark.integration
     def test_specific_query_uses_chunks(self, ingested_collection):
         """A specific query should route to the chunk index with query expansion."""
         result = retrieve("What certifications does the candidate have?", ingested_collection, top_k=3)
 
-        assert result["route"] == "specific", \
-            f"Expected specific route, got: {result['route']}"
-        assert result["expanded_queries"] is not None, \
-            "Specific queries should have expanded queries"
-        assert len(result["expanded_queries"]) > 1, \
-            "Should have original + expanded queries"
+        assert result["route"] == "specific", f"Expected specific route, got: {result['route']}"
+        assert result["expanded_queries"] is not None, "Specific queries should have expanded queries"
+        assert len(result["expanded_queries"]) > 1, "Should have original + expanded queries"

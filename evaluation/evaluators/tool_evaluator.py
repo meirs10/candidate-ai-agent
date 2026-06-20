@@ -54,22 +54,24 @@ def run_tool_evaluation(data: list[dict]) -> pd.DataFrame:
         # Build a short summary of the trajectory
         traj_summary = " → ".join(t["tool"] for t in trajectory) if trajectory else "no tools"
 
-        rows.append({
-            "id": d["id"],
-            "question": d["question"],
-            "candidate_id": d.get("candidate_id", ""),
-            "candidate_name": d.get("candidate_name", ""),
-            "expected_tool": expected,
-            "actual_tool": actual,
-            "tool_correct": expected == actual,
-            "trajectory_summary": traj_summary,
-        })
+        rows.append(
+            {
+                "id": d["id"],
+                "question": d["question"],
+                "candidate_id": d.get("candidate_id", ""),
+                "candidate_name": d.get("candidate_name", ""),
+                "expected_tool": expected,
+                "actual_tool": actual,
+                "tool_correct": expected == actual,
+                "trajectory_summary": traj_summary,
+            }
+        )
 
     df = pd.DataFrame(rows)
 
     # Print summary
     total = len(df)
     correct = df["tool_correct"].sum()
-    print(f"[Tool Eval] Accuracy: {correct}/{total} ({correct/total*100:.1f}%)")
+    print(f"[Tool Eval] Accuracy: {correct}/{total} ({correct / total * 100:.1f}%)")
 
     return df

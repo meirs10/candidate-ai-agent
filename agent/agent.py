@@ -2,7 +2,7 @@ from agent.llm import LLMClient
 from agent.tools import TOOL_SCHEMAS, execute_tool
 
 SYSTEM_PROMPT = """
-You are an AI representative for a job candidate. 
+You are an AI representative for a job candidate.
 Your job is to answer recruiter questions accurately and professionally.
 
 You have three tools at your disposal:
@@ -53,7 +53,7 @@ def run(conversation_history: list, user_message: str) -> tuple[str, list, list]
     # Add new user message to history
     conversation_history.append({"role": "user", "content": user_message})
 
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}, *conversation_history]
 
     tool_trajectory = []
 
@@ -76,11 +76,13 @@ def run(conversation_history: list, user_message: str) -> tuple[str, list, list]
         print(f"[Agent] Tool '{tool_name}' returned: {tool_result[:200]}")
 
         # Record the tool call in the trajectory
-        tool_trajectory.append({
-            "tool": tool_name,
-            "args": tool_args,
-            "result_preview": tool_result[:300],
-        })
+        tool_trajectory.append(
+            {
+                "tool": tool_name,
+                "args": tool_args,
+                "result_preview": tool_result[:300],
+            }
+        )
 
         # Append the tool interaction so the LLM sees the result
         messages.append({"role": "assistant", "content": "", "tool_calls": [tool_call]})

@@ -5,8 +5,8 @@ All checks are read-only — output reports only.
 
 import json
 import logging
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ def check_proficiency_distribution(personas: list[dict], documents_db: dict) -> 
             doc = documents_db.get(doc_id)
             if not doc:
                 continue
-            for skill, intensity in doc.get("skill_evidence", {}).items():
+            for _skill, intensity in doc.get("skill_evidence", {}).items():
                 level_counts[intensity] += 1
 
     total = sum(level_counts.values())
@@ -77,9 +77,7 @@ def check_global_level_distribution(personas: list[dict]) -> dict:
 
 def check_archetype_distribution(personas: list[dict]) -> dict:
     """Check that all archetypes have >= 4% representation."""
-    archetype_counts = Counter(
-        p["hyperparams"]["archetype"] for p in personas
-    )
+    archetype_counts = Counter(p["hyperparams"]["archetype"] for p in personas)
     total = len(personas)
 
     distribution = {}
@@ -101,8 +99,12 @@ def check_archetype_distribution(personas: list[dict]) -> dict:
 def check_experience_distribution(personas: list[dict]) -> dict:
     """Check that experience distribution matches target (+-5%)."""
     targets = {
-        "0-1": 15, "2-3": 20, "4-6": 25,
-        "7-9": 20, "10-12": 12, "13+": 8,
+        "0-1": 15,
+        "2-3": 20,
+        "4-6": 25,
+        "7-9": 20,
+        "10-12": 12,
+        "13+": 8,
     }
 
     bracket_counts = Counter()
@@ -180,7 +182,7 @@ def check_length_proficiency_correlation(personas: list[dict], documents_db: dic
             doc = documents_db.get(doc_id)
             if not doc:
                 continue
-            for skill, intensity in doc.get("skill_evidence", {}).items():
+            for _skill, intensity in doc.get("skill_evidence", {}).items():
                 lengths.append(len(doc.get("text", "")))
                 levels.append(intensity)
 

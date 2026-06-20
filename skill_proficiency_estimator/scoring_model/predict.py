@@ -25,11 +25,10 @@ _THIS_DIR = Path(__file__).resolve().parent  # scoring_model/
 if str(_THIS_DIR) not in sys.path:
     sys.path.insert(0, str(_THIS_DIR))
 
-from transformers import AutoTokenizer
-
 import config
 import heads
 from model import ScoringModel
+from transformers import AutoTokenizer
 
 # The trained/best experiment — overrides the config default so inference always
 # loads the coral_top3 head + checkpoint (the only one with a saved best_model.pt).

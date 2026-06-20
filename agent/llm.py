@@ -8,7 +8,7 @@ class LLMClient:
     def __init__(self, model="qwen3"):
         self.model = model
 
-    def call(self, messages: list, tools: list = None) -> dict:
+    def call(self, messages: list, tools: list | None = None) -> dict:
         """
         messages: list of {"role": "user"/"assistant"/"tool", "content": "..."}
         tools: list of tool dicts in Ollama format

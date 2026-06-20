@@ -6,10 +6,7 @@ RERANK_MODEL = "Qwen/Qwen3-Reranker-0.6B"
 # The instruction the model conditions on. Qwen3-Reranker was trained to judge
 # relevance *given an instruction*, so this is part of the scoring contract, not
 # decoration. Tuned here for recruitment-document retrieval.
-DEFAULT_INSTRUCTION = (
-    "Given a question about a job candidate, retrieve the resume passages "
-    "that answer it."
-)
+DEFAULT_INSTRUCTION = "Given a question about a job candidate, retrieve the resume passages that answer it."
 
 
 class Qwen3Reranker:
@@ -55,11 +52,7 @@ class Qwen3Reranker:
             dtype = torch.float32
 
         self.tokenizer = AutoTokenizer.from_pretrained(RERANK_MODEL, padding_side="left")
-        self.model = (
-            AutoModelForCausalLM.from_pretrained(RERANK_MODEL, dtype=dtype)
-            .to(device)
-            .eval()
-        )
+        self.model = AutoModelForCausalLM.from_pretrained(RERANK_MODEL, dtype=dtype).to(device).eval()
         self.max_length = max_length
         self.batch_size = batch_size
 
@@ -112,7 +105,7 @@ class Qwen3Reranker:
         scores: list[float] = []
         for start in range(0, len(texts), self.batch_size):
             scores.extend(self._score(texts[start : start + self.batch_size]))
-        scored = sorted(zip(scores, chunks), key=lambda x: x[0], reverse=True)
+        scored = sorted(zip(scores, chunks, strict=False), key=lambda x: x[0], reverse=True)
         return [chunk for _, chunk in scored[:top_k]]
 
 

@@ -15,17 +15,16 @@ already measures answer-grounding correctly, making it redundant.
 import json
 import re
 
-import pandas as pd
 import ollama as ollama_client
-from deepeval.models import DeepEvalBaseLLM
-from deepeval.test_case import LLMTestCase
+import pandas as pd
 from deepeval.metrics import GEval
-from deepeval.test_case import LLMTestCaseParams
-
+from deepeval.models import DeepEvalBaseLLM
+from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 
 # ---------------------------------------------------------------------------
 # Custom Ollama model adapter for DeepEval
 # ---------------------------------------------------------------------------
+
 
 class OllamaJudge(DeepEvalBaseLLM):
     """Wraps a local Ollama model so DeepEval can use it as evaluator.
@@ -84,6 +83,7 @@ class OllamaJudge(DeepEvalBaseLLM):
 # ---------------------------------------------------------------------------
 # GEval evaluation (all questions — reference-based, no contexts needed)
 # ---------------------------------------------------------------------------
+
 
 def run_deepeval_geval(
     data: list[dict],
@@ -150,13 +150,13 @@ def run_deepeval_geval(
             row["deepeval_correctness"] = correctness.score
             row["reason"] = correctness.reason
         except Exception as e:
-            print(f"  [DeepEval] GEval failed on q{i+1}: {e}")
+            print(f"  [DeepEval] GEval failed on q{i + 1}: {e}")
             row["deepeval_correctness"] = None
             row["reason"] = f"[ERROR] {e}"
         rows.append(row)
 
         if (i + 1) % 10 == 0:
-            print(f"  [DeepEval] GEval progress: {i+1}/{len(test_cases)}")
+            print(f"  [DeepEval] GEval progress: {i + 1}/{len(test_cases)}")
 
-    print(f"[DeepEval] GEval evaluation complete.")
+    print("[DeepEval] GEval evaluation complete.")
     return pd.DataFrame(rows)

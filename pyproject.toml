@@ -1,5 +1,93 @@
+[project]
+name = "candidate-ai-agent"
+version = "0.1.0"
+description = "AI-powered candidate screening agent with RAG and skill-proficiency estimation"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+    # Core agent
+    "streamlit",
+    "chromadb",
+    "sentence-transformers",
+    "ollama",
+    "langchain-text-splitters",
+    "langchain-ollama",
+    "langchain-huggingface",
+    "einops",
+    # Document parsing
+    "PyMuPDF",
+    "python-docx",
+    "pytesseract",
+    "Pillow",
+    "unstructured[md,pdf,docx]",
+    # Evaluation
+    "ragas",
+    "deepeval",
+    "pandas",
+    "jinja2",
+    # SPE dataset generation
+    "aiohttp",
+    "scikit-learn",
+    "scipy",
+    "numpy",
+    # RAG Fusion
+    "rank_bm25",
+    # Skill-proficiency scoring model
+    "torch",
+    "transformers",
+    "coral_pytorch",
+    "accelerate",
+    "tiktoken",
+    "sentencepiece",
+    "protobuf",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
 [tool.pytest.ini_options]
 markers = [
     "integration: tests that require Ollama or external services (deselect with '-m not integration')",
 ]
 testpaths = ["tests"]
+
+# ---------------------------------------------------------------------------
+# ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "RUF", # Ruff-specific rules
+]
+ignore = [
+    "E501", # line too long — handled by formatter
+    "RUF001", "RUF002", "RUF003", # ambiguous string characters
+    "E741", # ambiguous variable names
+    "E402", # module level import not at top of file
+    "E722", # bare except
+    "SIM115", # open file without context manager
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["agent", "rag", "evaluation", "pages", "store", "skill_proficiency_estimator"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

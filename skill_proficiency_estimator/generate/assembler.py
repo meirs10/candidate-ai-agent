@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 
-def assemble_dataset(checkpoint_dir: Path, output_dir: Path = None):
+def assemble_dataset(checkpoint_dir: Path, output_dir: Path | None = None):
     """Merge all checkpoint files into the final dataset files.
 
     Reads from:
@@ -75,7 +75,7 @@ def assemble_dataset(checkpoint_dir: Path, output_dir: Path = None):
         dt = doc.get("type", "unknown")
         doc_types[dt] = doc_types.get(dt, 0) + 1
 
-    logger.info(f"Dataset summary:")
+    logger.info("Dataset summary:")
     logger.info(f"  Personas: {len(personas)}")
     logger.info(f"  Total skills: {total_skills}")
     logger.info(f"  Total documents: {total_docs}")

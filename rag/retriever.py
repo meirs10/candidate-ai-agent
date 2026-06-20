@@ -1,6 +1,7 @@
 import chromadb
 import ollama
 from rank_bm25 import BM25Okapi
+
 from rag.embedder import embedder
 from rag.reranker import reranker
 
@@ -14,6 +15,7 @@ client = chromadb.PersistentClient(path=CHROMA_PATH)
 # 1. Query Expansion
 # ---------------------------------------------------------------------------
 
+
 def expand_query(original_query: str, n_variations: int = 3) -> list[str]:
     prompt = (
         f"You are a query-understanding module inside a retrieval pipeline.\n"
@@ -26,7 +28,7 @@ def expand_query(original_query: str, n_variations: int = 3) -> list[str]:
         f"- Include at least one short keyword-style query (for BM25)\n"
         f"- Include at least one natural-language query (for vector search)\n"
         f"- Cover different angles the answer might be described under\n\n"
-        f"User question: \"{original_query}\"\n\n"
+        f'User question: "{original_query}"\n\n'
         f"Return ONLY the queries, one per line, no numbering, no explanation."
     )
 
@@ -36,12 +38,13 @@ def expand_query(original_query: str, n_variations: int = 3) -> list[str]:
     )
     raw = response["message"]["content"].strip()
     variations = [line.strip() for line in raw.splitlines() if line.strip()]
-    return [original_query] + variations[:n_variations]
+    return [original_query, *variations[:n_variations]]
 
 
 # ---------------------------------------------------------------------------
 # 2. Query Routing
 # ---------------------------------------------------------------------------
+
 
 def is_broad_query_llm(query: str) -> bool:
     prompt = (
@@ -81,6 +84,7 @@ def is_broad_query_llm(query: str) -> bool:
 # 3. Fusion Retrieval — BM25 + Vector search merged with RRF
 # ---------------------------------------------------------------------------
 
+
 def bm25_search(query: str, chunks: list[str], top_k: int = 10) -> list[str]:
     if not chunks:
         return []
@@ -109,6 +113,7 @@ def rrf_fusion(*ranked_lists: list[str], k: int = 60) -> list[str]:
 # 4. Re-ranking
 # ---------------------------------------------------------------------------
 
+
 def rerank(query: str, chunks: list[str], top_k: int = 8) -> list[str]:
     return reranker.rerank(query, chunks, top_k=top_k)
 
@@ -116,6 +121,7 @@ def rerank(query: str, chunks: list[str], top_k: int = 8) -> list[str]:
 # ---------------------------------------------------------------------------
 # 5. Main retrieve pipeline
 # ---------------------------------------------------------------------------
+
 
 def _fusion_retrieve(collection, query: str, top_k: int) -> dict:
     """Expand → vector + BM25 → RRF → rerank. The 'specific' path, factored out
@@ -196,7 +202,7 @@ def retrieve(
     is_broad = use_routing and is_broad_query_llm(query)
 
     if is_broad and use_summary:
-        print(f"[Retriever] Broad query detected → searching summary index")
+        print("[Retriever] Broad query detected → searching summary index")
         summary_collection = client.get_or_create_collection(
             f"{candidate_id}_summaries",
             metadata={"hnsw:space": "cosine"},
@@ -253,19 +259,16 @@ def retrieve_batch_for_training(
     batched call. Returns one dict per query: {chunks, doc_ids, fused_pool}.
     """
     collection = client.get_or_create_collection(
-        name=candidate_id, metadata={"hnsw:space": "cosine"},
+        name=candidate_id,
+        metadata={"hnsw:space": "cosine"},
     )
     stored = collection.get(include=["documents", "metadatas"])
     all_chunks = stored["documents"]
-    text_to_doc = {
-        doc: (meta or {}).get("doc_id")
-        for doc, meta in zip(all_chunks, stored["metadatas"])
-    }
+    text_to_doc = {doc: (meta or {}).get("doc_id") for doc, meta in zip(all_chunks, stored["metadatas"], strict=False)}
     bm25 = BM25Okapi([c.lower().split() for c in all_chunks]) if all_chunks else None
 
     def _fuse(query, per_query_vectors, variations):
-        bm25_lists = ([_bm25_top(bm25, all_chunks, v, FETCH_PER_QUERY) for v in variations]
-                      if bm25 is not None else [])
+        bm25_lists = [_bm25_top(bm25, all_chunks, v, FETCH_PER_QUERY) for v in variations] if bm25 is not None else []
         fused = rrf_fusion(*per_query_vectors, *bm25_lists)
         top = rerank(query, fused, top_k=top_k)
         return {"chunks": top, "doc_ids": [text_to_doc.get(c) for c in top], "fused_pool": fused}
@@ -290,7 +293,6 @@ def retrieve_batch_for_training(
     return results
 
 
-def retrieve_for_training(query: str, candidate_id: str,
-                          top_k: int = 3, expand: bool = False) -> dict:
+def retrieve_for_training(query: str, candidate_id: str, top_k: int = 3, expand: bool = False) -> dict:
     """Single-query convenience wrapper over retrieve_batch_for_training."""
     return retrieve_batch_for_training([query], candidate_id, top_k=top_k, expand=expand)[0]

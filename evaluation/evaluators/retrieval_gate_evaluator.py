@@ -29,6 +29,7 @@ import numpy as np
 import pandas as pd
 
 from rag.embedder import embedder
+
 # Reuse the retriever's existing Chroma client — opening a second PersistentClient
 # on the same path in the same process can conflict.
 from rag.retriever import client as chroma_client
@@ -84,7 +85,8 @@ def run_retrieval_gate_evaluation(
         DataFrame with one row per analyzed question.
     """
     eligible = [
-        r for r in data
+        r
+        for r in data
         if r.get("final_tool") == "search_documents"
         and r.get("route") == "specific"
         and r.get("category") != "negative"
@@ -93,7 +95,8 @@ def run_retrieval_gate_evaluation(
     ]
 
     skipped_no_trace = sum(
-        1 for r in data
+        1
+        for r in data
         if r.get("final_tool") == "search_documents"
         and r.get("route") == "specific"
         and r.get("category") != "negative"
@@ -135,19 +138,21 @@ def run_retrieval_gate_evaluation(
         in_final = target_chunk in final
         loss_stage = _classify(in_index, in_fused, in_final)
 
-        rows.append({
-            "id": r.get("id", ""),
-            "question": r.get("question", ""),
-            "candidate_name": r.get("candidate_name", ""),
-            "category": r.get("category", ""),
-            "target_sim": round(target_sim, 3),
-            "in_index": in_index,
-            "in_fused_pool": in_fused,
-            "in_final": in_final,
-            "loss_stage": loss_stage,
-            "fused_pool_size": len(fused),
-            "target_chunk": target_chunk[:160],
-        })
+        rows.append(
+            {
+                "id": r.get("id", ""),
+                "question": r.get("question", ""),
+                "candidate_name": r.get("candidate_name", ""),
+                "category": r.get("category", ""),
+                "target_sim": round(target_sim, 3),
+                "in_index": in_index,
+                "in_fused_pool": in_fused,
+                "in_final": in_final,
+                "loss_stage": loss_stage,
+                "fused_pool_size": len(fused),
+                "target_chunk": target_chunk[:160],
+            }
+        )
 
     df = pd.DataFrame(rows)
     if df.empty:
@@ -157,9 +162,9 @@ def run_retrieval_gate_evaluation(
     total = len(df)
     ok = counts.get("ok", 0)
     print(f"[RetrievalGate] Analyzed {total} specific docs questions.")
-    print(f"  reached final context (ok): {ok}/{total} ({ok/total*100:.1f}%)")
+    print(f"  reached final context (ok): {ok}/{total} ({ok / total * 100:.1f}%)")
     for stage in ("ingestion", "recall", "rerank"):
         n = counts.get(stage, 0)
         if n:
-            print(f"  lost at {stage:9s}: {n} ({n/total*100:.1f}%)")
+            print(f"  lost at {stage:9s}: {n} ({n / total * 100:.1f}%)")
     return df

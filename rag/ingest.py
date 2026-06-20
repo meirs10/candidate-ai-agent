@@ -1,10 +1,12 @@
+import os
+import re
+
 import chromadb
 import ollama
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from unstructured.partition.auto import partition
+
 from rag.embedder import embedder
-import os
-import re
 
 CHROMA_PATH = "./chroma_db"
 SUMMARY_LLM = "qwen3"
@@ -35,9 +37,7 @@ def get_summary_collection(candidate_id: str):
 
 # -- Section extraction ------------------------------------------------------
 
-_SPACED_HEADER_RE = re.compile(
-    r"^[A-Z](\s+[A-Z]){3,}(\s+[A-Z])*\s*$"
-)
+_SPACED_HEADER_RE = re.compile(r"^[A-Z](\s+[A-Z]){3,}(\s+[A-Z])*\s*$")
 
 
 def _is_spaced_header(text: str) -> bool:
@@ -55,9 +55,7 @@ def _is_data_title(text: str) -> bool:
     stripped = text.strip()
     if re.search(r"\d", stripped):
         return True
-    if "@" in stripped or "☎" in stripped or "✉" in stripped:
-        return True
-    return False
+    return bool("@" in stripped or "☎" in stripped or "✉" in stripped)
 
 
 def extract_sections(file_path: str) -> list[dict]:
@@ -74,10 +72,12 @@ def extract_sections(file_path: str) -> list[dict]:
 
     def _flush():
         if current_texts:
-            sections.append({
-                "text": "\n\n".join(current_texts),
-                "section": current_section,
-            })
+            sections.append(
+                {
+                    "text": "\n\n".join(current_texts),
+                    "section": current_section,
+                }
+            )
             current_texts.clear()
 
     for element in elements:
@@ -106,6 +106,7 @@ def extract_sections(file_path: str) -> list[dict]:
 
 # -- Summary generation ------------------------------------------------------
 
+
 def generate_summary(full_text: str, doc_type: str) -> str:
     """Ask the LLM to summarize the document in 5-6 sentences."""
     prompt = (
@@ -129,6 +130,7 @@ def generate_summary(full_text: str, doc_type: str) -> str:
 
 # -- In-memory ingestion (raw text, no file, no summary) ---------------------
 
+
 def ingest_text(text: str, candidate_id: str, doc_id: str, doc_type: str = "cv") -> int:
     """Ingest a raw in-memory text document (no file partitioning, no summary).
 
@@ -148,10 +150,7 @@ def ingest_text(text: str, candidate_id: str, doc_id: str, doc_type: str = "cv")
         return 0
 
     ids = [f"{doc_id}_chunk_{i}" for i in range(len(chunks))]
-    metas = [
-        {"candidate_id": candidate_id, "doc_id": doc_id, "doc_type": doc_type}
-        for _ in chunks
-    ]
+    metas = [{"candidate_id": candidate_id, "doc_id": doc_id, "doc_type": doc_type} for _ in chunks]
     embeddings = embedder.encode_documents(chunks)
     collection.add(documents=chunks, embeddings=embeddings, ids=ids, metadatas=metas)
     return len(chunks)
@@ -159,8 +158,8 @@ def ingest_text(text: str, candidate_id: str, doc_id: str, doc_type: str = "cv")
 
 # -- Ingestion pipeline -------------------------------------------------------
 
-def ingest_document(file_path: str, candidate_id: str, doc_type: str = "cv",
-                    build_summary: bool = True):
+
+def ingest_document(file_path: str, candidate_id: str, doc_type: str = "cv", build_summary: bool = True):
     """Full pipeline: file -> sections -> chunks -> embeddings -> ChromaDB.
 
     Uses encode_documents() so all stored vectors have the 'search_document:'
@@ -188,15 +187,17 @@ def ingest_document(file_path: str, candidate_id: str, doc_type: str = "cv",
             contextualized_chunk = f"Section: {section['section']}\n{chunk}"
             all_chunks.append(contextualized_chunk)
             all_ids.append(f"{base}_s{s_idx}_chunk_{c_idx}")
-            all_metas.append({
-                "candidate_id": candidate_id,
-                "doc_type": doc_type,
-                "source_file": base,
-                "section": section["section"],
-                # doc_id provenance (mirrors ingest_text) so retrieved chunks can
-                # always be traced back to a source document, regardless of path.
-                "doc_id": base,
-            })
+            all_metas.append(
+                {
+                    "candidate_id": candidate_id,
+                    "doc_type": doc_type,
+                    "source_file": base,
+                    "section": section["section"],
+                    # doc_id provenance (mirrors ingest_text) so retrieved chunks can
+                    # always be traced back to a source document, regardless of path.
+                    "doc_id": base,
+                }
+            )
 
     # encode_documents applies 'search_document:' prefix to every chunk
     all_embeddings = embedder.encode_documents(all_chunks)
@@ -225,10 +226,12 @@ def ingest_document(file_path: str, candidate_id: str, doc_type: str = "cv",
         documents=[summary],
         embeddings=summary_embedding,
         ids=[base],
-        metadatas=[{
-            "candidate_id": candidate_id,
-            "doc_type": doc_type,
-            "source_file": base,
-        }],
+        metadatas=[
+            {
+                "candidate_id": candidate_id,
+                "doc_type": doc_type,
+                "source_file": base,
+            }
+        ],
     )
     print(f"Summary stored for {base}: '{summary[:80]}...'")

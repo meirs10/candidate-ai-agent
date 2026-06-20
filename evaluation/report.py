@@ -23,10 +23,9 @@ def select_rag_results(pipeline_results: list[dict]) -> list[dict]:
     and were dragging the aggregate down.
     """
     return [
-        r for r in pipeline_results
-        if r.get("final_tool") == "search_documents"
-        and r.get("contexts")
-        and r.get("category") != "negative"
+        r
+        for r in pipeline_results
+        if r.get("final_tool") == "search_documents" and r.get("contexts") and r.get("category") != "negative"
     ]
 
 
@@ -56,7 +55,7 @@ def _pct(num, total) -> str:
     """Format a percentage."""
     if total == 0:
         return "N/A"
-    return f"{num/total*100:.1f}%"
+    return f"{num / total * 100:.1f}%"
 
 
 def _build_overview_section(pipeline_results, eval_results) -> str:
@@ -88,14 +87,16 @@ def _build_overview_section(pipeline_results, eval_results) -> str:
         acc = tool_df["tool_correct"].sum()
         cards += f"""
     <div class="metric-card">
-      <div class="metric-score" style="color:{_score_color(acc/len(tool_df))}">{_pct(acc, len(tool_df))}</div>
+      <div class="metric-score" style="color:{_score_color(acc / len(tool_df))}">{_pct(acc, len(tool_df))}</div>
       <div class="metric-label">Tool Accuracy</div>
     </div>"""
 
     # RAGAS means
     ragas_df = eval_results.get("ragas_df")
     if ragas_df is not None:
-        metric_cols = [c for c in ragas_df.columns if c not in ("user_input", "response", "retrieved_contexts", "reference")]
+        metric_cols = [
+            c for c in ragas_df.columns if c not in ("user_input", "response", "retrieved_contexts", "reference")
+        ]
         for col in metric_cols:
             vals = ragas_df[col].dropna()
             if len(vals) > 0:
@@ -126,7 +127,7 @@ def _build_overview_section(pipeline_results, eval_results) -> str:
         ok = (gate_df["loss_stage"] == "ok").sum()
         cards += f"""
     <div class="metric-card">
-      <div class="metric-score" style="color:{_score_color(ok/len(gate_df))}">{_pct(ok, len(gate_df))}</div>
+      <div class="metric-score" style="color:{_score_color(ok / len(gate_df))}">{_pct(ok, len(gate_df))}</div>
       <div class="metric-label">Retrieval Reaches Answer</div>
     </div>"""
 
@@ -148,7 +149,7 @@ def _build_overview_section(pipeline_results, eval_results) -> str:
         correct = router_df["route_correct"].sum()
         cards += f"""
     <div class="metric-card">
-      <div class="metric-score" style="color:{_score_color(correct/len(router_df))}">{_pct(correct, len(router_df))}</div>
+      <div class="metric-score" style="color:{_score_color(correct / len(router_df))}">{_pct(correct, len(router_df))}</div>
       <div class="metric-label">Router Accuracy</div>
     </div>"""
 
@@ -173,11 +174,11 @@ def _build_tool_section(tool_df) -> str:
         q = html.escape(str(r["question"])[:60], quote=True)
         rows += f"""
         <tr>
-          <td>{r['id']}</td>
+          <td>{r["id"]}</td>
           <td title="{q}">{q}</td>
-          <td>{r['expected_tool']}</td>
-          <td style="color:{color}">{r['actual_tool']}</td>
-          <td style="font-size:0.8em">{html.escape(str(r['trajectory_summary']), quote=True)}</td>
+          <td>{r["expected_tool"]}</td>
+          <td style="color:{color}">{r["actual_tool"]}</td>
+          <td style="font-size:0.8em">{html.escape(str(r["trajectory_summary"]), quote=True)}</td>
         </tr>"""
 
     return f"""
@@ -194,7 +195,9 @@ def _build_rag_section(ragas_df, pipeline_results) -> str:
         return "<p>No RAG-routed questions to evaluate.</p>"
 
     # RAGAS summary
-    metric_cols = [c for c in ragas_df.columns if c not in ("user_input", "response", "retrieved_contexts", "reference")]
+    metric_cols = [
+        c for c in ragas_df.columns if c not in ("user_input", "response", "retrieved_contexts", "reference")
+    ]
     means_html = ""
     for col in metric_cols:
         vals = ragas_df[col].dropna()
@@ -217,12 +220,12 @@ def _build_rag_section(ragas_df, pipeline_results) -> str:
         answer = html.escape(str(r["answer"])[:100], quote=True)
         rows += f"""
         <tr>
-          <td>{r['id']}</td>
-          <td title="{html.escape(str(r['question']), quote=True)}">{html.escape(str(r['question'])[:50], quote=True)}</td>
-          <td>{r.get('route', 'N/A')}</td>
+          <td>{r["id"]}</td>
+          <td title="{html.escape(str(r["question"]), quote=True)}">{html.escape(str(r["question"])[:50], quote=True)}</td>
+          <td>{r.get("route", "N/A")}</td>
           <td class="answer-cell" title="{answer}">{answer}...</td>
           <td>{scores}</td>
-          <td>{r['latency_s']}s</td>
+          <td>{r["latency_s"]}s</td>
         </tr>"""
 
     return f"""
@@ -237,8 +240,10 @@ def _build_rag_section(ragas_df, pipeline_results) -> str:
 def _build_retrieval_gate_section(gate_df) -> str:
     """Build the Retrieval Gate Localization section (ingestion vs recall vs rerank)."""
     if gate_df is None or len(gate_df) == 0:
-        return ("<p>No retrieval-gate data. Requires a fresh pipeline run (not REUSE) "
-                "so the pre-rerank fused pool is captured.</p>")
+        return (
+            "<p>No retrieval-gate data. Requires a fresh pipeline run (not REUSE) "
+            "so the pre-rerank fused pool is captured.</p>"
+        )
 
     total = len(gate_df)
     stage_color = {"ok": "#22c55e", "rerank": "#eab308", "recall": "#f97316", "ingestion": "#ef4444"}
@@ -248,8 +253,10 @@ def _build_retrieval_gate_section(gate_df) -> str:
     for stage in ("ok", "recall", "rerank", "ingestion"):
         n = counts.get(stage, 0)
         label = "reached answer" if stage == "ok" else f"lost @ {stage}"
-        summary += (f'<div class="summary-stat"><strong style="color:{stage_color[stage]}">'
-                    f'{n}</strong> {label} ({_pct(n, total)})</div>')
+        summary += (
+            f'<div class="summary-stat"><strong style="color:{stage_color[stage]}">'
+            f"{n}</strong> {label} ({_pct(n, total)})</div>"
+        )
 
     rows = ""
     for _, r in gate_df.sort_values("loss_stage").iterrows():
@@ -257,15 +264,15 @@ def _build_retrieval_gate_section(gate_df) -> str:
         q = html.escape(str(r["question"])[:55], quote=True)
         rows += f"""
         <tr>
-          <td>{r['id']}</td>
+          <td>{r["id"]}</td>
           <td title="{q}">{q}</td>
-          <td>{html.escape(str(r.get('candidate_name', '')), quote=True)}</td>
-          <td>{r['category']}</td>
-          <td>{_format_score(r['target_sim'])}</td>
-          <td style="color:{_score_color(bool(r['in_index']))}">{_format_score(bool(r['in_index']))}</td>
-          <td style="color:{_score_color(bool(r['in_fused_pool']))}">{_format_score(bool(r['in_fused_pool']))}</td>
-          <td style="color:{_score_color(bool(r['in_final']))}">{_format_score(bool(r['in_final']))}</td>
-          <td style="color:{color};font-weight:600">{r['loss_stage']}</td>
+          <td>{html.escape(str(r.get("candidate_name", "")), quote=True)}</td>
+          <td>{r["category"]}</td>
+          <td>{_format_score(r["target_sim"])}</td>
+          <td style="color:{_score_color(bool(r["in_index"]))}">{_format_score(bool(r["in_index"]))}</td>
+          <td style="color:{_score_color(bool(r["in_fused_pool"]))}">{_format_score(bool(r["in_fused_pool"]))}</td>
+          <td style="color:{_score_color(bool(r["in_final"]))}">{_format_score(bool(r["in_final"]))}</td>
+          <td style="color:{color};font-weight:600">{r["loss_stage"]}</td>
         </tr>"""
 
     return f"""
@@ -301,9 +308,9 @@ def _build_geval_section(geval_df, pipeline_results) -> str:
         gt = html.escape(str(r["ground_truth"])[:100], quote=True)
         rows += f"""
         <tr>
-          <td>{r['id']}</td>
-          <td>{r['category']}</td>
-          <td title="{html.escape(str(r['question']), quote=True)}">{html.escape(str(r['question'])[:50], quote=True)}</td>
+          <td>{r["id"]}</td>
+          <td>{r["category"]}</td>
+          <td title="{html.escape(str(r["question"]), quote=True)}">{html.escape(str(r["question"])[:50], quote=True)}</td>
           <td class="answer-cell" title="{answer}">{answer}...</td>
           <td class="gt-cell" title="{gt}">{gt}...</td>
           <td style="color:{_score_color(val)}">{_format_score(val)}</td>
@@ -357,7 +364,7 @@ def _build_refusal_section(refusal_df) -> str:
     <div class="summary-stat"><strong style="color:{_score_color(accuracy)}">{_pct(tp + tn, total)}</strong> Accuracy</div>
     <div class="summary-stat"><strong style="color:{_score_color(precision)}">{precision:.1%}</strong> Precision</div>
     <div class="summary-stat"><strong style="color:{_score_color(recall)}">{recall:.1%}</strong> Recall</div>
-    <div class="summary-stat"><strong style="color:{_score_color(1 - halluc/total if total else 1)}">{halluc}</strong> Hallucinations</div>
+    <div class="summary-stat"><strong style="color:{_score_color(1 - halluc / total if total else 1)}">{halluc}</strong> Hallucinations</div>
     {cm_html}
     """
 
@@ -376,11 +383,11 @@ def _build_refusal_section(refusal_df) -> str:
         answer = html.escape(str(r["answer_preview"])[:120], quote=True)
         rows += f"""
         <tr>
-          <td>{r['id']}</td>
-          <td>{r['category']}</td>
-          <td title="{html.escape(str(r['question']), quote=True)}">{html.escape(str(r['question'])[:50], quote=True)}</td>
+          <td>{r["id"]}</td>
+          <td>{r["category"]}</td>
+          <td title="{html.escape(str(r["question"]), quote=True)}">{html.escape(str(r["question"])[:50], quote=True)}</td>
           <td style="color:{cls_color};font-weight:bold">{cls}</td>
-          <td>{'Yes' if r['refused'] else 'No'}</td>
+          <td>{"Yes" if r["refused"] else "No"}</td>
           <td>{halluc_icon}</td>
           <td>{redir_icon}</td>
           <td class="answer-cell" title="{answer}">{answer}...</td>
@@ -421,17 +428,17 @@ def _build_ingestion_section(ingestion_report) -> str:
 
         # Chunk stats
         chunk_html = f"""
-        <div class="summary-stat"><strong>{cs.get('total_chunks', 0)}</strong> Chunks</div>
-        <div class="summary-stat"><strong>{cs.get('avg_chunk_size', 0)}</strong> Avg Size</div>
-        <div class="summary-stat"><strong>{cs.get('min_chunk_size', 0)}-{cs.get('max_chunk_size', 0)}</strong> Range</div>
-        <div class="summary-stat"><strong>{cs.get('empty_or_tiny_chunks', 0)}</strong> Tiny</div>
+        <div class="summary-stat"><strong>{cs.get("total_chunks", 0)}</strong> Chunks</div>
+        <div class="summary-stat"><strong>{cs.get("avg_chunk_size", 0)}</strong> Avg Size</div>
+        <div class="summary-stat"><strong>{cs.get("min_chunk_size", 0)}-{cs.get("max_chunk_size", 0)}</strong> Range</div>
+        <div class="summary-stat"><strong>{cs.get("empty_or_tiny_chunks", 0)}</strong> Tiny</div>
         """
 
         # Doc-type breakdown table
         dt_rows = ""
         if dtb:
             for dt, stats in dtb.items():
-                dt_rows += f'<tr><td>{dt}</td><td>{stats["chunk_count"]}</td><td>{stats["avg_size"]}</td><td>{stats["min_size"]}</td><td>{stats["max_size"]}</td></tr>'
+                dt_rows += f"<tr><td>{dt}</td><td>{stats['chunk_count']}</td><td>{stats['avg_size']}</td><td>{stats['min_size']}</td><td>{stats['max_size']}</td></tr>"
             chunk_html += f"""
             <table style="margin-top:0.5rem">
               <thead><tr><th>Doc Type</th><th>Chunks</th><th>Avg Size</th><th>Min</th><th>Max</th></tr></thead>
@@ -442,7 +449,7 @@ def _build_ingestion_section(ingestion_report) -> str:
         # Section coverage
         coverage_pct = sc.get("coverage_pct", 0)
         missing = sc.get("missing", [])
-        section_html = f'<div class="summary-stat"><strong style="color:{_score_color(coverage_pct/100)}">{coverage_pct}%</strong> Coverage</div>'
+        section_html = f'<div class="summary-stat"><strong style="color:{_score_color(coverage_pct / 100)}">{coverage_pct}%</strong> Coverage</div>'
         if missing:
             section_html += f'<div class="summary-stat">Missing: {", ".join(missing)}</div>'
 
@@ -457,12 +464,12 @@ def _build_ingestion_section(ingestion_report) -> str:
 
         # Embedding probes
         hit_rate = ep.get("hit_rate", 0)
-        probe_html = f'<div class="summary-stat"><strong style="color:{_score_color(hit_rate)}">{hit_rate*100:.0f}%</strong> Embedding Hit Rate</div>'
+        probe_html = f'<div class="summary-stat"><strong style="color:{_score_color(hit_rate)}">{hit_rate * 100:.0f}%</strong> Embedding Hit Rate</div>'
 
         # Duplicates
         dup_html = f"""
-        <div class="summary-stat"><strong>{dc.get('exact_duplicates', 0)}</strong> Exact Dups</div>
-        <div class="summary-stat"><strong>{dc.get('near_duplicates_sampled', 0)}</strong> Near Dups</div>
+        <div class="summary-stat"><strong>{dc.get("exact_duplicates", 0)}</strong> Exact Dups</div>
+        <div class="summary-stat"><strong>{dc.get("near_duplicates_sampled", 0)}</strong> Near Dups</div>
         """
 
         sections += f"""
@@ -492,10 +499,12 @@ def _build_router_section(router_df) -> str:
     total = len(router_df)
     correct = router_df["route_correct"].sum()
     false_broad = len(router_df[(router_df["expected_route"] == "specific") & (router_df["actual_route"] == "broad")])
-    false_specific = len(router_df[(router_df["expected_route"] == "broad") & (router_df["actual_route"] == "specific")])
+    false_specific = len(
+        router_df[(router_df["expected_route"] == "broad") & (router_df["actual_route"] == "specific")]
+    )
 
     summary = f"""
-    <div class="summary-stat"><strong style="color:{_score_color(correct/total)}">{correct}/{total}</strong> Correct ({_pct(correct, total)})</div>
+    <div class="summary-stat"><strong style="color:{_score_color(correct / total)}">{correct}/{total}</strong> Correct ({_pct(correct, total)})</div>
     <div class="summary-stat"><strong>{false_broad}</strong> False Broad</div>
     <div class="summary-stat"><strong>{false_specific}</strong> False Specific</div>
     """
@@ -506,11 +515,11 @@ def _build_router_section(router_df) -> str:
         q = html.escape(str(r["question"])[:60], quote=True)
         rows += f"""
         <tr>
-          <td>{r['id']}</td>
+          <td>{r["id"]}</td>
           <td title="{q}">{q}</td>
-          <td>{r['expected_route']}</td>
-          <td style="color:{color}">{r['actual_route']}</td>
-          <td style="color:{color}">{'✓' if r['route_correct'] else '✗'}</td>
+          <td>{r["expected_route"]}</td>
+          <td style="color:{color}">{r["actual_route"]}</td>
+          <td style="color:{color}">{"✓" if r["route_correct"] else "✗"}</td>
         </tr>"""
 
     return f"""
@@ -578,7 +587,7 @@ def _generate_html(pipeline_results, eval_results) -> str:
 <body>
 
 <h1>Multi-Candidate Evaluation Report</h1>
-<div class="meta">Generated: {timestamp} | Questions: {len(pipeline_results)} | Candidates: {', '.join(sorted(set(r.get('candidate_name', '?') for r in pipeline_results)))}</div>
+<div class="meta">Generated: {timestamp} | Questions: {len(pipeline_results)} | Candidates: {", ".join(sorted(set(r.get("candidate_name", "?") for r in pipeline_results)))}</div>
 
 <h2>Overview</h2>
 <div class="metrics-grid">

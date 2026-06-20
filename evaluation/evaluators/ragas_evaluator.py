@@ -9,17 +9,17 @@ Metrics computed:
 """
 
 import pandas as pd
-from ragas import evaluate, EvaluationDataset, SingleTurnSample, RunConfig
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_ollama import ChatOllama
+from ragas import EvaluationDataset, RunConfig, SingleTurnSample, evaluate
+from ragas.embeddings import LangchainEmbeddingsWrapper
+from ragas.llms import LangchainLLMWrapper
 from ragas.metrics import (
     Faithfulness,
-    ResponseRelevancy,
     LLMContextPrecisionWithReference,
     LLMContextRecall,
+    ResponseRelevancy,
 )
-from ragas.llms import LangchainLLMWrapper
-from ragas.embeddings import LangchainEmbeddingsWrapper
-from langchain_ollama import ChatOllama
-from langchain_huggingface import HuggingFaceEmbeddings
 
 
 def _build_llm(model: str = "qwen3"):
@@ -89,5 +89,5 @@ def run_ragas_evaluation(
     )
 
     df = results.to_pandas()
-    print(f"[RAGAS] Evaluation complete.")
+    print("[RAGAS] Evaluation complete.")
     return df

@@ -5,12 +5,11 @@ Head type (CORAL vs classifier) and how many top backbone layers to fine-tune ar
 selected by the active experiment (config.HEAD_TYPE / config.UNFREEZE_LAST_N).
 """
 
+import config
+import heads
 import torch
 import torch.nn as nn
 from transformers import AutoModel
-
-import config
-import heads
 
 
 def _set_trainable_layers(backbone, unfreeze_last_n: int) -> int:
@@ -30,8 +29,7 @@ def _set_trainable_layers(backbone, unfreeze_last_n: int) -> int:
     layers = getattr(encoder, "layer", None)
     if layers is None:
         raise AttributeError(
-            f"Could not locate transformer layers on {type(backbone).__name__} "
-            f"(expected .encoder.layer) to unfreeze."
+            f"Could not locate transformer layers on {type(backbone).__name__} (expected .encoder.layer) to unfreeze."
         )
 
     n = min(unfreeze_last_n, len(layers))
@@ -99,6 +97,6 @@ class ScoringModel(nn.Module):
         logits : (B, 4)  – 4 sigmoid outputs (cumulative probabilities)
         """
         outputs = self.backbone(input_ids=input_ids, attention_mask=attention_mask)
-        cls_hidden = outputs.last_hidden_state[:, 0, :]   # [CLS] token
+        cls_hidden = outputs.last_hidden_state[:, 0, :]  # [CLS] token
         logits = self.head(cls_hidden)
         return logits

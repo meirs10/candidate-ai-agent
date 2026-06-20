@@ -3,11 +3,10 @@ Validation: Anti-shortcut checks (BoW baseline, banned phrases).
 All checks are read-only — output reports only.
 """
 
-import re
 import json
 import logging
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 from generate.sanitizer import COMPILED_PATTERNS
 
@@ -25,11 +24,13 @@ def check_banned_phrases(documents_db: dict) -> dict:
         for pattern in COMPILED_PATTERNS:
             matches = pattern.findall(text)
             if matches:
-                issues.append({
-                    "doc_id": doc_id,
-                    "pattern": pattern.pattern,
-                    "matches": matches,
-                })
+                issues.append(
+                    {
+                        "doc_id": doc_id,
+                        "pattern": pattern.pattern,
+                        "matches": matches,
+                    }
+                )
 
     return {
         "total_documents": len(documents_db),
@@ -47,9 +48,7 @@ def check_level1_absence(personas: list[dict], documents_db: dict) -> dict:
     issues = []
 
     for persona in personas:
-        level1_skills = [
-            s for s, level in persona.get("skills", {}).items() if level == 1
-        ]
+        level1_skills = [s for s, level in persona.get("skills", {}).items() if level == 1]
 
         for doc_id in persona.get("document_ids", []):
             doc = documents_db.get(doc_id)
@@ -61,17 +60,18 @@ def check_level1_absence(personas: list[dict], documents_db: dict) -> dict:
                 # Check primary skill name
                 skill_lower = skill.lower().split("/")[0].split("(")[0].strip()
                 if len(skill_lower) > 2 and skill_lower in text:
-                    issues.append({
-                        "persona_id": persona["persona_id"],
-                        "doc_id": doc_id,
-                        "skill": skill,
-                        "found_text": skill_lower,
-                    })
+                    issues.append(
+                        {
+                            "persona_id": persona["persona_id"],
+                            "doc_id": doc_id,
+                            "skill": skill,
+                            "found_text": skill_lower,
+                        }
+                    )
 
     return {
         "total_checked": sum(
-            len([s for s, l in p.get("skills", {}).items() if l == 1])
-            * len(p.get("document_ids", []))
+            len([s for s, l in p.get("skills", {}).items() if l == 1]) * len(p.get("document_ids", []))
             for p in personas
         ),
         "violations": len(issues),
@@ -86,10 +86,10 @@ def check_bow_baseline(personas: list[dict], documents_db: dict) -> dict:
     Returns report dict.
     """
     try:
+        import numpy as np
         from sklearn.feature_extraction.text import TfidfVectorizer
         from sklearn.linear_model import LogisticRegression
         from sklearn.model_selection import cross_val_score
-        import numpy as np
     except ImportError:
         logger.warning("scikit-learn not installed — skipping BoW baseline check")
         return {"skipped": True, "reason": "scikit-learn not installed"}
@@ -127,10 +127,7 @@ def check_bow_baseline(personas: list[dict], documents_db: dict) -> dict:
     for i, cls in enumerate(clf.classes_):
         coefs = clf.coef_[i] if len(clf.classes_) > 2 else clf.coef_[0]
         top_idx = coefs.argsort()[-10:][::-1]
-        top_features[str(cls)] = [
-            {"feature": feature_names[idx], "weight": float(coefs[idx])}
-            for idx in top_idx
-        ]
+        top_features[str(cls)] = [{"feature": feature_names[idx], "weight": float(coefs[idx])} for idx in top_idx]
 
     return {
         "mean_cv_accuracy": mean_acc,

@@ -2,14 +2,16 @@
 
 # 🤖 Candidate AI Agent
 
-**An AI-powered digital avatar designed to represent job candidates to recruiters.**
+**An AI-powered digital avatar designed to represent you to recruiters 24/7.**
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" />
+  <img src="https://img.shields.io/badge/Python-3.11%2B-blue?style=for-the-badge&logo=python" />
   <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" />
   <img src="https://img.shields.io/badge/Ollama-black?style=for-the-badge&logo=ollama&logoColor=white" />
-  <img src="https://img.shields.io/badge/DeBERTa--v3-5A2D81?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white" />
   <img src="https://img.shields.io/badge/ChromaDB-FFA500?style=for-the-badge&logo=database&logoColor=white" />
+  <img src="https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logo=uv&logoColor=white" />
+  <img src="https://img.shields.io/badge/Ruff-261230?style=for-the-badge&logo=ruff&logoColor=D7FF64" />
 </p>
 
 </div>
@@ -195,41 +197,54 @@ Retrieval feeding the scorer is near-perfect (**Hit@8 = 0.998**), so remaining e
 ## 🚀 Getting Started
 
 ### Prerequisites
-1. Ensure you have **Python 3.10+** installed.
-2. Install and run [Ollama](https://ollama.ai/).
-3. Pull the required model:
+1. **Python 3.11+** — [uv](https://docs.astral.sh/uv/) will manage the venv for you.
+2. Install [uv](https://docs.astral.sh/uv/getting-started/installation/) (the fast Python package manager).
+3. Install and run [Ollama](https://ollama.ai/) and pull the required model:
    ```bash
    ollama pull qwen3
    ```
 4. A CUDA GPU is recommended for the skill scorer + reranker (CPU works but is slow; the first estimation also downloads `deberta-v3-base`).
 
 ### Installation
-1. Clone the repository and navigate to the project directory:
-   ```bash
-   git clone <your-repo-url>
-   cd candidate-ai-agent
-   ```
-2. Set up your virtual environment and install dependencies:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   pip install -r requirements.txt   # includes the skill-scorer deps (torch, transformers, coral_pytorch, …)
-   ```
+```bash
+git clone <your-repo-url>
+cd candidate-ai-agent
+uv sync            # creates .venv and installs all dependencies from uv.lock
+```
 
 ### Running the App
-Start the Streamlit application:
 ```bash
-streamlit run main.py
+uv run streamlit run main.py
 ```
 1. **Candidate Setup (`/setup`):** Fill in your verified details, upload your CV/documents, list your skills, and click **Estimate Skill Proficiency**.
 2. **Recruiter Chat (`/recruiter`):** Share the link with recruiters so they can chat with your personalized AI agent — now able to report grounded 1–5 skill levels.
 
+### Docker
+Build and run without installing anything locally (except Ollama):
+```bash
+docker build -t candidate-ai-agent .
+docker run -p 8501:8501 candidate-ai-agent
+```
+The multi-stage `Dockerfile` uses the official uv image for fast, cached builds and produces a slim runtime image.
+
 ### (Optional) Rebuild the skill scorer
 From inside `skill_proficiency_estimator/`:
 ```bash
-python run_generation.py --num-personas 300 --concurrency 4   # generate the corpus
-python scoring_model/build_dataset.py                         # RAG → training_data.csv
-python scoring_model/run_all.py                               # train all experiments + report
+uv run python run_generation.py --num-personas 300 --concurrency 4   # generate the corpus
+uv run python scoring_model/build_dataset.py                         # RAG → training_data.csv
+uv run python scoring_model/run_all.py                               # train all experiments + report
+```
+
+---
+
+## 🛠️ Development
+
+```bash
+uv sync                        # install all deps including dev group (ruff, pytest)
+uv run ruff check .            # lint
+uv run ruff check --fix .      # lint + auto-fix
+uv run ruff format .           # format
+uv run pytest                  # run tests
 ```
 
 ---

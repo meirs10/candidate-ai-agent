@@ -10,13 +10,12 @@ retrieval_meta.jsonl (both are keyed by that same CSV row position).
 
 import re
 
+import config
 import pandas as pd
 import torch
-from torch.utils.data import Dataset, DataLoader
-from transformers import AutoTokenizer
 from sklearn.model_selection import train_test_split
-
-import config
+from torch.utils.data import DataLoader, Dataset
+from transformers import AutoTokenizer
 
 
 # ──────────────────────────────────────────────────────────────
@@ -48,7 +47,7 @@ class ScoringDataset(Dataset):
             return_tensors="pt",
         )
         return {
-            "input_ids": encoding["input_ids"].squeeze(0),           # (MAX_LEN,)
+            "input_ids": encoding["input_ids"].squeeze(0),  # (MAX_LEN,)
             "attention_mask": encoding["attention_mask"].squeeze(0),  # (MAX_LEN,)
             "label": torch.tensor(self.labels[idx], dtype=torch.long),
         }
@@ -71,10 +70,7 @@ def _build_input_text(row: pd.Series, sep: str) -> str:
         (c for c in row.index if _CHUNK_RE.fullmatch(str(c))),
         key=lambda c: int(str(c)[5:]),
     )
-    chunks = " ".join(
-        str(row[c]) for c in chunk_cols
-        if pd.notna(row[c]) and str(row[c]).strip()
-    )
+    chunks = " ".join(str(row[c]) for c in chunk_cols if pd.notna(row[c]) and str(row[c]).strip())
     return f"{row['skill']} {sep} {chunks}"
 
 
@@ -108,7 +104,7 @@ def _make_loader(df: pd.DataFrame, tokenizer, shuffle: bool) -> DataLoader:
         ds,
         batch_size=config.BATCH_SIZE,
         shuffle=shuffle,
-        num_workers=config.NUM_WORKERS,      # parallel tokenization
+        num_workers=config.NUM_WORKERS,  # parallel tokenization
         pin_memory=torch.cuda.is_available(),  # faster host->GPU copies
         persistent_workers=config.NUM_WORKERS > 0,
     )
@@ -122,13 +118,8 @@ def _subsample(df: pd.DataFrame, subset: float) -> pd.DataFrame:
     split needs >= 2 rows per class). Original row indices are preserved so the
     retrieval-meta join in evaluate.py still works on subset runs.
     """
-    if subset >= 1:
-        frac = min(1.0, float(subset) / len(df))
-    else:
-        frac = float(subset)
-    sampled = df.groupby("label", group_keys=False).sample(
-        frac=frac, random_state=config.RANDOM_SEED
-    )
+    frac = min(1.0, float(subset) / len(df)) if subset >= 1 else float(subset)
+    sampled = df.groupby("label", group_keys=False).sample(frac=frac, random_state=config.RANDOM_SEED)
     return sampled
 
 
@@ -171,14 +162,13 @@ def load_data_with_frames(subset: float | None = None):
 
     if subset is not None:
         df = _subsample(df, subset)
-        print(f"[subset] Using {len(df)} rows "
-              f"(label dist: {df['label'].value_counts().sort_index().to_dict()})")
+        print(f"[subset] Using {len(df)} rows (label dist: {df['label'].value_counts().sort_index().to_dict()})")
     tokenizer = AutoTokenizer.from_pretrained(config.MODEL_NAME)
 
     train_df, val_df, test_df = _split_frames(df)
 
     train_loader = _make_loader(train_df, tokenizer, shuffle=True)
-    val_loader   = _make_loader(val_df,   tokenizer, shuffle=False)
-    test_loader  = _make_loader(test_df,  tokenizer, shuffle=False)
+    val_loader = _make_loader(val_df, tokenizer, shuffle=False)
+    test_loader = _make_loader(test_df, tokenizer, shuffle=False)
 
     return train_loader, val_loader, test_loader, test_df

@@ -2,20 +2,21 @@
 Phase 2: Persona generation via LLM.
 """
 
-import json
 import asyncio
-import aiohttp
+import json
 import logging
 import random as _random
 from pathlib import Path
 
+import aiohttp
+
 from generate.hyperparams import (
+    get_archetypes,
+    get_skills_by_category,
+    low_level_quota,
     sample_archetype,
     sample_persona_hyperparams,
     seniority_band_bias,
-    low_level_quota,
-    get_archetypes,
-    get_skills_by_category,
 )
 from generate.prompts import PERSONA_GENERATION
 
@@ -57,6 +58,7 @@ def pick_unique_name() -> str:
     unique = f"{base} {suffix}"
     _used_names.add(unique)
     return unique
+
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
 MODEL = "qwen3"
@@ -156,7 +158,7 @@ def _extract_json(text: str) -> dict:
     if "<think>" in text:
         think_end = text.rfind("</think>")
         if think_end != -1:
-            text = text[think_end + len("</think>"):].strip()
+            text = text[think_end + len("</think>") :].strip()
 
     # Strip markdown fences
     if "```json" in text:
@@ -215,6 +217,7 @@ async def generate_persona(
 
     # Determine skill counts
     import random
+
     total = random.randint(*archetype["skill_count_range"])
     primary_count = max(4, int(total * 0.6))
     secondary_count = total - primary_count
@@ -263,18 +266,20 @@ async def generate_persona(
             # floor so the global label distribution cannot collapse.
             original = dict(persona_data["skills"])
             persona_data["skills"], _ = enforce_skill_levels(
-                persona_data["skills"], primary_pool, secondary_pool,
-                primary_band, secondary_band, hyperparams["seniority"],
+                persona_data["skills"],
+                primary_pool,
+                secondary_pool,
+                primary_band,
+                secondary_band,
+                hyperparams["seniority"],
             )
-            n_adjusted = sum(1 for k in original
-                             if original[k] != persona_data["skills"].get(k))
+            n_adjusted = sum(1 for k in original if original[k] != persona_data["skills"].get(k))
             if n_adjusted:
-                logger.info(f"{persona_id}: enforced tier bands on {n_adjusted}/"
-                            f"{len(original)} skill levels")
+                logger.info(f"{persona_id}: enforced tier bands on {n_adjusted}/{len(original)} skill levels")
 
             break
         except (json.JSONDecodeError, ValueError, KeyError) as e:
-            logger.warning(f"{persona_id} attempt {attempt+1} failed: {e}")
+            logger.warning(f"{persona_id} attempt {attempt + 1} failed: {e}")
             if attempt == max_retries - 1:
                 raise RuntimeError(f"Failed to generate {persona_id} after {max_retries} attempts") from e
 
@@ -296,5 +301,7 @@ async def generate_persona(
     with open(checkpoint_file, "w") as f:
         json.dump(persona, f, indent=2)
 
-    logger.info(f"Generated {persona_id}: {persona['name']} ({archetype['label']}, {hyperparams['years_experience']}yr)")
+    logger.info(
+        f"Generated {persona_id}: {persona['name']} ({archetype['label']}, {hyperparams['years_experience']}yr)"
+    )
     return persona

@@ -17,11 +17,11 @@ import json
 import os
 
 import matplotlib
-matplotlib.use("Agg")            # no display needed
-import matplotlib.pyplot as plt
 
+matplotlib.use("Agg")  # no display needed
 import config
 import evaluate as evaluate_mod
+import matplotlib.pyplot as plt
 
 
 def _load_json(path):
@@ -35,13 +35,20 @@ def _plot_learning_curve(exp, history, out_path):
 
     ax1.plot(epochs, [h["train_loss"] for h in history], "-o", label="train_loss")
     ax1.plot(epochs, [h["val_mae"] for h in history], "-s", label="val_MAE")
-    ax1.set_xlabel("epoch"); ax1.set_ylabel("loss / MAE"); ax1.set_title(f"{exp} — loss")
-    ax1.legend(); ax1.grid(alpha=0.3)
+    ax1.set_xlabel("epoch")
+    ax1.set_ylabel("loss / MAE")
+    ax1.set_title(f"{exp} — loss")
+    ax1.legend()
+    ax1.grid(alpha=0.3)
 
     ax2.plot(epochs, [h["val_qwk"] for h in history], "-^", color="tab:green", label="val_QWK")
     ax2.plot(epochs, [h["val_off_by_one"] for h in history], "-d", color="tab:purple", label="val_±1")
-    ax2.set_xlabel("epoch"); ax2.set_ylabel("score"); ax2.set_title(f"{exp} — val metrics")
-    ax2.set_ylim(-0.05, 1.05); ax2.legend(); ax2.grid(alpha=0.3)
+    ax2.set_xlabel("epoch")
+    ax2.set_ylabel("score")
+    ax2.set_title(f"{exp} — val metrics")
+    ax2.set_ylim(-0.05, 1.05)
+    ax2.legend()
+    ax2.grid(alpha=0.3)
 
     fig.tight_layout()
     fig.savefig(out_path, dpi=120, bbox_inches="tight")
@@ -55,8 +62,12 @@ def _plot_combined(histories, results, out_path):
     for exp, hist in histories.items():
         if hist:
             ax1.plot([h["epoch"] for h in hist], [h["val_qwk"] for h in hist], "-o", label=exp)
-    ax1.set_xlabel("epoch"); ax1.set_ylabel("val QWK"); ax1.set_title("Learning (val QWK)")
-    ax1.set_ylim(-0.05, 1.05); ax1.legend(); ax1.grid(alpha=0.3)
+    ax1.set_xlabel("epoch")
+    ax1.set_ylabel("val QWK")
+    ax1.set_title("Learning (val QWK)")
+    ax1.set_ylim(-0.05, 1.05)
+    ax1.legend()
+    ax1.grid(alpha=0.3)
 
     exps = list(results.keys())
     x = range(len(exps))
@@ -65,8 +76,11 @@ def _plot_combined(histories, results, out_path):
     w = 0.35
     ax2.bar([i - w / 2 for i in x], qwk, w, label="test QWK", color="tab:green")
     ax2.bar([i + w / 2 for i in x], mae, w, label="test MAE", color="tab:red")
-    ax2.set_xticks(list(x)); ax2.set_xticklabels(exps, rotation=15, ha="right")
-    ax2.set_title("Test metrics"); ax2.legend(); ax2.grid(alpha=0.3, axis="y")
+    ax2.set_xticks(list(x))
+    ax2.set_xticklabels(exps, rotation=15, ha="right")
+    ax2.set_title("Test metrics")
+    ax2.legend()
+    ax2.grid(alpha=0.3, axis="y")
 
     fig.tight_layout()
     fig.savefig(out_path, dpi=120, bbox_inches="tight")
@@ -91,13 +105,12 @@ def build():
             continue
 
         print(f"\n[report] evaluating {exp} on test set ...")
-        evaluate_mod.evaluate()                       # runs test, saves metrics.json
+        evaluate_mod.evaluate()  # runs test, saves metrics.json
 
         results[exp] = _load_json(config.metrics_path())
         histories[exp] = _load_json(os.path.join(config.run_dir(), "history.json"))
         if histories[exp]:
-            _plot_learning_curve(exp, histories[exp],
-                                 os.path.join(config.run_dir(), "learning_curve.png"))
+            _plot_learning_curve(exp, histories[exp], os.path.join(config.run_dir(), "learning_curve.png"))
 
     if not results:
         print("No evaluated models found. Train them first (run_all.py).")
@@ -109,16 +122,25 @@ def build():
     # ── Markdown report ─────────────────────────────────────
     order = sorted(results, key=lambda e: results[e]["scoring"]["mae"])
     lines = ["# Skill-Scoring — Model Comparison Report", ""]
-    lines += ["## Test-set metrics (sorted by MAE)", "",
-              "| experiment | MAE | acc | ±1 | QWK | Spearman | n |",
-              "|---|---|---|---|---|---|---|"]
+    lines += [
+        "## Test-set metrics (sorted by MAE)",
+        "",
+        "| experiment | MAE | acc | ±1 | QWK | Spearman | n |",
+        "|---|---|---|---|---|---|---|",
+    ]
     for e in order:
         s = results[e]["scoring"]
-        lines.append(f"| {e} | {s['mae']:.4f} | {s['accuracy']:.4f} | {s['off_by_one']:.4f} "
-                     f"| {s['qwk']:.4f} | {s['spearman']:.4f} | {results[e]['n_test']} |")
-    lines += ["", f"**Best by MAE:** `{order[0]}`  |  **Best by QWK:** "
-                  f"`{max(results, key=lambda e: results[e]['scoring']['qwk'])}`", ""]
-    lines += ["## Learning curves & test metrics", "", f"![combined](report_combined.png)", ""]
+        lines.append(
+            f"| {e} | {s['mae']:.4f} | {s['accuracy']:.4f} | {s['off_by_one']:.4f} "
+            f"| {s['qwk']:.4f} | {s['spearman']:.4f} | {results[e]['n_test']} |"
+        )
+    lines += [
+        "",
+        f"**Best by MAE:** `{order[0]}`  |  **Best by QWK:** "
+        f"`{max(results, key=lambda e: results[e]['scoring']['qwk'])}`",
+        "",
+    ]
+    lines += ["## Learning curves & test metrics", "", "![combined](report_combined.png)", ""]
 
     for e in order:
         r = results[e]
@@ -131,8 +153,11 @@ def build():
             lines += ["Confusion matrix:", _confusion_block(r["confusion_matrix"]), ""]
         if r.get("retrieval"):
             rt = r["retrieval"]
-            lines += [f"Retrieval: Hit={rt.get('hit_rate', 0):.3f}  "
-                      f"Prec={rt.get('precision', 0):.3f}  MRR={rt.get('mrr', 0):.3f}", ""]
+            lines += [
+                f"Retrieval: Hit={rt.get('hit_rate', 0):.3f}  "
+                f"Prec={rt.get('precision', 0):.3f}  MRR={rt.get('mrr', 0):.3f}",
+                "",
+            ]
 
     report_path = os.path.join(str(runs_dir), "report.md")
     with open(report_path, "w", encoding="utf-8") as f:
@@ -140,7 +165,7 @@ def build():
 
     print(f"\n[report] wrote {report_path}")
     print(f"[report] combined figure: {combined_png}")
-    print(f"[report] per-model curves: runs/<exp>/learning_curve.png")
+    print("[report] per-model curves: runs/<exp>/learning_curve.png")
 
 
 if __name__ == "__main__":

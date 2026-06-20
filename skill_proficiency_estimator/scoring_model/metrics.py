@@ -17,9 +17,9 @@ from __future__ import annotations
 import numpy as np
 from scipy.stats import spearmanr
 from sklearn.metrics import (
-    mean_absolute_error,
     accuracy_score,
     cohen_kappa_score,
+    mean_absolute_error,
 )
 
 
@@ -49,10 +49,7 @@ def ordinal_metrics(y_true, y_pred) -> dict:
     labels = sorted(set(np.unique(y_true)) | set(np.unique(y_pred)))
     qwk = float(cohen_kappa_score(y_true, y_pred, weights="quadratic", labels=labels))
 
-    if np.std(y_pred) == 0 or np.std(y_true) == 0:
-        rho = 0.0
-    else:
-        rho = float(spearmanr(y_true, y_pred).correlation)
+    rho = 0.0 if np.std(y_pred) == 0 or np.std(y_true) == 0 else float(spearmanr(y_true, y_pred).correlation)
 
     return {
         "mae": mae,

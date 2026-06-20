@@ -8,12 +8,11 @@ evaluate.py stay head-agnostic. Adding a head later means editing only this file
   "classifier" : K logits, cross-entropy, argmax decode
 """
 
+import config
 import torch
 import torch.nn as nn
-from coral_pytorch.losses import coral_loss
 from coral_pytorch.dataset import levels_from_labelbatch
-
-import config
+from coral_pytorch.losses import coral_loss
 
 _ce = nn.CrossEntropyLoss()
 
@@ -41,5 +40,5 @@ def compute_loss(head_type: str, logits: torch.Tensor, labels: torch.Tensor) -> 
 def decode(head_type: str, logits: torch.Tensor) -> torch.Tensor:
     """Convert head outputs -> predicted class (0..K-1)."""
     if head_type == "coral":
-        return (logits > 0).sum(dim=1)   # raw cumulative logit > 0  <=>  P > 0.5
+        return (logits > 0).sum(dim=1)  # raw cumulative logit > 0  <=>  P > 0.5
     return logits.argmax(dim=1)

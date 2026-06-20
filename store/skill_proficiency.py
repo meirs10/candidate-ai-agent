@@ -26,7 +26,7 @@ _SCORING_DIR = _REPRESENTOR_ROOT / "skill_proficiency_estimator" / "scoring_mode
 if str(_SCORING_DIR) not in sys.path:
     sys.path.insert(0, str(_SCORING_DIR))
 
-import predict  # noqa: E402  (import after sys.path setup, by design)
+import predict
 
 # Chunks ingested via ingest_document() carry a "Section: <name>\n" prefix for
 # retrieval context. The scorer was trained on raw chunk text (no such prefix),
@@ -67,18 +67,17 @@ def estimate_skills(
     retrievals = retrieve_batch_for_training(skills, candidate_id, top_k=k)
 
     # Score on section-stripped chunks; store the original chunks as evidence.
-    items = [
-        (skill, [_for_scoring(c) for c in r["chunks"]])
-        for skill, r in zip(skills, retrievals)
-    ]
+    items = [(skill, [_for_scoring(c) for c in r["chunks"]]) for skill, r in zip(skills, retrievals, strict=False)]
     levels = predict.predict_levels(items)
 
     results: list[dict] = []
-    for skill, r, level in zip(skills, retrievals, levels):
-        results.append({
-            "skill": skill,
-            "level": level,
-            "chunks": r["chunks"],
-            "doc_ids": r.get("doc_ids", []),
-        })
+    for skill, r, level in zip(skills, retrievals, levels, strict=False):
+        results.append(
+            {
+                "skill": skill,
+                "level": level,
+                "chunks": r["chunks"],
+                "doc_ids": r.get("doc_ids", []),
+            }
+        )
     return results

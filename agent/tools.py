@@ -1,9 +1,9 @@
 from rag.retriever import retrieve
 from store.structured import (
+    PROFICIENCY_SCALE,
     get_field,
     get_skill_score,
     get_skill_scores,
-    PROFICIENCY_SCALE,
 )
 
 CANDIDATE_ID = "candidate_001"  # later: dynamic per candidate
@@ -39,12 +39,12 @@ TOOL_SCHEMAS = [
                             "years_of_experience, current_role, desired_job_title, "
                             "job_description, monthly_salary_expectation, "
                             "preferred_location, availability, work_type, open_to_relocation"
-                        )
+                        ),
                     }
                 },
-                "required": ["field"]
-            }
-        }
+                "required": ["field"],
+            },
+        },
     },
     {
         "type": "function",
@@ -73,12 +73,12 @@ TOOL_SCHEMAS = [
                             "The skill/technology to get the proficiency level for "
                             "(e.g. 'Python', 'AWS'). Leave empty to list all assessed "
                             "skills with their levels."
-                        )
+                        ),
                     }
                 },
-                "required": []
-            }
-        }
+                "required": [],
+            },
+        },
     },
     {
         "type": "function",
@@ -94,16 +94,11 @@ TOOL_SCHEMAS = [
             ),
             "parameters": {
                 "type": "object",
-                "properties": {
-                    "query": {
-                        "type": "string",
-                        "description": "The question or topic to search for"
-                    }
-                },
-                "required": ["query"]
-            }
-        }
-    }
+                "properties": {"query": {"type": "string", "description": "The question or topic to search for"}},
+                "required": ["query"],
+            },
+        },
+    },
 ]
 
 # -- Tool execution functions ------------------------------------------------
@@ -152,26 +147,28 @@ def get_skill_proficiency(**kwargs) -> str:
 
     scores = get_skill_scores()
     if not scores:
-        return ("No skill proficiency estimates are available for this candidate. "
-                "Use search_documents to look for skill evidence in the documents.")
+        return (
+            "No skill proficiency estimates are available for this candidate. "
+            "Use search_documents to look for skill evidence in the documents."
+        )
 
     # No specific skill → ranked overview of everything assessed
     if not skill:
         ranked = sorted(scores, key=lambda s: s.get("level", 0), reverse=True)
-        lines = [f"- {s['skill']}: {s['level']}/5 ({PROFICIENCY_SCALE.get(s['level'], '')})"
-                 for s in ranked]
+        lines = [f"- {s['skill']}: {s['level']}/5 ({PROFICIENCY_SCALE.get(s['level'], '')})" for s in ranked]
         return "Estimated skill proficiencies (1-5):\n" + "\n".join(lines)
 
     entry = get_skill_score(skill)
     if entry is None:
         listed = ", ".join(s["skill"] for s in scores)
-        return (f"'{skill}' was not among the candidate's assessed skills "
-                f"(assessed: {listed}). Use search_documents to check the documents directly.")
+        return (
+            f"'{skill}' was not among the candidate's assessed skills "
+            f"(assessed: {listed}). Use search_documents to check the documents directly."
+        )
 
     level = entry.get("level", 0)
     lines = [
-        f"{entry['skill']} — estimated proficiency: {level}/5 "
-        f"({PROFICIENCY_SCALE.get(level, '')}).",
+        f"{entry['skill']} — estimated proficiency: {level}/5 ({PROFICIENCY_SCALE.get(level, '')}).",
         "Scale: 1=awareness, 2=working familiarity, 3=competent, 4=strong, 5=expert.",
         "This is model-inferred from the candidate's documents, not self-reported.",
     ]

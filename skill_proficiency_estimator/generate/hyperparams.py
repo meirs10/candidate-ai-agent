@@ -2,9 +2,9 @@
 Hyperparameter sampling logic for persona and document generation.
 """
 
-import random
-import math
 import json
+import math
+import random
 from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -12,6 +12,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 # ---------------------------------------------------------------------------
 # Load static data
 # ---------------------------------------------------------------------------
+
 
 def load_skills_taxonomy() -> list[dict]:
     with open(DATA_DIR / "skills_taxonomy.json") as f:
@@ -61,11 +62,11 @@ def get_evidence_profiles() -> dict:
 
 EXPERIENCE_DISTRIBUTION = [
     # (min_years, max_years, weight)
-    (0, 1, 15),   # Entry
-    (2, 3, 20),   # Junior
-    (4, 6, 25),   # Mid
-    (7, 9, 20),   # Senior
-    (10, 12, 12), # Staff
+    (0, 1, 15),  # Entry
+    (2, 3, 20),  # Junior
+    (4, 6, 25),  # Mid
+    (7, 9, 20),  # Senior
+    (10, 12, 12),  # Staff
     (13, 15, 8),  # Principal
 ]
 
@@ -119,13 +120,13 @@ def seniority_band_bias(seniority: str) -> str:
     """
     biases = {
         "junior": "Lean to the LOW end of each band: primary skills mostly at the "
-                  "band minimum, and most secondary skills at 1-2.",
-        "mid":    "Sit mid-band: primary skills around the middle of their band, "
-                  "secondary skills spread across their full band.",
+        "band minimum, and most secondary skills at 1-2.",
+        "mid": "Sit mid-band: primary skills around the middle of their band, "
+        "secondary skills spread across their full band.",
         "senior": "Lean to the HIGH end for primary skills (several at the band max); "
-                  "secondary skills still include several genuine 1-2s.",
-        "staff":  "Primary skills at the high end (multiple at the maximum); secondary "
-                  "skills are breadth areas, so keep several at 1-2.",
+        "secondary skills still include several genuine 1-2s.",
+        "staff": "Primary skills at the high end (multiple at the maximum); secondary "
+        "skills are breadth areas, so keep several at 1-2.",
     }
     return biases.get(seniority, biases["mid"])
 
@@ -147,8 +148,16 @@ def low_level_quota(n_secondary: int, seniority: str) -> int:
 # ---------------------------------------------------------------------------
 
 INDUSTRIES = [
-    "fintech", "healthtech", "e-commerce", "adtech", "cybersecurity",
-    "gaming", "SaaS", "enterprise", "startup", "consulting",
+    "fintech",
+    "healthtech",
+    "e-commerce",
+    "adtech",
+    "cybersecurity",
+    "gaming",
+    "SaaS",
+    "enterprise",
+    "startup",
+    "consulting",
 ]
 
 WRITING_STYLES = ["modest", "neutral", "confident", "verbose", "concise"]
@@ -168,9 +177,7 @@ def sample_persona_hyperparams(archetype_key: str) -> dict:
         "seniority": seniority,
         "industry": random.choice(INDUSTRIES),
         "writing_style": random.choice(WRITING_STYLES),
-        "language_fluency": random.choices(
-            LANGUAGE_FLUENCIES, weights=[50, 30, 20], k=1
-        )[0],
+        "language_fluency": random.choices(LANGUAGE_FLUENCIES, weights=[50, 30, 20], k=1)[0],
         "self_promotion_level": random.choice(SELF_PROMOTION_LEVELS),
         "quantification_tendency": random.choice(QUANTIFICATION_TENDENCIES),
     }
@@ -228,6 +235,7 @@ def sample_document_hyperparams(doc_type: str) -> dict:
 # Document count distribution
 # ---------------------------------------------------------------------------
 
+
 def sample_doc_count(years_experience: int) -> int:
     """Sample document count based on experience level.
 
@@ -245,6 +253,7 @@ def sample_doc_count(years_experience: int) -> int:
 # ---------------------------------------------------------------------------
 # Archetype-weighted sampling
 # ---------------------------------------------------------------------------
+
 
 def sample_archetype() -> str:
     """Sample an archetype key weighted by the target distribution."""
