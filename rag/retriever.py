@@ -1,6 +1,4 @@
-import chromadb
-import ollama
-from rank_bm25 import BM25Okapi
+from __future__ import annotations
 
 from rag.embedder import embedder
 from rag.reranker import reranker
@@ -8,7 +6,17 @@ from rag.reranker import reranker
 CHROMA_PATH = "./chroma_db"
 ROUTER_LLM = "qwen3"
 
-client = chromadb.PersistentClient(path=CHROMA_PATH)
+_client = None
+
+
+def _get_client():
+    """Lazy ChromaDB client - instantiated on first call, not at import time."""
+    global _client
+    if _client is None:
+        import chromadb
+
+        _client = chromadb.PersistentClient(path=CHROMA_PATH)
+    return _client
 
 
 # ---------------------------------------------------------------------------
@@ -31,6 +39,8 @@ def expand_query(original_query: str, n_variations: int = 3) -> list[str]:
         f'User question: "{original_query}"\n\n'
         f"Return ONLY the queries, one per line, no numbering, no explanation."
     )
+
+    import ollama
 
     response = ollama.chat(
         model=ROUTER_LLM,
@@ -70,6 +80,8 @@ def is_broad_query_llm(query: str) -> bool:
         f"Return ONLY the word BROAD or SPECIFIC. No other text."
     )
 
+    import ollama
+
     response = ollama.chat(
         model=ROUTER_LLM,
         messages=[{"role": "user", "content": prompt}],
@@ -88,6 +100,8 @@ def is_broad_query_llm(query: str) -> bool:
 def bm25_search(query: str, chunks: list[str], top_k: int = 10) -> list[str]:
     if not chunks:
         return []
+    from rank_bm25 import BM25Okapi
+
     tokenized_corpus = [chunk.lower().split() for chunk in chunks]
     bm25 = BM25Okapi(tokenized_corpus)
     tokenized_query = query.lower().split()
@@ -193,7 +207,7 @@ def retrieve(
         - expanded_queries: list[str] | None — query variations (specific only)
         - fused_pool: list[str] | None — candidate pool before re-rank (specific only)
     """
-    collection = client.get_or_create_collection(
+    collection = _get_client().get_or_create_collection(
         name=candidate_id,
         metadata={"hnsw:space": "cosine"},
     )
@@ -203,7 +217,7 @@ def retrieve(
 
     if is_broad and use_summary:
         print("[Retriever] Broad query detected → searching summary index")
-        summary_collection = client.get_or_create_collection(
+        summary_collection = _get_client().get_or_create_collection(
             f"{candidate_id}_summaries",
             metadata={"hnsw:space": "cosine"},
         )
@@ -237,7 +251,7 @@ def retrieve(
 FETCH_PER_QUERY = 10
 
 
-def _bm25_top(bm25: BM25Okapi, chunks: list[str], query: str, top_k: int) -> list[str]:
+def _bm25_top(bm25, chunks: list[str], query: str, top_k: int) -> list[str]:
     """Top-k chunks for `query` from a *pre-built* BM25 index (avoids rebuilding)."""
     scores = bm25.get_scores(query.lower().split())
     top_indices = scores.argsort()[-top_k:][::-1]
@@ -258,13 +272,15 @@ def retrieve_batch_for_training(
     across all queries; with expand=False all query embeddings are computed in one
     batched call. Returns one dict per query: {chunks, doc_ids, fused_pool}.
     """
-    collection = client.get_or_create_collection(
+    collection = _get_client().get_or_create_collection(
         name=candidate_id,
         metadata={"hnsw:space": "cosine"},
     )
     stored = collection.get(include=["documents", "metadatas"])
     all_chunks = stored["documents"]
     text_to_doc = {doc: (meta or {}).get("doc_id") for doc, meta in zip(all_chunks, stored["metadatas"], strict=False)}
+    from rank_bm25 import BM25Okapi
+
     bm25 = BM25Okapi([c.lower().split() for c in all_chunks]) if all_chunks else None
 
     def _fuse(query, per_query_vectors, variations):

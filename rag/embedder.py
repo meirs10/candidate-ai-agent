@@ -7,7 +7,7 @@ class NomicEmbedder:
     """
     Wrapper around nomic-embed-text-v1.5 that applies the required task prefixes.
 
-    Nomic was trained asymmetrically — queries and documents live in different
+    Nomic was trained asymmetrically - queries and documents live in different
     subspaces. Without these prefixes the embeddings are misaligned and similarity
     scores become unreliable, which is why nomic appeared to perform worse than
     MiniLM in your earlier eval.
@@ -35,5 +35,31 @@ class NomicEmbedder:
         return self.model.encode(prefixed, normalize_embeddings=True).tolist()
 
 
-# Single shared instance — import this everywhere
-embedder = NomicEmbedder()
+class _LazyEmbedder:
+    """Proxy that defers NomicEmbedder() construction until first use.
+
+    Importing this module no longer triggers a HuggingFace model download -
+    the actual model is loaded only when encode_*() is first called.  This
+    lets the Streamlit server and Docker health-check start instantly.
+    """
+
+    def __init__(self):
+        self._instance: NomicEmbedder | None = None
+
+    def _get(self) -> NomicEmbedder:
+        if self._instance is None:
+            self._instance = NomicEmbedder()
+        return self._instance
+
+    def encode_documents(self, texts: list[str]) -> list:
+        return self._get().encode_documents(texts)
+
+    def encode_query(self, text: str) -> list:
+        return self._get().encode_query(text)
+
+    def encode_queries(self, texts: list[str]) -> list:
+        return self._get().encode_queries(texts)
+
+
+# Single shared instance - import this everywhere
+embedder = _LazyEmbedder()

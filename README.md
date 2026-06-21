@@ -12,6 +12,7 @@
   <img src="https://img.shields.io/badge/ChromaDB-FFA500?style=for-the-badge&logo=database&logoColor=white" />
   <img src="https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logo=uv&logoColor=white" />
   <img src="https://img.shields.io/badge/Ruff-261230?style=for-the-badge&logo=ruff&logoColor=D7FF64" />
+  <img src="https://img.shields.io/github/actions/workflow/status/meirs10/candidate-ai-agent/ci.yml?branch=main&style=for-the-badge&label=CI" />
 </p>
 
 </div>
@@ -246,6 +247,16 @@ uv run ruff check --fix .      # lint + auto-fix
 uv run ruff format .           # format
 uv run pytest                  # run tests
 ```
+
+### CI
+
+A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every push/PR to `main`:
+
+| Job | What it does |
+|-----|--------------|
+| **lint** | `uv run ruff check .` |
+| **test** | Runs the e2e smoke test — validates the full agent wiring (tool dispatch → structured store → answer assembly) with mocked LLM |
+| **docker** | Builds the Docker image and verifies Streamlit's health endpoint responds |
 
 ---
   

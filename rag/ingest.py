@@ -1,8 +1,6 @@
 import os
 import re
 
-import chromadb
-import ollama
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from unstructured.partition.auto import partition
 
@@ -11,7 +9,17 @@ from rag.embedder import embedder
 CHROMA_PATH = "./chroma_db"
 SUMMARY_LLM = "qwen3"
 
-client = chromadb.PersistentClient(path=CHROMA_PATH)
+_client = None
+
+
+def _get_client():
+    """Lazy ChromaDB client - instantiated on first call, not at import time."""
+    global _client
+    if _client is None:
+        import chromadb
+
+        _client = chromadb.PersistentClient(path=CHROMA_PATH)
+    return _client
 
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=1000,
@@ -22,14 +30,14 @@ text_splitter = RecursiveCharacterTextSplitter(
 
 
 def get_collection(candidate_id: str):
-    return client.get_or_create_collection(
+    return _get_client().get_or_create_collection(
         name=candidate_id,
         metadata={"hnsw:space": "cosine"},
     )
 
 
 def get_summary_collection(candidate_id: str):
-    return client.get_or_create_collection(
+    return _get_client().get_or_create_collection(
         name=f"{candidate_id}_summaries",
         metadata={"hnsw:space": "cosine"},
     )
@@ -120,6 +128,8 @@ def generate_summary(full_text: str, doc_type: str) -> str:
         f"Be factual, no opinions.\n\n"
         f"Document:\n{full_text[:3000]}"
     )
+
+    import ollama
 
     response = ollama.chat(
         model=SUMMARY_LLM,

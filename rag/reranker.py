@@ -24,7 +24,7 @@ class Qwen3Reranker:
         3. Compare the logit of the "yes" token against the "no" token; the
            softmax probability of "yes" is the relevance score.
 
-    Always score with rerank() — it preserves the (query, chunks, top_k) API the
+    Always score with rerank() - it preserves the (query, chunks, top_k) API the
     rest of the pipeline expects.
     """
 
@@ -109,5 +109,31 @@ class Qwen3Reranker:
         return [chunk for _, chunk in scored[:top_k]]
 
 
-# Single shared instance — import this everywhere
-reranker = Qwen3Reranker()
+class _LazyReranker:
+    """Proxy that defers Qwen3Reranker() construction until first use.
+
+    Importing this module no longer triggers a HuggingFace model download
+    (~1.2 GB).  The actual model is loaded only when rerank() is first called.
+    This lets the Streamlit server and Docker health-check start instantly.
+    """
+
+    def __init__(self):
+        self._instance: Qwen3Reranker | None = None
+
+    def _get(self) -> Qwen3Reranker:
+        if self._instance is None:
+            self._instance = Qwen3Reranker()
+        return self._instance
+
+    def rerank(
+        self,
+        query: str,
+        chunks: list[str],
+        top_k: int = 8,
+        instruction: str = DEFAULT_INSTRUCTION,
+    ) -> list[str]:
+        return self._get().rerank(query, chunks, top_k, instruction)
+
+
+# Single shared instance - import this everywhere
+reranker = _LazyReranker()
