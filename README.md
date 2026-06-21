@@ -1,3 +1,4 @@
+```markdown
 <div align="center">
 
 # 🤖 Candidate AI Agent
@@ -238,6 +239,22 @@ uv run python scoring_model/run_all.py                               # train all
 
 ---
 
+## 🚢 Deployment
+
+The project ships as a single multi-stage Docker image, making it portable to any container platform (Cloud Run, ECS, Azure Container Apps, or a self-managed Kubernetes cluster).
+
+**Production architecture would look like:**
+
+- **App container** — the Streamlit app, built from the included `Dockerfile`, exposing the UI on port `8501`. Stateless aside from session data, so it can be scaled horizontally behind a load balancer if needed.
+- **LLM backend** — Ollama runs as a separate service rather than inside the app container, either as a sidecar container on the same host (for GPU access) or as a dedicated inference service. This keeps the app container lightweight and lets the GPU-bound component scale independently.
+- **Vector store** — ChromaDB's data directory would be mounted to persistent storage (a volume or cloud disk) rather than the container's ephemeral filesystem, so ingested documents and embeddings survive restarts and redeploys.
+- **Skill scorer checkpoint** — the trained DeBERTa+CORAL model (~700MB) would be pulled from object storage (e.g. S3/GCS) at container startup or baked into a dedicated image layer, rather than committed to the repo.
+- **Configuration** — model endpoints, ports, and any secrets would be injected via environment variables rather than local config files, following standard 12-factor practices.
+
+**CI/CD path:** the existing GitHub Actions pipeline already builds and health-checks the image on every push. Adding a deployment step (e.g. push to a container registry, then trigger a deploy on the target platform) would complete the pipeline from commit to running service.
+
+---
+
 ## 🛠️ Development
 
 ```bash
@@ -259,4 +276,4 @@ A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml
 | **docker** | Builds the Docker image and verifies Streamlit's health endpoint responds |
 
 ---
-  
+```
