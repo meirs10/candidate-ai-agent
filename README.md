@@ -1,4 +1,3 @@
-```markdown
 <div align="center">
 
 # 🤖 Candidate AI Agent
@@ -276,4 +275,3 @@ A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml
 | **docker** | Builds the Docker image and verifies Streamlit's health endpoint responds |
 
 ---
-```
