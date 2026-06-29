@@ -101,7 +101,7 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 840,
+        "summary_length": 768,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
@@ -270,7 +270,7 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 549,
+        "summary_length": 688,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
@@ -426,7 +426,7 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 703,
+        "summary_length": 692,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
@@ -595,11 +595,11 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 632,
+        "summary_length": 699,
         "checklist_items_found": 5,
         "checklist_total": 5,
-        "llm_score": 0.98,
-        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 0.98 /1.0"
+        "llm_score": 1.0,
+        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 1.0 /1.0"
       },
       "embedding_probes": {
         "probes": [
@@ -665,28 +665,28 @@
         "total_chunks": 23,
         "avg_chunk_size": 417.0,
         "min_chunk_size": 48,
-        "max_chunk_size": 975,
+        "max_chunk_size": 976,
         "std_chunk_size": 278.7,
         "empty_or_tiny_chunks": 0
       },
       "doc_type_breakdown": {
         "cv": {
           "chunk_count": 15,
-          "avg_size": 374.8,
+          "avg_size": 374.9,
           "min_size": 48,
-          "max_size": 950
+          "max_size": 951
         },
         "readme": {
           "chunk_count": 5,
-          "avg_size": 412.4,
+          "avg_size": 412.2,
           "min_size": 149,
-          "max_size": 915
+          "max_size": 913
         },
         "recommendation": {
           "chunk_count": 3,
-          "avg_size": 635.3,
+          "avg_size": 635.7,
           "min_size": 131,
-          "max_size": 975
+          "max_size": 976
         }
       },
       "section_coverage": {
@@ -750,7 +750,7 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 809,
+        "summary_length": 830,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
@@ -766,7 +766,7 @@
           {
             "term": "Noa",
             "found_in_top1": true,
-            "top1_preview": "Section: To Whom It May Concem,\nAtironSource, Noa redesigned the SDK integration experience, reducin"
+            "top1_preview": "Section: To Whom It May Concem,\n1am delighted to recommend Noa Friedman, who has been an exceptional"
           },
           {
             "term": "SDK",
@@ -801,12 +801,12 @@
           {
             "term": "Collaborated",
             "found_in_top1": false,
-            "top1_preview": "Section: #Work Experience\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n##Product Manager — itronSource (acquired by Unity) S"
+            "top1_preview": "Section: #Work Experience\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n##Product Manager — ironSource (acquired by Unity) Se"
           },
           {
             "term": "Work Experience",
             "found_in_top1": true,
-            "top1_preview": "Section: #Work Experience\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n##Product Manager — itronSource (acquired by Unity) S"
+            "top1_preview": "Section: #Work Experience\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n-\n\n##Product Manager — ironSource (acquired by Unity) Se"
           }
         ],
         "hit_rate": 0.7
@@ -905,11 +905,11 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 697,
+        "summary_length": 809,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
-        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 1.0 / 1.0"
+        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 1.0 /1.0"
       },
       "embedding_probes": {
         "probes": [
@@ -965,6 +965,137 @@
           }
         ],
         "hit_rate": 0.8
+      }
+    }
+  },
+  "eval_project": {
+    "name": "Project Knowledge Base",
+    "report": {
+      "chunk_stats": {
+        "total_chunks": 37,
+        "avg_chunk_size": 733.2,
+        "min_chunk_size": 326,
+        "max_chunk_size": 1037,
+        "std_chunk_size": 173.7,
+        "empty_or_tiny_chunks": 0
+      },
+      "doc_type_breakdown": {
+        "project": {
+          "chunk_count": 37,
+          "avg_size": 733.2,
+          "min_size": 326,
+          "max_size": 1037
+        }
+      },
+      "section_coverage": {
+        "expected": [
+          "architecture",
+          "deployment",
+          "evaluation",
+          "ingestion",
+          "providers",
+          "rag",
+          "retrieval",
+          "skill",
+          "stack",
+          "tools"
+        ],
+        "found": [
+          "AGENTIC TOOL CALLING — THE ReAct LOOP",
+          "CANDIDATE AI AGENT — COMPLETE PROJECT OVERVIEW",
+          "CONFIGURATION SYSTEM",
+          "DEPLOYMENT AND SECURITY",
+          "DESIGN PRINCIPLES AND WHAT MAKES IT NOTABLE",
+          "GPU MEMORY MANAGEMENT DURING SCORING",
+          "NEUTRAL LLM CLIENT",
+          "PLUGGABLE PROVIDERS",
+          "SKILL PROFICIENCY ESTIMATION — THE FLAGSHIP FEATURE",
+          "STRUCTURED STORE AND VECTOR STORE",
+          "SYNTHETIC TRAINING DATA GENERATION",
+          "TECHNOLOGY STACK",
+          "THE CORE DESIGN DECISION: BUILD VS SERVE",
+          "THE EVALUATION DATA",
+          "THE EVALUATION SUITE",
+          "THE FOUR TOOLS",
+          "THE RAG PIPELINE — INGESTION",
+          "THE RAG PIPELINE — RETRIEVAL",
+          "THE TWO USER FLOWS AND PAGES",
+          "WHAT THE PROJECT IS"
+        ],
+        "missing": [
+          "architecture"
+        ],
+        "extra": [],
+        "coverage_pct": 90.0,
+        "has_section_metadata": true
+      },
+      "duplicate_check": {
+        "exact_duplicates": 0,
+        "near_duplicates_sampled": 0,
+        "total_unique": 37
+      },
+      "summary_quality": {
+        "summary_exists": true,
+        "summary_length": 976,
+        "checklist_items_found": 5,
+        "checklist_total": 5,
+        "llm_score": 0.95,
+        "raw_evaluation": "what the project is: YES  \nthe architecture (agentic + RAG): YES  \nthe trained skill-proficiency scorer: YES  \nthe technology stack: YES  \nhow it is evaluated or deployed: YES  \nSCORE: 0.95 / 1.0"
+      },
+      "embedding_probes": {
+        "probes": [
+          {
+            "term": "API",
+            "found_in_top1": true,
+            "top1_preview": "Section: DEPLOYMENT AND SECURITY\nSeveral security properties are enforced by design. In production o"
+          },
+          {
+            "term": "LLM",
+            "found_in_top1": true,
+            "top1_preview": "Section: NEUTRAL LLM CLIENT\nEvery LLM interaction in the project — the agent loop, the broad/specifi"
+          },
+          {
+            "term": "Streamlit",
+            "found_in_top1": true,
+            "top1_preview": "Section: TECHNOLOGY STACK\nFrontend and app framework: Streamlit, multi-page. LLM and orchestration: "
+          },
+          {
+            "term": "RAG",
+            "found_in_top1": true,
+            "top1_preview": "Section: THE FOUR TOOLS\nsearch_documents runs the full RAG pipeline over the candidate's unstructure"
+          },
+          {
+            "term": "THE RAG PIPELINE",
+            "found_in_top1": true,
+            "top1_preview": "Section: THE FOUR TOOLS\nsearch_documents runs the full RAG pipeline over the candidate's unstructure"
+          },
+          {
+            "term": "ChromaDB",
+            "found_in_top1": true,
+            "top1_preview": "Section: STRUCTURED STORE AND VECTOR STORE\nThe structured store is a small JSON file holding the ver"
+          },
+          {
+            "term": "JSON",
+            "found_in_top1": true,
+            "top1_preview": "Section: STRUCTURED STORE AND VECTOR STORE\nThe structured store is a small JSON file holding the ver"
+          },
+          {
+            "term": "Ollama",
+            "found_in_top1": true,
+            "top1_preview": "Section: GPU MEMORY MANAGEMENT DURING SCORING\nWhen the local stack is used, the DeBERTa scorer and t"
+          },
+          {
+            "term": "DeBERTa",
+            "found_in_top1": true,
+            "top1_preview": "Section: SKILL PROFICIENCY ESTIMATION — THE FLAGSHIP FEATURE\nThe scorer itself is a fine-tuned DeBER"
+          },
+          {
+            "term": "Because",
+            "found_in_top1": true,
+            "top1_preview": "Section: THE RAG PIPELINE — RETRIEVAL\nA deliberate design touch: the pipeline exposes the fused cand"
+          }
+        ],
+        "hit_rate": 1.0
       }
     }
   }

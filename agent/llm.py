@@ -72,7 +72,7 @@ class LLMClient:
             if system:
                 messages.append({"role": "system", "content": system})
             messages.append({"role": "user", "content": prompt})
-            resp = ollama.chat(model=config.OLLAMA_MODEL, messages=messages)
+            resp = ollama.chat(model=config.OLLAMA_MODEL, messages=messages, options={"num_predict": 4096})
             return _THINK_RE.sub("", resp["message"]["content"]).strip()
 
         # Anthropic
