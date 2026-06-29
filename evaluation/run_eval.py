@@ -26,6 +26,12 @@ CATEGORY_FILTER = None
 # Report output format: "html", "json", or "csv"
 REPORT_FORMAT = "html"
 
+# If True, run NO evaluation — just rebuild the HTML report from the report files
+# a prior run left in reports/ (pipeline_results.json + the per-component
+# *_scores.csv + ingestion_report.json). Zero recompute: no pipeline run, no LLM
+# judges. Equivalent to the standalone `python -m evaluation.regenerate_report`.
+REGENERATE_HTML_ONLY = False
+
 # If True, only run the RAG pipeline (collect answers) without scoring
 DRY_RUN = False
 
@@ -53,6 +59,13 @@ JUDGE_MODEL = "qwen3"
 
 
 if __name__ == "__main__":
+    if REGENERATE_HTML_ONLY:
+        # Rebuild the HTML from saved data only — skip the whole evaluation.
+        from evaluation.regenerate_report import regenerate_html
+        out = regenerate_html()
+        print(f"\n✅ HTML report regenerated from saved data: {out}")
+        raise SystemExit(0)
+
     results = run_evaluation(
         candidates=CANDIDATES,
         components=COMPONENTS,

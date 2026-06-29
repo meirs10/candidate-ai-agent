@@ -16,6 +16,7 @@ CHROMA_PATH = "./chroma_db"
 def run_ingestion_evaluation(
     candidate_id: str,
     judge_model: str = "qwen3",
+    doc_kind: str = "candidate",
 ) -> dict:
     """
     Evaluate the quality of ingested data in ChromaDB.
@@ -23,6 +24,10 @@ def run_ingestion_evaluation(
     Args:
         candidate_id: The collection name to inspect.
         judge_model: Ollama model for LLM-judged summary quality.
+        doc_kind: "candidate" (CV-style sections/summary checklist) or "project"
+            (the project-overview KB — uses project-appropriate expected sections
+            and a project-oriented summary checklist, so the project's ingestion is
+            scored on the right rubric instead of the candidate one).
 
     Returns:
         Dict with keys:
@@ -80,11 +85,6 @@ def run_ingestion_evaluation(
     print(f"[Ingestion Eval] Doc type breakdown: { {k: v['chunk_count'] for k, v in doc_type_breakdown.items()} }")
 
     # ── 2. Section Coverage ──────────────────────────────────────────
-    expected_sections = {
-        "Personal Information", "Summary", "Work Experience", "Education",
-        "Technical Skills", "Projects", "Certifications", "Languages", "Interests",
-    }
-
     found_sections = set()
     for meta in metadatas:
         if meta and "section" in meta:
@@ -92,24 +92,50 @@ def run_ingestion_evaluation(
             section = meta["section"].lstrip("#").strip()
             found_sections.add(section)
 
-    # Case-insensitive matching
-    normalized_expected = {s.lower(): s for s in expected_sections}
-    normalized_found = {s.lower(): s for s in found_sections}
+    if doc_kind == "project":
+        # The project overview's headers are free-form topic titles, so match by
+        # distinctive concept keyword appearing anywhere in the found section names
+        # (robust to header-detection quirks) rather than exact section equality.
+        expected_concepts = [
+            "architecture", "tools", "rag", "retrieval", "ingestion",
+            "skill", "evaluation", "providers", "deployment", "stack",
+        ]
+        found_blob = " ".join(found_sections).lower()
+        matched_concepts = [c for c in expected_concepts if c in found_blob]
+        report["section_coverage"] = {
+            "expected": sorted(expected_concepts),
+            "found": sorted(found_sections),
+            "missing": sorted(c for c in expected_concepts if c not in matched_concepts),
+            "extra": [],
+            "coverage_pct": round(
+                len(matched_concepts) / len(expected_concepts) * 100, 1
+            ) if expected_concepts else 0,
+            "has_section_metadata": len(found_sections) > 0,
+        }
+    else:
+        expected_sections = {
+            "Personal Information", "Summary", "Work Experience", "Education",
+            "Technical Skills", "Projects", "Certifications", "Languages", "Interests",
+        }
 
-    matched = set(normalized_expected.keys()) & set(normalized_found.keys())
-    missing_sections = {normalized_expected[k] for k in set(normalized_expected.keys()) - matched}
-    extra_sections = {normalized_found[k] for k in set(normalized_found.keys()) - set(normalized_expected.keys())}
+        # Case-insensitive matching
+        normalized_expected = {s.lower(): s for s in expected_sections}
+        normalized_found = {s.lower(): s for s in found_sections}
 
-    report["section_coverage"] = {
-        "expected": sorted(expected_sections),
-        "found": sorted(found_sections),
-        "missing": sorted(missing_sections),
-        "extra": sorted(extra_sections),
-        "coverage_pct": round(
-            len(matched) / len(expected_sections) * 100, 1
-        ) if expected_sections else 0,
-        "has_section_metadata": len(found_sections) > 0,
-    }
+        matched = set(normalized_expected.keys()) & set(normalized_found.keys())
+        missing_sections = {normalized_expected[k] for k in set(normalized_expected.keys()) - matched}
+        extra_sections = {normalized_found[k] for k in set(normalized_found.keys()) - set(normalized_expected.keys())}
+
+        report["section_coverage"] = {
+            "expected": sorted(expected_sections),
+            "found": sorted(found_sections),
+            "missing": sorted(missing_sections),
+            "extra": sorted(extra_sections),
+            "coverage_pct": round(
+                len(matched) / len(expected_sections) * 100, 1
+            ) if expected_sections else 0,
+            "has_section_metadata": len(found_sections) > 0,
+        }
     print(f"[Ingestion Eval] Section coverage: {report['section_coverage']['coverage_pct']}%")
 
     # ── 3. Duplicate Check ───────────────────────────────────────────
@@ -150,25 +176,45 @@ def run_ingestion_evaluation(
 
     if summaries:
         summary_text = summaries[0]
-        checklist = [
-            "candidate name", "current role/job title", "key technical skills",
-            "education/degree", "years of experience",
-        ]
-        prompt = (
-            f"You are evaluating the quality of a candidate profile summary.\n\n"
-            f"Summary:\n{summary_text}\n\n"
-            f"Check if the summary mentions each of these key facts:\n"
-            + "\n".join(f"  - {item}" for item in checklist)
-            + "\n\nFor each item, respond with YES or NO. "
-            f"Then give an overall quality score from 0.0 to 1.0.\n\n"
-            f"Format your response EXACTLY as:\n"
-            f"candidate name: YES/NO\n"
-            f"current role/job title: YES/NO\n"
-            f"key technical skills: YES/NO\n"
-            f"education/degree: YES/NO\n"
-            f"years of experience: YES/NO\n"
-            f"SCORE: 0.X"
-        )
+        if doc_kind == "project":
+            checklist = [
+                "what the project is", "the architecture (agentic + RAG)",
+                "the trained skill-proficiency scorer", "the technology stack",
+                "how it is evaluated or deployed",
+            ]
+            checklist_lines = "\n".join(f"{item}: YES/NO" for item in checklist)
+            prompt = (
+                f"You are evaluating the quality of a software project summary "
+                f"written for a recruiter.\n\n"
+                f"Summary:\n{summary_text}\n\n"
+                f"Check if the summary mentions each of these key facts:\n"
+                + "\n".join(f"  - {item}" for item in checklist)
+                + "\n\nFor each item, respond with YES or NO. "
+                f"Then give an overall quality score from 0.0 to 1.0.\n\n"
+                f"Format your response EXACTLY as:\n"
+                f"{checklist_lines}\n"
+                f"SCORE: 0.X"
+            )
+        else:
+            checklist = [
+                "candidate name", "current role/job title", "key technical skills",
+                "education/degree", "years of experience",
+            ]
+            prompt = (
+                f"You are evaluating the quality of a candidate profile summary.\n\n"
+                f"Summary:\n{summary_text}\n\n"
+                f"Check if the summary mentions each of these key facts:\n"
+                + "\n".join(f"  - {item}" for item in checklist)
+                + "\n\nFor each item, respond with YES or NO. "
+                f"Then give an overall quality score from 0.0 to 1.0.\n\n"
+                f"Format your response EXACTLY as:\n"
+                f"candidate name: YES/NO\n"
+                f"current role/job title: YES/NO\n"
+                f"key technical skills: YES/NO\n"
+                f"education/degree: YES/NO\n"
+                f"years of experience: YES/NO\n"
+                f"SCORE: 0.X"
+            )
         response = ollama.chat(
             model=judge_model,
             messages=[{"role": "user", "content": prompt}],

@@ -155,7 +155,7 @@
   {
     "id": "p018",
     "question": "How many synthetic candidates are used for evaluation and how many questions does each have?",
-    "ground_truth": "Six synthetic candidates with varied document formats, each with a golden dataset of 75 questions.",
+    "ground_truth": "Six synthetic candidates with varied document formats, each with a golden dataset of about 75 questions, plus a separate project-knowledge dataset.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",
@@ -174,6 +174,186 @@
     "id": "p020",
     "question": "Does the project use prompt caching?",
     "ground_truth": "Yes. Prompt caching is applied to the frozen system prompt and the tool definitions to reduce the cost of the Claude API calls.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p021",
+    "question": "How do you decide which tool to call?",
+    "ground_truth": "An LLM agent reasons about each question in a ReAct-style loop and picks among four tools — get_structured_data for verified facts, get_skill_proficiency for the trained 1-5 skill level, search_documents for RAG over the candidate's documents, and search_project for questions about the system itself. It routes by subject and can chain tools, for example falling back to document search if a skill was not assessed.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p022",
+    "question": "What model powers you?",
+    "ground_truth": "By default Claude via the Anthropic API powers the agent loop, the broad/specific router, and query expansion; alternatively a local Ollama model can be used. The choice is configurable through a single provider-neutral LLM client.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p023",
+    "question": "What reranker do you use?",
+    "ground_truth": "A cross-encoder reranker — the Voyage rerank API by default, or a local Qwen3-Reranker scored by the probability of the 'yes' token over a query/document relevance prompt, with a 'none' option that skips reranking.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p024",
+    "question": "How do you retrieve information from the candidate's documents?",
+    "ground_truth": "Through a multi-stage RAG pipeline: an LLM router labels the query broad or specific; specific queries are expanded into keyword and natural-language variants; both dense vector search over ChromaDB and BM25 keyword search run and are merged with Reciprocal Rank Fusion; then a cross-encoder reranker keeps the best top-k chunks as context.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "hard"
+  },
+  {
+    "id": "p025",
+    "question": "How were you built?",
+    "ground_truth": "As a multi-page Streamlit app with an agentic ReAct tool-calling loop over four tools, an advanced hybrid RAG pipeline, and a fine-tuned DeBERTa-v3 skill scorer. It has a local build phase (ingestion, embedding, skill scoring) and an always-on serve phase that only does retrieval and LLM calls, with pluggable local or cloud providers.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "broad",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p026",
+    "question": "How do you figure out how good a candidate is at a skill?",
+    "ground_truth": "A trained DeBERTa-v3 model with a CORAL ordinal head scores each skill from 1 to 5 from the evidence chunks retrieved from the candidate's own documents. The level and its evidence are computed at setup time and saved, so I return a verified, model-grounded level rather than guessing from keywords.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p027",
+    "question": "What embedding model do you use?",
+    "ground_truth": "Voyage AI embeddings by default, or a local nomic-embed-text model via sentence-transformers. Both embed documents and queries asymmetrically, so switching the embedding provider requires rebuilding the vector index.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p028",
+    "question": "Can you run entirely on free, local models without any paid APIs?",
+    "ground_truth": "Yes. Every layer is pluggable: the LLM can be a local Ollama model, embeddings can be local nomic-embed, and the reranker can be a local Qwen3-Reranker — so the whole system can run on a 100% local open-source stack, or on an all-API cloud stack, purely by configuration.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p029",
+    "question": "How do you avoid making things up?",
+    "ground_truth": "I answer only from grounded evidence — verified structured fields, the trained skill scorer, or retrieved document chunks — and the system prompt instructs me never to guess. If the information is not found I say so rather than inventing it, and RAGAS faithfulness is evaluated to check that answers stay grounded.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p030",
+    "question": "What do you do when a recruiter asks something out of scope or that you don't know?",
+    "ground_truth": "I refuse rather than guess: out-of-scope or inappropriate questions get a refusal while legitimate questions are answered. Refusal accuracy is evaluated with a confusion matrix to ensure the right questions are refused and legitimate ones are not over-refused.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p031",
+    "question": "How were you evaluated?",
+    "ground_truth": "With a component-based harness scoring tool selection, RAG quality (RAGAS), answer correctness (DeepEval GEval), refusal accuracy, router accuracy, per-gate retrieval failure localization, and ingestion quality, run over six synthetic candidates plus a project-knowledge dataset, producing an HTML report with JSON and CSV companions.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "hard"
+  },
+  {
+    "id": "p032",
+    "question": "Where do you store your knowledge?",
+    "ground_truth": "Unstructured knowledge lives in ChromaDB, a persistent on-disk vector index with a separate collection per candidate and a separate collection for this project overview; verified facts and precomputed skill scores live in a small JSON structured store.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p033",
+    "question": "How many tools do you have and what are they?",
+    "ground_truth": "Four: get_structured_data for verified facts, get_skill_proficiency for the trained 1-5 skill level, search_documents for RAG over the candidate's documents, and search_project for RAG over the project's own documentation.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "easy"
+  },
+  {
+    "id": "p034",
+    "question": "Do you remember the conversation across questions?",
+    "ground_truth": "Yes — the recruiter chat keeps conversation history across turns so follow-up questions work, but only the final assistant text of each turn is persisted; the intermediate tool-call and tool-result plumbing is kept in a per-turn working copy.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p035",
+    "question": "How do you keep the candidate's private data secure?",
+    "ground_truth": "Access is gated by a single shared access code over HTTPS; in production only the recruiter chat is served and the setup page is hidden so the profile cannot be edited or re-ingested; the candidate's private data is kept out of public repositories; and API keys live only in environment variables or secrets, never committed.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p036",
+    "question": "How are you deployed and how much does it cost to run?",
+    "ground_truth": "The recruiter chat deploys to a Streamlit host such as Streamlit Community Cloud or Hugging Face Spaces over HTTPS. Only the lean, torch-free serve path is deployed, so it fits free or low-cost hosting; the all-API serve path typically costs only a few dollars a month, while the heavy build-time work runs locally and adds nothing to hosting.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p037",
+    "question": "What language do you answer in?",
+    "ground_truth": "I always answer in the same language the recruiter used, as instructed by the system prompt.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "easy"
+  },
+  {
+    "id": "p038",
+    "question": "What's the difference between how you answer a 'how good is she at Python' question and a 'how does the project work' question?",
+    "ground_truth": "A proficiency question routes to get_skill_proficiency, which returns the candidate's trained 1-5 level with its evidence; a question about how the system itself works routes to search_project, which runs RAG over this project documentation. They use different tools and different data sources.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "hard"
+  },
+  {
+    "id": "p039",
+    "question": "How do you expand a search query before retrieving?",
+    "ground_truth": "For specific queries an LLM generates several query variations — a mix of short keyword-style queries that favor BM25 and natural-language queries that favor vector search — to maximize recall across both retrieval methods.",
+    "category": "project",
+    "expected_source": "project",
+    "expected_route": "specific",
+    "difficulty": "medium"
+  },
+  {
+    "id": "p040",
+    "question": "Why might you say a skill wasn't assessed?",
+    "ground_truth": "get_skill_proficiency only has levels for the skills the candidate listed and that were scored at setup time; if a recruiter asks about a skill outside that set, the tool reports it was not assessed and I fall back to searching the documents for evidence.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",

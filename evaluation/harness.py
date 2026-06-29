@@ -455,7 +455,10 @@ def _run_ingestion(candidates_info: list[dict], judge_model: str) -> dict | None
         print(f"[Harness] Ingestion eval for {cand['name']} ({cand['eval_id']})")
         reports[cand["eval_id"]] = {
             "name": cand["name"],
-            "report": run_ingestion_evaluation(cand["eval_id"], judge_model=judge_model),
+            "report": run_ingestion_evaluation(
+                cand["eval_id"], judge_model=judge_model,
+                doc_kind=cand.get("doc_kind", "candidate"),
+            ),
         }
 
     ingestion_path = REPORTS_DIR / "ingestion_report.json"
@@ -554,6 +557,7 @@ def run_evaluation(
                     "doc_files": [],
                     "doc_count": 0,
                     "question_count": 0,
+                    "doc_kind": "project" if eid == EVAL_PROJECT_ID else "candidate",
                 }
             seen[eid]["question_count"] += 1
         candidates_info = list(seen.values())
@@ -661,6 +665,20 @@ def run_evaluation(
             if project_results:
                 all_pipeline_results.extend(project_results)
                 eval_candidate_ids.append(EVAL_PROJECT_ID)
+                # Include the project KB in the ingestion report alongside the
+                # candidates. doc_kind="project" switches the ingestion evaluator to
+                # the project rubric (concept-based sections + project summary
+                # checklist). The eval_project collection is still on disk at this
+                # point (cleanup happens in the final block), so ingestion can read it.
+                candidates_info.append({
+                    "idx": 10_000,  # sort last, after the numbered candidates
+                    "eval_id": EVAL_PROJECT_ID,
+                    "name": PROJECT_NAME,
+                    "doc_count": 1,
+                    "question_count": len(project_results),
+                    "doc_files": [(str(PROJECT_DOC), "project")],
+                    "doc_kind": "project",
+                })
                 print(f"[Harness] ✓ Project KB: {len(project_results)} results collected")
 
         pipeline_elapsed = time.time() - start_time

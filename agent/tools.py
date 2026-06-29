@@ -103,14 +103,30 @@ TOOL_SCHEMAS = [
     {
         "name": "search_project",
         "description": (
-            "Search documentation about THIS software project / system itself — "
-            "how the app was built, its architecture, technology stack, RAG "
-            "pipeline, the skill-proficiency model, the evaluation suite, "
-            "deployment, and design decisions. Use this ONLY for questions about "
-            "the project/system/app/tool itself (e.g. 'How does the RAG pipeline "
-            "work?', 'What reranker does this project use?', 'How is skill "
-            "proficiency estimated?', 'What is this system?'), NOT for questions "
-            "about the candidate or their experience — those use search_documents."
+            "Search documentation about THIS software project / system itself AND "
+            "about how YOU, the AI agent, work. Covers: the architecture, "
+            "technology stack, the RAG pipeline (routing, query expansion, hybrid "
+            "BM25 + vector fusion, RRF, reranking), the trained skill-proficiency "
+            "model, the evaluation suite, deployment, security, and design "
+            "decisions.\n"
+            "USE THIS for two kinds of questions:\n"
+            "  (1) Questions about the project/system/app/tool itself — e.g. 'How "
+            "does the RAG pipeline work?', 'What reranker does this project use?', "
+            "'How is skill proficiency estimated?', 'What is this system?'.\n"
+            "  (2) SECOND-PERSON questions addressed to you, the agent, about how "
+            "you operate or were built — e.g. 'How do you work?', 'How were you "
+            "built?', 'What model are you / powers you?', 'What reranker/embedder "
+            "do you use?', 'How do you decide which tool to call?', 'How do you "
+            "retrieve documents?', 'How do you score skills?', 'How were you "
+            "evaluated?'. Here 'you' means the agent/system, so the answer comes "
+            "from this tool.\n"
+            "Do NOT use this for questions about the CANDIDATE's own professional "
+            "profile, even when phrased with 'you/your' — 'your name', 'your "
+            "skills', 'your experience', 'what did you build/do' refer to the "
+            "candidate and use get_structured_data, get_skill_proficiency, or "
+            "search_documents. The rule: questions about how the agent/system "
+            "*operates or is engineered* → search_project; questions about the "
+            "*person being represented* → the candidate tools."
         ),
         "parameters": {
             "type": "object",
