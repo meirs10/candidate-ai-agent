@@ -101,7 +101,7 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 768,
+        "summary_length": 893,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
@@ -270,7 +270,7 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 688,
+        "summary_length": 723,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
@@ -426,7 +426,7 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 692,
+        "summary_length": 702,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
@@ -595,7 +595,7 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 699,
+        "summary_length": 726,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
@@ -750,7 +750,7 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 830,
+        "summary_length": 822,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 1.0,
@@ -905,11 +905,11 @@
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 809,
+        "summary_length": 864,
         "checklist_items_found": 5,
         "checklist_total": 5,
-        "llm_score": 1.0,
-        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 1.0 /1.0"
+        "llm_score": 0.95,
+        "raw_evaluation": "candidate name: YES  \ncurrent role/job title: YES  \nkey technical skills: YES  \neducation/degree: YES  \nyears of experience: YES  \nSCORE: 0.95 / 1.0"
       },
       "embedding_probes": {
         "probes": [
@@ -972,17 +972,17 @@
     "name": "Project Knowledge Base",
     "report": {
       "chunk_stats": {
-        "total_chunks": 37,
-        "avg_chunk_size": 733.2,
+        "total_chunks": 38,
+        "avg_chunk_size": 736.4,
         "min_chunk_size": 326,
         "max_chunk_size": 1037,
-        "std_chunk_size": 173.7,
+        "std_chunk_size": 185.8,
         "empty_or_tiny_chunks": 0
       },
       "doc_type_breakdown": {
         "project": {
-          "chunk_count": 37,
-          "avg_size": 733.2,
+          "chunk_count": 38,
+          "avg_size": 736.4,
           "min_size": 326,
           "max_size": 1037
         }
@@ -1032,11 +1032,11 @@
       "duplicate_check": {
         "exact_duplicates": 0,
         "near_duplicates_sampled": 0,
-        "total_unique": 37
+        "total_unique": 38
       },
       "summary_quality": {
         "summary_exists": true,
-        "summary_length": 976,
+        "summary_length": 1173,
         "checklist_items_found": 5,
         "checklist_total": 5,
         "llm_score": 0.95,
@@ -1062,12 +1062,12 @@
           {
             "term": "RAG",
             "found_in_top1": true,
-            "top1_preview": "Section: THE FOUR TOOLS\nsearch_documents runs the full RAG pipeline over the candidate's unstructure"
+            "top1_preview": "Section: THE RAG PIPELINE — INGESTION\nAlongside the per-chunk index, a separate summary index is bui"
           },
           {
             "term": "THE RAG PIPELINE",
             "found_in_top1": true,
-            "top1_preview": "Section: THE FOUR TOOLS\nsearch_documents runs the full RAG pipeline over the candidate's unstructure"
+            "top1_preview": "Section: THE RAG PIPELINE — INGESTION\nAlongside the per-chunk index, a separate summary index is bui"
           },
           {
             "term": "ChromaDB",
@@ -1077,7 +1077,7 @@
           {
             "term": "JSON",
             "found_in_top1": true,
-            "top1_preview": "Section: STRUCTURED STORE AND VECTOR STORE\nThe structured store is a small JSON file holding the ver"
+            "top1_preview": "Section: THE FOUR TOOLS\nget_structured_data returns fixed, guaranteed-accurate facts from the struct"
           },
           {
             "term": "Ollama",

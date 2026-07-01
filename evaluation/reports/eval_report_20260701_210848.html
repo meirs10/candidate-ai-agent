@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Evaluation Insight Report</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0f172a; color: #e2e8f0;
+    padding: 2rem; line-height: 1.6;
+  }
+  h1 { color: #f8fafc; margin-bottom: 0.5rem; font-size: 1.8rem; }
+  h2 { color: #94a3b8; margin: 2rem 0 1rem; font-size: 1.3rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
+  h3 { color: #94a3b8; }
+  .meta { color: #64748b; margin-bottom: 2rem; font-size: 0.9rem; }
+  .metrics-grid {
+    display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0;
+  }
+  .metric-card {
+    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+    padding: 1.2rem 1.5rem; min-width: 140px; text-align: center;
+  }
+  .metric-score { font-size: 1.6rem; font-weight: 700; }
+  .metric-label { font-size: 0.75rem; color: #94a3b8; margin-top: 0.3rem; }
+  table {
+    width: 100%; border-collapse: collapse; margin: 1rem 0;
+    background: #1e293b; border-radius: 8px; overflow: hidden;
+  }
+  th { background: #334155; color: #e2e8f0; padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; }
+  td { padding: 0.6rem 1rem; border-bottom: 1px solid #334155; font-size: 0.85rem; }
+  tr:hover { background: #33415555; }
+  .summary-stat { display: inline-block; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 0.8rem 1.2rem; margin: 0.3rem; }
+  .summary-stat strong { color: #38bdf8; }
+  .component-section { margin: 2rem 0; padding: 1.5rem; background: #1e293b22; border-radius: 12px; border: 1px solid #334155; }
+</style>
+</head>
+<body>
+
+<h1>Evaluation Insight Report</h1>
+<div class="meta">Generated: 2026-07-01 21:08:48 | Questions: 490 | Candidates: Dana Levy, Maya Chen, Noa Friedman, Ofir Ohan, Project Knowledge Base, Tal Ben-David, Yoni Abergel<br>
+Per-question detail is in the JSON/CSV reports and the per-component CSVs.</div>
+
+<h2>Overview</h2>
+<div class="metrics-grid">
+  
+    <div class="metric-card">
+      <div class="metric-score" style="color:#38bdf8">7</div>
+      <div class="metric-label">Candidates</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#38bdf8">490</div>
+      <div class="metric-label">Total Questions</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#38bdf8">6.33s</div>
+      <div class="metric-label">Avg Latency</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">88.4%</div>
+      <div class="metric-label">Tool Accuracy</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">0.893</div>
+      <div class="metric-label">RAG: Faithfulness</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">0.836</div>
+      <div class="metric-label">RAG: Answer Relevancy</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#eab308">0.770</div>
+      <div class="metric-label">RAG: Llm Context Precision With Reference</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#eab308">0.777</div>
+      <div class="metric-label">RAG: Context Recall</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#eab308">0.769</div>
+      <div class="metric-label">Answer Correctness</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">84.2%</div>
+      <div class="metric-label">Retrieval Reaches Answer</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">98.6%</div>
+      <div class="metric-label">Refusal Accuracy</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">83.1%</div>
+      <div class="metric-label">Router Accuracy</div>
+    </div>
+</div>
+
+<div class="component-section">
+<h2>Scores by Regime</h2>
+
+    <p style="color:#94a3b8;margin:0.5rem 0 1rem">Each cell is the mean score over the <em>applicable</em> questions in that group (— = metric does not apply to any question there). <strong>Tool</strong> = tool-selection accuracy · <strong>Answer</strong> = GEval answer correctness · <strong>Router</strong> = broad/specific routing accuracy · <strong>Refusal</strong> = refusal confusion accuracy · <strong>Retrieval</strong> = share of specific-doc questions whose evidence reached the final context · RAGAS metrics are over RAG-routed questions.</p>
+    <h3 style="color:#cbd5e1;margin-top:1.5rem">By Difficulty</h3>
+    
+    <table>
+      <thead><tr><th>Difficulty</th><th>N</th><th>Tool</th><th>Answer</th><th>Router</th><th>Refusal</th><th>Retrieval</th><th>Faithfulness</th><th>Answer Relevancy</th><th>Llm Context Precision With Reference</th><th>Context Recall</th><th>Latency</th></tr></thead>
+      <tbody><tr><td>easy</td><td>210</td><td style="color:#22c55e;font-weight:600">94%</td><td style="color:#22c55e;font-weight:600">81%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">99%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">80%</td><td style="color:#eab308;font-weight:600">79%</td><td>3.46s</td></tr><tr><td>medium</td><td>225</td><td style="color:#22c55e;font-weight:600">92%</td><td style="color:#eab308;font-weight:600">75%</td><td style="color:#22c55e;font-weight:600">82%</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#22c55e;font-weight:600">84%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">82%</td><td style="color:#eab308;font-weight:600">76%</td><td style="color:#eab308;font-weight:600">76%</td><td>8.66s</td></tr><tr><td>hard</td><td>55</td><td style="color:#eab308;font-weight:600">55%</td><td style="color:#eab308;font-weight:600">69%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">82%</td><td style="color:#22c55e;font-weight:600">92%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#22c55e;font-weight:600">80%</td><td style="color:#22c55e;font-weight:600">87%</td><td>7.77s</td></tr><tr style="font-weight:700;background:#0f172a"><td>All</td><td>490</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#eab308;font-weight:600">77%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">99%</td><td style="color:#22c55e;font-weight:600">84%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">84%</td><td style="color:#eab308;font-weight:600">77%</td><td style="color:#eab308;font-weight:600">78%</td><td>6.33s</td></tr></tbody>
+    </table>
+    <h3 style="color:#cbd5e1;margin-top:1.5rem">By Question Type</h3>
+    
+    <table>
+      <thead><tr><th>Question Type</th><th>N</th><th>Tool</th><th>Answer</th><th>Router</th><th>Refusal</th><th>Retrieval</th><th>Faithfulness</th><th>Answer Relevancy</th><th>Llm Context Precision With Reference</th><th>Context Recall</th><th>Latency</th></tr></thead>
+      <tbody><tr><td>certifications</td><td>30</td><td style="color:#22c55e;font-weight:600">97%</td><td style="color:#eab308;font-weight:600">69%</td><td style="color:#22c55e;font-weight:600">80%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#eab308;font-weight:600">69%</td><td style="color:#eab308;font-weight:600">71%</td><td>7.70s</td></tr><tr><td>complex</td><td>30</td><td style="color:#ef4444;font-weight:600">20%</td><td style="color:#eab308;font-weight:600">63%</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#eab308;font-weight:600">75%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">81%</td><td style="color:#eab308;font-weight:600">67%</td><td>6.55s</td></tr><tr><td>education</td><td>48</td><td style="color:#eab308;font-weight:600">73%</td><td style="color:#22c55e;font-weight:600">81%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#eab308;font-weight:600">66%</td><td style="color:#eab308;font-weight:600">70%</td><td style="color:#eab308;font-weight:600">68%</td><td>4.48s</td></tr><tr><td>experience</td><td>60</td><td style="color:#22c55e;font-weight:600">97%</td><td style="color:#eab308;font-weight:600">79%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#eab308;font-weight:600">74%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#eab308;font-weight:600">71%</td><td style="color:#eab308;font-weight:600">76%</td><td>6.86s</td></tr><tr><td>negative</td><td>30</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#ef4444;font-weight:600">25%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td>1.30s</td></tr><tr><td>personal</td><td>48</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td>3.67s</td></tr><tr><td>preferences</td><td>48</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">94%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td>2.29s</td></tr><tr><td>proficiency</td><td>24</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#eab308;font-weight:600">71%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#eab308;font-weight:600">80%</td><td style="color:#eab308;font-weight:600">51%</td><td style="color:#22c55e;font-weight:600">93%</td><td style="color:#22c55e;font-weight:600">83%</td><td>5.18s</td></tr><tr><td>project</td><td>40</td><td style="color:#22c55e;font-weight:600">92%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#eab308;font-weight:600">76%</td><td style="color:#22c55e;font-weight:600">85%</td><td style="color:#22c55e;font-weight:600">84%</td><td>8.36s</td></tr><tr><td>projects</td><td>60</td><td style="color:#22c55e;font-weight:600">97%</td><td style="color:#22c55e;font-weight:600">84%</td><td style="color:#22c55e;font-weight:600">80%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#22c55e;font-weight:600">95%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">91%</td><td>10.23s</td></tr><tr><td>skills</td><td>72</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#eab308;font-weight:600">68%</td><td style="color:#22c55e;font-weight:600">82%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#eab308;font-weight:600">79%</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#22c55e;font-weight:600">84%</td><td style="color:#eab308;font-weight:600">73%</td><td style="color:#eab308;font-weight:600">67%</td><td>9.06s</td></tr><tr style="font-weight:700;background:#0f172a"><td>All</td><td>490</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#eab308;font-weight:600">77%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">99%</td><td style="color:#22c55e;font-weight:600">84%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">84%</td><td style="color:#eab308;font-weight:600">77%</td><td style="color:#eab308;font-weight:600">78%</td><td>6.33s</td></tr></tbody>
+    </table>
+    <h3 style="color:#cbd5e1;margin-top:1.5rem">By Candidate</h3>
+    
+    <table>
+      <thead><tr><th>Candidate</th><th>N</th><th>Tool</th><th>Answer</th><th>Router</th><th>Refusal</th><th>Retrieval</th><th>Faithfulness</th><th>Answer Relevancy</th><th>Llm Context Precision With Reference</th><th>Context Recall</th><th>Latency</th></tr></thead>
+      <tbody><tr><td>Dana Levy</td><td>75</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#eab308;font-weight:600">71%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#22c55e;font-weight:600">99%</td><td style="color:#22c55e;font-weight:600">80%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#eab308;font-weight:600">80%</td><td style="color:#eab308;font-weight:600">61%</td><td style="color:#eab308;font-weight:600">55%</td><td>6.31s</td></tr><tr><td>Maya Chen</td><td>75</td><td style="color:#22c55e;font-weight:600">91%</td><td style="color:#eab308;font-weight:600">79%</td><td style="color:#22c55e;font-weight:600">81%</td><td style="color:#22c55e;font-weight:600">99%</td><td style="color:#22c55e;font-weight:600">92%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">85%</td><td style="color:#22c55e;font-weight:600">85%</td><td style="color:#22c55e;font-weight:600">89%</td><td>6.53s</td></tr><tr><td>Noa Friedman</td><td>75</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#eab308;font-weight:600">75%</td><td style="color:#eab308;font-weight:600">79%</td><td style="color:#22c55e;font-weight:600">99%</td><td style="color:#22c55e;font-weight:600">85%</td><td style="color:#22c55e;font-weight:600">93%</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#22c55e;font-weight:600">82%</td><td style="color:#22c55e;font-weight:600">84%</td><td>6.04s</td></tr><tr><td>Ofir Ohan</td><td>75</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#eab308;font-weight:600">80%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">97%</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">85%</td><td style="color:#22c55e;font-weight:600">85%</td><td>5.83s</td></tr><tr><td>Project Knowledge Base</td><td>40</td><td style="color:#22c55e;font-weight:600">92%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#eab308;font-weight:600">76%</td><td style="color:#22c55e;font-weight:600">85%</td><td style="color:#22c55e;font-weight:600">84%</td><td>8.36s</td></tr><tr><td>Tal Ben-David</td><td>75</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#eab308;font-weight:600">69%</td><td style="color:#eab308;font-weight:600">76%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#eab308;font-weight:600">79%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">85%</td><td style="color:#eab308;font-weight:600">61%</td><td style="color:#eab308;font-weight:600">54%</td><td>5.60s</td></tr><tr><td>Yoni Abergel</td><td>75</td><td style="color:#22c55e;font-weight:600">92%</td><td style="color:#22c55e;font-weight:600">82%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">99%</td><td style="color:#22c55e;font-weight:600">81%</td><td style="color:#22c55e;font-weight:600">92%</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#eab308;font-weight:600">78%</td><td style="color:#22c55e;font-weight:600">90%</td><td>6.61s</td></tr><tr style="font-weight:700;background:#0f172a"><td>All</td><td>490</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#eab308;font-weight:600">77%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">99%</td><td style="color:#22c55e;font-weight:600">84%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">84%</td><td style="color:#eab308;font-weight:600">77%</td><td style="color:#eab308;font-weight:600">78%</td><td>6.33s</td></tr></tbody>
+    </table>
+</div>
+
+<div class="component-section">
+<h2>Refusal Accuracy</h2>
+
+    <div class="summary-stat"><strong style="color:#22c55e">98.6%</strong> Accuracy</div>
+    <div class="summary-stat"><strong style="color:#22c55e">87.1%</strong> Precision</div>
+    <div class="summary-stat"><strong style="color:#22c55e">90.0%</strong> Recall</div>
+    <div class="summary-stat"><strong style="color:#22c55e">1</strong> Hallucinations</div>
+    
+    <table style="width:auto;margin:1rem 0">
+      <thead><tr><th></th><th>Refused</th><th>Answered</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Should refuse</strong></td>
+          <td style="color:#22c55e">TP = 27</td>
+          <td style="color:#ef4444">FN = 3</td></tr>
+        <tr><td><strong>Should answer</strong></td>
+          <td style="color:#ef4444">FP = 4</td>
+          <td style="color:#22c55e">TN = 456</td></tr>
+      </tbody>
+    </table>
+</div>
+
+<div class="component-section">
+<h2>Retrieval Gate Localization (Ingestion / Recall / Rerank)</h2>
+
+    <p style="color:#94a3b8;margin-bottom:1rem">Specific-doc questions traced through the retrieval gates —
+    where the ground-truth evidence chunk was first lost
+    (ingestion → not well represented in any chunk; recall → never entered the fused pool;
+    rerank → cut by the cross-encoder).</p>
+    <div class="summary-stat"><strong style="color:#22c55e">176</strong> reached answer (84.2%)</div><div class="summary-stat"><strong style="color:#f97316">9</strong> lost @ recall (4.3%)</div><div class="summary-stat"><strong style="color:#eab308">24</strong> lost @ rerank (11.5%)</div><div class="summary-stat"><strong style="color:#ef4444">0</strong> lost @ ingestion (0.0%)</div>
+    
+        <table style="margin-top:1rem">
+          <thead><tr><th>Candidate</th><th>N</th><th>Reaches Answer</th>
+          <th>Lost @ Recall</th><th>Lost @ Rerank</th><th>Lost @ Ingestion</th></tr></thead>
+          <tbody><tr><td>Dana Levy</td><td>30</td><td style="color:#22c55e;font-weight:600">80%</td><td>2</td><td>4</td><td>0</td></tr><tr><td>Maya Chen</td><td>36</td><td style="color:#22c55e;font-weight:600">92%</td><td>1</td><td>2</td><td>0</td></tr><tr><td>Noa Friedman</td><td>27</td><td style="color:#22c55e;font-weight:600">85%</td><td>1</td><td>3</td><td>0</td></tr><tr><td>Ofir Ohan</td><td>26</td><td style="color:#22c55e;font-weight:600">88%</td><td>1</td><td>2</td><td>0</td></tr><tr><td>Project Knowledge Base</td><td>30</td><td style="color:#22c55e;font-weight:600">83%</td><td>0</td><td>5</td><td>0</td></tr><tr><td>Tal Ben-David</td><td>28</td><td style="color:#eab308;font-weight:600">79%</td><td>0</td><td>6</td><td>0</td></tr><tr><td>Yoni Abergel</td><td>32</td><td style="color:#22c55e;font-weight:600">81%</td><td>4</td><td>2</td><td>0</td></tr></tbody>
+        </table>
+</div>
+
+<div class="component-section">
+<h2>Ingestion Quality</h2>
+
+        <div style="margin:1rem 0;padding:1rem;background:#1e293b;border-radius:8px;border:1px solid #334155">
+          <h3 style="color:#f8fafc;font-size:1.1rem;margin-bottom:0.8rem">Dana Levy</h3>
+          <h4 style="color:#94a3b8;font-size:0.9rem">Chunks</h4>
+          
+        <div class="summary-stat"><strong>27</strong> Chunks</div>
+        <div class="summary-stat"><strong>233.6</strong> Avg Size</div>
+        <div class="summary-stat"><strong>34-1068</strong> Range</div>
+        <div class="summary-stat"><strong>0</strong> Tiny</div>
+        
+            <table style="margin-top:0.5rem">
+              <thead><tr><th>Doc Type</th><th>Chunks</th><th>Avg Size</th><th>Min</th><th>Max</th></tr></thead>
+              <tbody><tr><td>cv</td><td>15</td><td>213.1</td><td>34</td><td>414</td></tr><tr><td>readme</td><td>9</td><td>150.0</td><td>36</td><td>315</td></tr><tr><td>recommendation</td><td>3</td><td>586.3</td><td>53</td><td>1068</td></tr></tbody>
+            </table>
+            
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Sections</h4>
+          <div class="summary-stat"><strong style="color:#eab308">77.8%</strong> Coverage</div><div class="summary-stat">Missing: Technical Skills, Work Experience</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Summaries</h4>
+          
+        <div class="summary-stat"><strong style="color:#22c55e">1.000</strong> Summary</div>
+        <div class="summary-stat"><strong>5/5</strong> Checklist</div>
+        
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Embeddings</h4>
+          <div class="summary-stat"><strong style="color:#22c55e">90%</strong> Embedding Hit Rate</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Duplicates</h4>
+          
+        <div class="summary-stat"><strong>0</strong> Exact Dups</div>
+        <div class="summary-stat"><strong>0</strong> Near Dups</div>
+        
+        </div>
+        
+        <div style="margin:1rem 0;padding:1rem;background:#1e293b;border-radius:8px;border:1px solid #334155">
+          <h3 style="color:#f8fafc;font-size:1.1rem;margin-bottom:0.8rem">Yoni Abergel</h3>
+          <h4 style="color:#94a3b8;font-size:0.9rem">Chunks</h4>
+          
+        <div class="summary-stat"><strong>26</strong> Chunks</div>
+        <div class="summary-stat"><strong>353.5</strong> Avg Size</div>
+        <div class="summary-stat"><strong>28-928</strong> Range</div>
+        <div class="summary-stat"><strong>0</strong> Tiny</div>
+        
+            <table style="margin-top:0.5rem">
+              <thead><tr><th>Doc Type</th><th>Chunks</th><th>Avg Size</th><th>Min</th><th>Max</th></tr></thead>
+              <tbody><tr><td>cv</td><td>14</td><td>389.4</td><td>99</td><td>928</td></tr><tr><td>readme</td><td>10</td><td>208.4</td><td>28</td><td>368</td></tr><tr><td>recommendation</td><td>2</td><td>828.0</td><td>757</td><td>899</td></tr></tbody>
+            </table>
+            
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Sections</h4>
+          <div class="summary-stat"><strong style="color:#eab308">66.7%</strong> Coverage</div><div class="summary-stat">Missing: Education, Projects, Work Experience</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Summaries</h4>
+          
+        <div class="summary-stat"><strong style="color:#22c55e">1.000</strong> Summary</div>
+        <div class="summary-stat"><strong>5/5</strong> Checklist</div>
+        
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Embeddings</h4>
+          <div class="summary-stat"><strong style="color:#22c55e">90%</strong> Embedding Hit Rate</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Duplicates</h4>
+          
+        <div class="summary-stat"><strong>0</strong> Exact Dups</div>
+        <div class="summary-stat"><strong>0</strong> Near Dups</div>
+        
+        </div>
+        
+        <div style="margin:1rem 0;padding:1rem;background:#1e293b;border-radius:8px;border:1px solid #334155">
+          <h3 style="color:#f8fafc;font-size:1.1rem;margin-bottom:0.8rem">Maya Chen</h3>
+          <h4 style="color:#94a3b8;font-size:0.9rem">Chunks</h4>
+          
+        <div class="summary-stat"><strong>25</strong> Chunks</div>
+        <div class="summary-stat"><strong>340.0</strong> Avg Size</div>
+        <div class="summary-stat"><strong>19-1038</strong> Range</div>
+        <div class="summary-stat"><strong>0</strong> Tiny</div>
+        
+            <table style="margin-top:0.5rem">
+              <thead><tr><th>Doc Type</th><th>Chunks</th><th>Avg Size</th><th>Min</th><th>Max</th></tr></thead>
+              <tbody><tr><td>cv</td><td>12</td><td>413.0</td><td>93</td><td>1004</td></tr><tr><td>readme</td><td>10</td><td>195.2</td><td>19</td><td>365</td></tr><tr><td>recommendation</td><td>3</td><td>531.0</td><td>37</td><td>1038</td></tr></tbody>
+            </table>
+            
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Sections</h4>
+          <div class="summary-stat"><strong style="color:#22c55e">100.0%</strong> Coverage</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Summaries</h4>
+          
+        <div class="summary-stat"><strong style="color:#22c55e">1.000</strong> Summary</div>
+        <div class="summary-stat"><strong>5/5</strong> Checklist</div>
+        
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Embeddings</h4>
+          <div class="summary-stat"><strong style="color:#22c55e">80%</strong> Embedding Hit Rate</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Duplicates</h4>
+          
+        <div class="summary-stat"><strong>0</strong> Exact Dups</div>
+        <div class="summary-stat"><strong>0</strong> Near Dups</div>
+        
+        </div>
+        
+        <div style="margin:1rem 0;padding:1rem;background:#1e293b;border-radius:8px;border:1px solid #334155">
+          <h3 style="color:#f8fafc;font-size:1.1rem;margin-bottom:0.8rem">Ofir Ohan</h3>
+          <h4 style="color:#94a3b8;font-size:0.9rem">Chunks</h4>
+          
+        <div class="summary-stat"><strong>28</strong> Chunks</div>
+        <div class="summary-stat"><strong>375.2</strong> Avg Size</div>
+        <div class="summary-stat"><strong>54-998</strong> Range</div>
+        <div class="summary-stat"><strong>0</strong> Tiny</div>
+        
+            <table style="margin-top:0.5rem">
+              <thead><tr><th>Doc Type</th><th>Chunks</th><th>Avg Size</th><th>Min</th><th>Max</th></tr></thead>
+              <tbody><tr><td>cv</td><td>15</td><td>410.1</td><td>77</td><td>998</td></tr><tr><td>readme</td><td>10</td><td>237.7</td><td>54</td><td>420</td></tr><tr><td>recommendation</td><td>3</td><td>659.3</td><td>145</td><td>990</td></tr></tbody>
+            </table>
+            
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Sections</h4>
+          <div class="summary-stat"><strong style="color:#eab308">66.7%</strong> Coverage</div><div class="summary-stat">Missing: Education, Projects, Work Experience</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Summaries</h4>
+          
+        <div class="summary-stat"><strong style="color:#22c55e">1.000</strong> Summary</div>
+        <div class="summary-stat"><strong>5/5</strong> Checklist</div>
+        
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Embeddings</h4>
+          <div class="summary-stat"><strong style="color:#22c55e">90%</strong> Embedding Hit Rate</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Duplicates</h4>
+          
+        <div class="summary-stat"><strong>0</strong> Exact Dups</div>
+        <div class="summary-stat"><strong>0</strong> Near Dups</div>
+        
+        </div>
+        
+        <div style="margin:1rem 0;padding:1rem;background:#1e293b;border-radius:8px;border:1px solid #334155">
+          <h3 style="color:#f8fafc;font-size:1.1rem;margin-bottom:0.8rem">Noa Friedman</h3>
+          <h4 style="color:#94a3b8;font-size:0.9rem">Chunks</h4>
+          
+        <div class="summary-stat"><strong>23</strong> Chunks</div>
+        <div class="summary-stat"><strong>417.0</strong> Avg Size</div>
+        <div class="summary-stat"><strong>48-976</strong> Range</div>
+        <div class="summary-stat"><strong>0</strong> Tiny</div>
+        
+            <table style="margin-top:0.5rem">
+              <thead><tr><th>Doc Type</th><th>Chunks</th><th>Avg Size</th><th>Min</th><th>Max</th></tr></thead>
+              <tbody><tr><td>cv</td><td>15</td><td>374.9</td><td>48</td><td>951</td></tr><tr><td>readme</td><td>5</td><td>412.2</td><td>149</td><td>913</td></tr><tr><td>recommendation</td><td>3</td><td>635.7</td><td>131</td><td>976</td></tr></tbody>
+            </table>
+            
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Sections</h4>
+          <div class="summary-stat"><strong style="color:#eab308">77.8%</strong> Coverage</div><div class="summary-stat">Missing: Projects, Technical Skills</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Summaries</h4>
+          
+        <div class="summary-stat"><strong style="color:#22c55e">1.000</strong> Summary</div>
+        <div class="summary-stat"><strong>5/5</strong> Checklist</div>
+        
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Embeddings</h4>
+          <div class="summary-stat"><strong style="color:#eab308">70%</strong> Embedding Hit Rate</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Duplicates</h4>
+          
+        <div class="summary-stat"><strong>0</strong> Exact Dups</div>
+        <div class="summary-stat"><strong>0</strong> Near Dups</div>
+        
+        </div>
+        
+        <div style="margin:1rem 0;padding:1rem;background:#1e293b;border-radius:8px;border:1px solid #334155">
+          <h3 style="color:#f8fafc;font-size:1.1rem;margin-bottom:0.8rem">Tal Ben-David</h3>
+          <h4 style="color:#94a3b8;font-size:0.9rem">Chunks</h4>
+          
+        <div class="summary-stat"><strong>20</strong> Chunks</div>
+        <div class="summary-stat"><strong>255.8</strong> Avg Size</div>
+        <div class="summary-stat"><strong>34-940</strong> Range</div>
+        <div class="summary-stat"><strong>0</strong> Tiny</div>
+        
+            <table style="margin-top:0.5rem">
+              <thead><tr><th>Doc Type</th><th>Chunks</th><th>Avg Size</th><th>Min</th><th>Max</th></tr></thead>
+              <tbody><tr><td>cv</td><td>10</td><td>209.6</td><td>34</td><td>935</td></tr><tr><td>readme</td><td>8</td><td>203.2</td><td>40</td><td>317</td></tr><tr><td>recommendation</td><td>2</td><td>697.5</td><td>455</td><td>940</td></tr></tbody>
+            </table>
+            
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Sections</h4>
+          <div class="summary-stat"><strong style="color:#eab308">66.7%</strong> Coverage</div><div class="summary-stat">Missing: Projects, Technical Skills, Work Experience</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Summaries</h4>
+          
+        <div class="summary-stat"><strong style="color:#22c55e">0.950</strong> Summary</div>
+        <div class="summary-stat"><strong>5/5</strong> Checklist</div>
+        
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Embeddings</h4>
+          <div class="summary-stat"><strong style="color:#22c55e">80%</strong> Embedding Hit Rate</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Duplicates</h4>
+          
+        <div class="summary-stat"><strong>0</strong> Exact Dups</div>
+        <div class="summary-stat"><strong>0</strong> Near Dups</div>
+        
+        </div>
+        
+        <div style="margin:1rem 0;padding:1rem;background:#1e293b;border-radius:8px;border:1px solid #334155">
+          <h3 style="color:#f8fafc;font-size:1.1rem;margin-bottom:0.8rem">Project Knowledge Base</h3>
+          <h4 style="color:#94a3b8;font-size:0.9rem">Chunks</h4>
+          
+        <div class="summary-stat"><strong>38</strong> Chunks</div>
+        <div class="summary-stat"><strong>736.4</strong> Avg Size</div>
+        <div class="summary-stat"><strong>326-1037</strong> Range</div>
+        <div class="summary-stat"><strong>0</strong> Tiny</div>
+        
+            <table style="margin-top:0.5rem">
+              <thead><tr><th>Doc Type</th><th>Chunks</th><th>Avg Size</th><th>Min</th><th>Max</th></tr></thead>
+              <tbody><tr><td>project</td><td>38</td><td>736.4</td><td>326</td><td>1037</td></tr></tbody>
+            </table>
+            
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Sections</h4>
+          <div class="summary-stat"><strong style="color:#22c55e">90.0%</strong> Coverage</div><div class="summary-stat">Missing: architecture</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Summaries</h4>
+          
+        <div class="summary-stat"><strong style="color:#22c55e">0.950</strong> Summary</div>
+        <div class="summary-stat"><strong>5/5</strong> Checklist</div>
+        
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Embeddings</h4>
+          <div class="summary-stat"><strong style="color:#22c55e">100%</strong> Embedding Hit Rate</div>
+          <h4 style="color:#94a3b8;font-size:0.9rem;margin-top:0.8rem">Duplicates</h4>
+          
+        <div class="summary-stat"><strong>0</strong> Exact Dups</div>
+        <div class="summary-stat"><strong>0</strong> Near Dups</div>
+        
+        </div>
+        
+</div>
+
+</body>
+</html>

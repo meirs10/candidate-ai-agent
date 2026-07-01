@@ -1,246 +1,237 @@
-id,question,expected_route,actual_route,route_correct
-q015,What was the candidate's thesis about?,specific,broad,False
-q016,Did the candidate receive any academic honors?,specific,specific,True
-q020,Where has the candidate worked previously?,specific,specific,True
-q021,What was the candidate's first job?,specific,specific,True
-q022,Describe the candidate's work at Check Point.,specific,specific,True
-q023,Has the candidate held a leadership role?,specific,specific,True
-q024,What industries has the candidate worked in?,specific,specific,True
-q025,What is a key technical achievement the candidate accomplished?,specific,specific,True
-q026,Has the candidate had any teaching experience?,specific,specific,True
-q028,What are the candidate's primary security tools and frameworks?,specific,specific,True
-q029,What cloud platforms does the candidate have experience with?,specific,specific,True
-q030,What databases has the candidate worked with?,specific,broad,False
-q031,Does the candidate have DevSecOps experience?,specific,specific,True
-q033,Does the candidate have experience with penetration testing?,specific,specific,True
-q034,Does the candidate have SIEM experience?,specific,specific,True
-q035,What threat analysis experience does the candidate have?,specific,specific,True
-q036,Does the candidate have identity and access management experience?,specific,specific,True
-q038,What networking skills does the candidate have?,specific,broad,False
-q039,What projects has the candidate worked on?,broad,specific,False
-q040,Tell me about the zero-trust architecture project.,specific,specific,True
-q041,What was the outcome of the threat intelligence project?,specific,specific,True
-q042,What technologies were used in the red team automation project?,specific,specific,True
-q043,What is the candidate's most significant project?,specific,specific,True
-q044,Has the candidate contributed to open-source projects?,specific,specific,True
-q045,What systems has the candidate built?,specific,specific,True
-q046,Does the candidate have red team experience?,specific,specific,True
-q047,Has the candidate worked on any research projects?,specific,specific,True
-q048,What is the scale of systems the candidate has worked with?,specific,specific,True
-q049,What certifications does the candidate have?,specific,broad,False
-q050,Does the candidate have an OSCP certification?,specific,specific,True
-q051,Does the candidate have a CISSP certification?,specific,specific,True
-q052,When did the candidate get their AWS security certification?,specific,specific,True
-q053,Does the candidate have any management certifications?,specific,specific,True
-q072,Would this candidate be a good fit for a remote security role in Europe?,broad,specific,False
-q075,Summarize why I should consider this candidate for a principal security engineer position.,broad,specific,False
-q015,What was the candidate's capstone project about?,specific,specific,True
-q016,Did the candidate receive any academic honors?,specific,specific,True
-q020,Where has the candidate worked previously?,specific,specific,True
-q021,What was the candidate's first job?,specific,specific,True
-q022,Describe the candidate's work at Wix.,specific,specific,True
-q023,Has the candidate held a leadership role?,specific,specific,True
-q025,What is a key technical achievement the candidate accomplished?,specific,specific,True
-q026,Has the candidate had any teaching or mentoring experience?,specific,specific,True
-q029,What cloud platforms does the candidate have experience with?,specific,broad,False
-q030,What databases has the candidate worked with?,specific,specific,True
-q031,Does the candidate have DevOps or infrastructure experience?,specific,specific,True
-q032,Does the candidate know Python?,specific,specific,True
-q034,Does the candidate have CI/CD experience?,specific,specific,True
-q035,What observability experience does the candidate have?,specific,specific,True
-q036,Does the candidate have Infrastructure-as-Code experience?,specific,specific,True
-q037,Does the candidate have experience with service mesh?,specific,specific,True
-q038,What networking and security tools does the candidate know?,specific,specific,True
-q039,What projects has the candidate worked on?,broad,broad,True
-q040,Tell me about the multi-cloud migration project.,specific,specific,True
-q041,What was the outcome of the deployment platform project?,specific,specific,True
-q042,What technologies were used in the autoscaler project?,specific,specific,True
-q043,What is the candidate's most significant project?,specific,specific,True
-q044,Has the candidate contributed to open-source projects?,specific,broad,False
-q045,What systems has the candidate built?,specific,specific,True
-q046,Does the candidate have experience with cost optimization?,specific,specific,True
-q047,Has the candidate worked on any developer productivity projects?,specific,specific,True
-q048,What is the scale of systems the candidate has worked with?,specific,specific,True
-q049,What certifications does the candidate have?,specific,broad,False
-q050,Does the candidate have an AWS certification?,specific,specific,True
-q051,Does the candidate have a Kubernetes certification?,specific,specific,True
-q052,When did the candidate get their Terraform certification?,specific,specific,True
-q053,Does the candidate have any management certifications?,specific,specific,True
-q071,Is this candidate overqualified for a junior DevOps role?,broad,specific,False
-q072,Would this candidate be a good fit for a remote DevOps role in Europe?,broad,broad,True
-q074,What unique combination of skills does this candidate offer?,broad,specific,False
-q075,Summarize why I should consider this candidate for a staff DevOps engineer position.,broad,specific,False
-q015,What was the candidate's capstone project about?,specific,broad,False
-q016,Did the candidate receive any academic honors?,specific,specific,True
-q020,Where has the candidate worked previously?,specific,specific,True
-q021,What was the candidate's first job?,specific,specific,True
-q022,Describe the candidate's work at Wix.,specific,specific,True
-q023,Has the candidate held a leadership role?,specific,specific,True
-q024,What industries has the candidate worked in?,specific,broad,False
-q025,What is a key technical achievement the candidate accomplished?,specific,specific,True
-q026,Has the candidate had any teaching or mentoring experience?,specific,specific,True
-q029,What cloud platforms does the candidate have experience with?,specific,specific,True
-q030,What databases has the candidate worked with?,specific,specific,True
-q031,Does the candidate have DevOps experience?,specific,broad,False
-q034,Does the candidate have testing experience?,specific,specific,True
-q035,What accessibility experience does the candidate have?,specific,specific,True
-q036,Does the candidate have design system experience?,specific,specific,True
-q037,Does the candidate have experience with build tools?,specific,specific,True
-q038,What backend and API skills does the candidate have?,specific,specific,True
-q039,What projects has the candidate worked on?,broad,specific,False
-q040,Tell me about the design system project.,specific,specific,True
-q041,What was the outcome of the collaborative editor project?,specific,specific,True
-q042,What technologies were used in the performance optimization project?,specific,specific,True
-q043,What is the candidate's most significant project?,specific,specific,True
-q044,Has the candidate contributed to open-source projects?,specific,specific,True
-q045,What systems has the candidate built?,specific,specific,True
-q046,Does the candidate have web performance experience?,specific,specific,True
-q047,Has the candidate worked on real-time applications?,specific,specific,True
-q048,What is the scale of systems the candidate has worked with?,specific,specific,True
-q049,What certifications does the candidate have?,specific,specific,True
-q050,Does the candidate have a Google Cloud certification?,specific,specific,True
-q051,Does the candidate have an accessibility certification?,specific,specific,True
-q052,When did the candidate get their Meta certification?,specific,specific,True
-q053,Does the candidate have any management certifications?,specific,specific,True
-q072,Would this candidate be a good fit for a remote frontend role in Europe?,broad,broad,True
-q075,Summarize why I should consider this candidate for a senior frontend engineer position.,broad,specific,False
-q015,What was the candidate's capstone project about?,specific,specific,True
-q016,Was the candidate on the Dean's List?,specific,specific,True
-q020,Where has the candidate worked previously?,specific,specific,True
-q021,What was the candidate's first job?,specific,specific,True
-q022,Describe the candidate's work at TechStart Solutions.,specific,broad,False
-q023,Has the candidate led a team?,specific,specific,True
-q024,What industries has the candidate worked in?,specific,specific,True
-q025,How did the candidate reduce model inference latency?,specific,specific,True
-q026,Has the candidate worked as a teaching assistant?,specific,broad,False
-q029,What cloud platforms does the candidate have experience with?,specific,specific,True
-q030,What databases has the candidate worked with?,specific,broad,False
-q034,Does the candidate have frontend development skills?,specific,specific,True
-q035,What NLP experience does the candidate have?,specific,specific,True
-q036,Does the candidate have computer vision experience?,specific,specific,True
-q037,Does the candidate have experience with Kubernetes?,specific,specific,True
-q038,What data engineering tools does the candidate know?,specific,specific,True
-q039,What projects has the candidate worked on?,broad,specific,False
-q040,Tell me about the recommendation engine project.,specific,specific,True
-q041,What was the outcome of the fraud detection project?,specific,specific,True
-q042,What technologies were used in the chatbot project?,specific,specific,True
-q043,What is the candidate's most significant project?,specific,specific,True
-q044,Has the candidate contributed to open-source projects?,specific,specific,True
-q045,What ML models has the candidate built?,specific,specific,True
-q046,Does the candidate have real-time systems experience?,specific,specific,True
-q047,Has the candidate worked on any NLP projects?,specific,specific,True
-q048,What is the largest dataset the candidate has worked with?,specific,specific,True
-q049,What certifications does the candidate have?,specific,specific,True
-q050,Does the candidate have any AWS certifications?,specific,specific,True
-q051,Does the candidate have a deep learning certification?,specific,specific,True
-q052,When did the candidate get their AWS certification?,specific,specific,True
-q053,Does the candidate have any project management certifications?,specific,specific,True
-q071,Is this candidate overqualified for a junior data scientist role?,broad,specific,False
-q075,Summarize why I should consider this candidate for a senior ML engineer position.,broad,specific,False
-q015,What was the candidate's MBA project about?,specific,broad,False
-q016,Did the candidate receive any academic honors?,specific,specific,True
-q020,Where has the candidate worked previously?,specific,specific,True
-q021,What was the candidate's first job?,specific,specific,True
-q022,Describe the candidate's work at ironSource.,specific,specific,True
-q023,Has the candidate held a leadership role?,specific,specific,True
-q024,What industries has the candidate worked in?,specific,broad,False
-q025,What is a key technical achievement the candidate accomplished?,specific,specific,True
-q026,Has the candidate had any mentoring experience?,specific,specific,True
-q029,What cloud platforms does the candidate have experience with?,specific,broad,False
-q030,What data and analytics tools does the candidate use?,specific,specific,True
-q033,Does the candidate have A/B testing experience?,specific,specific,True
-q034,Does the candidate have data analytics experience?,specific,specific,True
-q035,What product management methodologies does the candidate use?,specific,broad,False
-q036,Does the candidate have user research experience?,specific,specific,True
-q037,Does the candidate have experience with ML products?,specific,specific,True
-q039,What projects has the candidate worked on?,broad,specific,False
-q040,Tell me about the ad mediation project.,specific,specific,True
-q041,What was the outcome of the analytics dashboard project?,specific,specific,True
-q042,What technologies were used in the LTV modeling project?,specific,specific,True
-q043,What is the candidate's most significant project?,specific,specific,True
-q044,Has the candidate contributed to open-source projects?,specific,specific,True
-q045,What products has the candidate built or launched?,specific,specific,True
-q046,Does the candidate have monetization experience?,specific,specific,True
-q047,Has the candidate worked on developer-facing products?,specific,specific,True
-q048,What is the scale of products the candidate has managed?,specific,specific,True
-q049,What certifications does the candidate have?,specific,specific,True
-q050,Does the candidate have a product management certification?,specific,specific,True
-q051,Does the candidate have a data analytics certification?,specific,specific,True
-q052,When did the candidate get their Scrum certification?,specific,specific,True
-q053,Does the candidate have any management or methodology certifications?,specific,specific,True
-q074,What unique combination of skills does this candidate offer?,broad,specific,False
-q075,Summarize why I should consider this candidate for a director of product position.,broad,specific,False
-q015,What was the candidate's thesis about?,specific,broad,False
-q016,Did the candidate receive any academic honors?,specific,specific,True
-q020,Where has the candidate worked previously?,specific,specific,True
-q021,What was the candidate's first job?,specific,specific,True
-q022,Describe the candidate's work at Amdocs.,specific,specific,True
-q023,Has the candidate held a leadership role?,specific,specific,True
-q024,What industries has the candidate worked in?,specific,specific,True
-q025,What is a key technical achievement the candidate accomplished?,specific,specific,True
-q026,Has the candidate had any teaching experience?,specific,specific,True
-q028,What are the candidate's primary technical frameworks and tools?,specific,specific,True
-q029,What cloud platforms does the candidate have experience with?,specific,specific,True
-q030,What databases has the candidate worked with?,specific,broad,False
-q031,Does the candidate have DevOps or infrastructure experience?,specific,specific,True
-q032,Does the candidate know Python?,specific,broad,False
-q034,Does the candidate have distributed systems experience?,specific,specific,True
-q035,What architecture patterns does the candidate know?,specific,broad,False
-q036,Does the candidate have observability experience?,specific,specific,True
-q038,What streaming and data processing tools does the candidate know?,specific,specific,True
-q039,What projects has the candidate worked on?,broad,specific,False
-q040,Tell me about the event enrichment pipeline.,specific,specific,True
-q041,What was the outcome of the multi-region architecture project?,specific,specific,True
-q042,What technologies were used in the microservices migration?,specific,specific,True
-q043,What is the candidate's most significant project?,specific,specific,True
-q044,Has the candidate contributed to open-source projects?,specific,specific,True
-q045,What systems has the candidate built?,specific,specific,True
-q046,Does the candidate have high-availability experience?,specific,specific,True
-q047,Has the candidate worked on migration projects?,specific,broad,False
-q048,What is the scale of systems the candidate has worked with?,specific,specific,True
-q049,What certifications does the candidate have?,specific,specific,True
-q050,Does the candidate have an AWS certification?,specific,specific,True
-q051,Does the candidate have a Kafka certification?,specific,specific,True
-q052,When did the candidate get their Java certification?,specific,specific,True
-q053,Does the candidate have any management certifications?,specific,specific,True
-q072,Would this candidate be a good fit for a remote backend role in Europe?,broad,specific,False
-q075,Summarize why I should consider this candidate for a principal engineer position.,broad,specific,False
-p001,What is this project?,broad,specific,False
-p002,Give me a high-level overview of the system.,broad,broad,True
-p003,What reranker does the project use?,specific,specific,True
-p004,How does the skill proficiency estimation work?,specific,specific,True
-p005,What evaluation frameworks does the project use?,specific,specific,True
-p006,What is Reciprocal Rank Fusion used for in the retrieval pipeline?,specific,specific,True
-p007,Which vector database does the project use?,specific,specific,True
-p008,What embedding options does the project support?,specific,broad,False
-p009,How are documents ingested?,specific,specific,True
-p010,What tools does the agent have?,specific,specific,True
-p011,What does the query router do?,specific,broad,False
-p012,How is the recruiter chat deployed and secured?,specific,specific,True
-p013,What is the build-vs-serve split?,specific,specific,True
-p014,What do the 1 to 5 skill proficiency levels mean?,specific,specific,True
-p015,How was the training data for the skill scorer created?,specific,specific,True
-p016,Which LLM does the project use?,specific,specific,True
-p017,What is the per-gate retrieval analysis?,specific,specific,True
-p018,How many synthetic candidates are used for evaluation and how many questions does each have?,specific,specific,True
-p019,What hybrid search methods are combined in retrieval?,specific,specific,True
-p020,Does the project use prompt caching?,specific,specific,True
-p021,How do you decide which tool to call?,specific,specific,True
-p022,What model powers you?,specific,specific,True
-p023,What reranker do you use?,specific,specific,True
-p024,How do you retrieve information from the candidate's documents?,specific,specific,True
-p025,How were you built?,broad,broad,True
-p026,How do you figure out how good a candidate is at a skill?,specific,specific,True
-p027,What embedding model do you use?,specific,specific,True
-p028,"Can you run entirely on free, local models without any paid APIs?",specific,specific,True
-p029,How do you avoid making things up?,specific,broad,False
-p030,What do you do when a recruiter asks something out of scope or that you don't know?,specific,specific,True
-p031,How were you evaluated?,specific,specific,True
-p032,Where do you store your knowledge?,specific,specific,True
-p033,How many tools do you have and what are they?,specific,specific,True
-p034,Do you remember the conversation across questions?,specific,specific,True
-p035,How do you keep the candidate's private data secure?,specific,specific,True
-p036,How are you deployed and how much does it cost to run?,specific,specific,True
-p037,What language do you answer in?,specific,specific,True
-p039,How do you expand a search query before retrieving?,specific,broad,False
-p040,Why might you say a skill wasn't assessed?,specific,broad,False
+question_id,candidate_name,category,difficulty,question,expected_route,actual_route,route_correct
+q015,Dana Levy,education,medium,What was the candidate's thesis about?,specific,specific,True
+q016,Dana Levy,education,medium,Did the candidate receive any academic honors?,specific,specific,True
+q020,Dana Levy,experience,medium,Where has the candidate worked previously?,specific,specific,True
+q021,Dana Levy,experience,medium,What was the candidate's first job?,specific,specific,True
+q022,Dana Levy,experience,medium,Describe the candidate's work at Check Point.,specific,specific,True
+q024,Dana Levy,experience,medium,What industries has the candidate worked in?,specific,specific,True
+q025,Dana Levy,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q026,Dana Levy,experience,medium,Has the candidate had any teaching experience?,specific,specific,True
+q028,Dana Levy,skills,medium,What are the candidate's primary security tools and frameworks?,specific,broad,False
+q029,Dana Levy,skills,medium,What cloud platforms does the candidate have experience with?,specific,specific,True
+q030,Dana Levy,skills,medium,What databases has the candidate worked with?,specific,broad,False
+q031,Dana Levy,skills,medium,Does the candidate have DevSecOps experience?,specific,specific,True
+q033,Dana Levy,skills,easy,Does the candidate have experience with penetration testing?,specific,specific,True
+q034,Dana Levy,skills,medium,Does the candidate have SIEM experience?,specific,specific,True
+q035,Dana Levy,skills,medium,What threat analysis experience does the candidate have?,specific,specific,True
+q036,Dana Levy,skills,medium,Does the candidate have identity and access management experience?,specific,specific,True
+q037,Dana Levy,skills,easy,Does the candidate have experience with Kubernetes?,specific,specific,True
+q038,Dana Levy,skills,medium,What networking skills does the candidate have?,specific,specific,True
+q039,Dana Levy,projects,medium,What projects has the candidate worked on?,broad,specific,False
+q040,Dana Levy,projects,medium,Tell me about the zero-trust architecture project.,specific,specific,True
+q041,Dana Levy,projects,medium,What was the outcome of the threat intelligence project?,specific,specific,True
+q042,Dana Levy,projects,medium,What technologies were used in the red team automation project?,specific,specific,True
+q043,Dana Levy,projects,hard,What is the candidate's most significant project?,specific,specific,True
+q044,Dana Levy,projects,medium,Has the candidate contributed to open-source projects?,specific,specific,True
+q045,Dana Levy,projects,hard,What systems has the candidate built?,specific,specific,True
+q046,Dana Levy,projects,medium,Does the candidate have red team experience?,specific,specific,True
+q047,Dana Levy,projects,medium,Has the candidate worked on any research projects?,specific,specific,True
+q048,Dana Levy,projects,medium,What is the scale of systems the candidate has worked with?,specific,specific,True
+q049,Dana Levy,certifications,medium,What certifications does the candidate have?,specific,specific,True
+q050,Dana Levy,certifications,easy,Does the candidate have an OSCP certification?,specific,specific,True
+q051,Dana Levy,certifications,easy,Does the candidate have a CISSP certification?,specific,specific,True
+q052,Dana Levy,certifications,easy,When did the candidate get their AWS security certification?,specific,specific,True
+q053,Dana Levy,certifications,medium,Does the candidate have any management certifications?,specific,specific,True
+q015,Yoni Abergel,education,medium,What was the candidate's capstone project about?,specific,specific,True
+q016,Yoni Abergel,education,medium,Did the candidate receive any academic honors?,specific,specific,True
+q020,Yoni Abergel,experience,medium,Where has the candidate worked previously?,specific,specific,True
+q021,Yoni Abergel,experience,medium,What was the candidate's first job?,specific,specific,True
+q022,Yoni Abergel,experience,medium,Describe the candidate's work at Wix.,specific,specific,True
+q023,Yoni Abergel,experience,medium,Has the candidate held a leadership role?,specific,specific,True
+q024,Yoni Abergel,experience,medium,What industries has the candidate worked in?,specific,broad,False
+q025,Yoni Abergel,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q026,Yoni Abergel,experience,medium,Has the candidate had any teaching or mentoring experience?,specific,specific,True
+q029,Yoni Abergel,skills,medium,What cloud platforms does the candidate have experience with?,specific,broad,False
+q030,Yoni Abergel,skills,medium,What databases has the candidate worked with?,specific,broad,False
+q031,Yoni Abergel,skills,medium,Does the candidate have DevOps or infrastructure experience?,specific,specific,True
+q032,Yoni Abergel,skills,easy,Does the candidate know Python?,specific,specific,True
+q034,Yoni Abergel,skills,medium,Does the candidate have CI/CD experience?,specific,specific,True
+q035,Yoni Abergel,skills,medium,What observability experience does the candidate have?,specific,specific,True
+q036,Yoni Abergel,skills,medium,Does the candidate have Infrastructure-as-Code experience?,specific,specific,True
+q037,Yoni Abergel,skills,easy,Does the candidate have experience with service mesh?,specific,specific,True
+q038,Yoni Abergel,skills,medium,What networking and security tools does the candidate know?,specific,specific,True
+q039,Yoni Abergel,projects,medium,What projects has the candidate worked on?,broad,specific,False
+q040,Yoni Abergel,projects,medium,Tell me about the multi-cloud migration project.,specific,specific,True
+q041,Yoni Abergel,projects,medium,What was the outcome of the deployment platform project?,specific,specific,True
+q042,Yoni Abergel,projects,medium,What technologies were used in the autoscaler project?,specific,specific,True
+q043,Yoni Abergel,projects,hard,What is the candidate's most significant project?,specific,specific,True
+q044,Yoni Abergel,projects,medium,Has the candidate contributed to open-source projects?,specific,specific,True
+q045,Yoni Abergel,projects,hard,What systems has the candidate built?,specific,specific,True
+q046,Yoni Abergel,projects,medium,Does the candidate have experience with cost optimization?,specific,specific,True
+q047,Yoni Abergel,projects,medium,Has the candidate worked on any developer productivity projects?,specific,specific,True
+q048,Yoni Abergel,projects,medium,What is the scale of systems the candidate has worked with?,specific,specific,True
+q049,Yoni Abergel,certifications,medium,What certifications does the candidate have?,specific,broad,False
+q050,Yoni Abergel,certifications,easy,Does the candidate have an AWS certification?,specific,specific,True
+q051,Yoni Abergel,certifications,easy,Does the candidate have a Kubernetes certification?,specific,specific,True
+q052,Yoni Abergel,certifications,easy,When did the candidate get their Terraform certification?,specific,specific,True
+q053,Yoni Abergel,certifications,medium,Does the candidate have any management certifications?,specific,specific,True
+q071,Yoni Abergel,complex,hard,Is this candidate overqualified for a junior DevOps role?,broad,specific,False
+q075,Yoni Abergel,complex,hard,Summarize why I should consider this candidate for a staff DevOps engineer position.,broad,specific,False
+q015,Maya Chen,education,medium,What was the candidate's capstone project about?,specific,specific,True
+q016,Maya Chen,education,medium,Did the candidate receive any academic honors?,specific,specific,True
+q020,Maya Chen,experience,medium,Where has the candidate worked previously?,specific,specific,True
+q021,Maya Chen,experience,medium,What was the candidate's first job?,specific,specific,True
+q022,Maya Chen,experience,medium,Describe the candidate's work at Wix.,specific,specific,True
+q023,Maya Chen,experience,medium,Has the candidate held a leadership role?,specific,specific,True
+q024,Maya Chen,experience,medium,What industries has the candidate worked in?,specific,specific,True
+q025,Maya Chen,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q026,Maya Chen,experience,medium,Has the candidate had any teaching or mentoring experience?,specific,specific,True
+q029,Maya Chen,skills,medium,What cloud platforms does the candidate have experience with?,specific,specific,True
+q030,Maya Chen,skills,medium,What databases has the candidate worked with?,specific,specific,True
+q031,Maya Chen,skills,medium,Does the candidate have DevOps experience?,specific,specific,True
+q034,Maya Chen,skills,medium,Does the candidate have testing experience?,specific,specific,True
+q035,Maya Chen,skills,medium,What accessibility experience does the candidate have?,specific,specific,True
+q036,Maya Chen,skills,medium,Does the candidate have design system experience?,specific,specific,True
+q037,Maya Chen,skills,easy,Does the candidate have experience with build tools?,specific,specific,True
+q038,Maya Chen,skills,medium,What backend and API skills does the candidate have?,specific,specific,True
+q039,Maya Chen,projects,medium,What projects has the candidate worked on?,broad,specific,False
+q040,Maya Chen,projects,medium,Tell me about the design system project.,specific,specific,True
+q041,Maya Chen,projects,medium,What was the outcome of the collaborative editor project?,specific,specific,True
+q042,Maya Chen,projects,medium,What technologies were used in the performance optimization project?,specific,specific,True
+q043,Maya Chen,projects,hard,What is the candidate's most significant project?,specific,specific,True
+q044,Maya Chen,projects,medium,Has the candidate contributed to open-source projects?,specific,specific,True
+q045,Maya Chen,projects,hard,What systems has the candidate built?,specific,specific,True
+q046,Maya Chen,projects,medium,Does the candidate have web performance experience?,specific,specific,True
+q047,Maya Chen,projects,medium,Has the candidate worked on real-time applications?,specific,specific,True
+q048,Maya Chen,projects,medium,What is the scale of systems the candidate has worked with?,specific,specific,True
+q049,Maya Chen,certifications,medium,What certifications does the candidate have?,specific,specific,True
+q050,Maya Chen,certifications,easy,Does the candidate have a Google Cloud certification?,specific,specific,True
+q051,Maya Chen,certifications,easy,Does the candidate have an accessibility certification?,specific,specific,True
+q052,Maya Chen,certifications,easy,When did the candidate get their Meta certification?,specific,specific,True
+q053,Maya Chen,certifications,medium,Does the candidate have any management certifications?,specific,specific,True
+q072,Maya Chen,complex,hard,Would this candidate be a good fit for a remote frontend role in Europe?,broad,specific,False
+q075,Maya Chen,complex,hard,Summarize why I should consider this candidate for a senior frontend engineer position.,broad,specific,False
+q015,Ofir Ohan,education,medium,What was the candidate's capstone project about?,specific,specific,True
+q020,Ofir Ohan,experience,medium,Where has the candidate worked previously?,specific,specific,True
+q021,Ofir Ohan,experience,medium,What was the candidate's first job?,specific,specific,True
+q022,Ofir Ohan,experience,medium,Describe the candidate's work at TechStart Solutions.,specific,specific,True
+q023,Ofir Ohan,experience,medium,Has the candidate led a team?,specific,specific,True
+q025,Ofir Ohan,experience,hard,How did the candidate reduce model inference latency?,specific,specific,True
+q026,Ofir Ohan,experience,medium,Has the candidate worked as a teaching assistant?,specific,specific,True
+q028,Ofir Ohan,skills,medium,What ML and deep learning frameworks does the candidate use?,specific,specific,True
+q029,Ofir Ohan,skills,medium,What cloud platforms does the candidate have experience with?,specific,broad,False
+q030,Ofir Ohan,skills,medium,What databases has the candidate worked with?,specific,broad,False
+q031,Ofir Ohan,skills,medium,Does the candidate have DevOps experience?,specific,specific,True
+q034,Ofir Ohan,skills,medium,Does the candidate have frontend development skills?,specific,broad,False
+q035,Ofir Ohan,skills,medium,What NLP experience does the candidate have?,specific,broad,False
+q036,Ofir Ohan,skills,medium,Does the candidate have computer vision experience?,specific,specific,True
+q037,Ofir Ohan,skills,easy,Does the candidate have experience with Kubernetes?,specific,specific,True
+q039,Ofir Ohan,projects,medium,What projects has the candidate worked on?,broad,specific,False
+q040,Ofir Ohan,projects,medium,Tell me about the recommendation engine project.,specific,specific,True
+q041,Ofir Ohan,projects,medium,What was the outcome of the fraud detection project?,specific,specific,True
+q042,Ofir Ohan,projects,medium,What technologies were used in the chatbot project?,specific,specific,True
+q043,Ofir Ohan,projects,hard,What is the candidate's most significant project?,specific,specific,True
+q044,Ofir Ohan,projects,medium,Has the candidate contributed to open-source projects?,specific,specific,True
+q045,Ofir Ohan,projects,hard,What ML models has the candidate built?,specific,specific,True
+q046,Ofir Ohan,projects,medium,Does the candidate have real-time systems experience?,specific,specific,True
+q047,Ofir Ohan,projects,medium,Has the candidate worked on any NLP projects?,specific,specific,True
+q048,Ofir Ohan,projects,medium,What is the largest dataset the candidate has worked with?,specific,specific,True
+q049,Ofir Ohan,certifications,medium,What certifications does the candidate have?,specific,specific,True
+q050,Ofir Ohan,certifications,easy,Does the candidate have any AWS certifications?,specific,specific,True
+q051,Ofir Ohan,certifications,easy,Does the candidate have a deep learning certification?,specific,specific,True
+q052,Ofir Ohan,certifications,easy,When did the candidate get their AWS certification?,specific,specific,True
+q053,Ofir Ohan,certifications,medium,Does the candidate have any project management certifications?,specific,specific,True
+q072,Ofir Ohan,complex,hard,Would this candidate be a good fit for a remote ML role in Europe?,broad,broad,True
+q015,Noa Friedman,education,medium,What was the candidate's MBA project about?,specific,broad,False
+q016,Noa Friedman,education,medium,Did the candidate receive any academic honors?,specific,specific,True
+q020,Noa Friedman,experience,medium,Where has the candidate worked previously?,specific,specific,True
+q021,Noa Friedman,experience,medium,What was the candidate's first job?,specific,specific,True
+q022,Noa Friedman,experience,medium,Describe the candidate's work at ironSource.,specific,specific,True
+q023,Noa Friedman,experience,medium,Has the candidate held a leadership role?,specific,specific,True
+q024,Noa Friedman,experience,medium,What industries has the candidate worked in?,specific,broad,False
+q025,Noa Friedman,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q026,Noa Friedman,experience,medium,Has the candidate had any mentoring experience?,specific,specific,True
+q028,Noa Friedman,skills,medium,What are the candidate's primary product tools?,specific,specific,True
+q029,Noa Friedman,skills,medium,What cloud platforms does the candidate have experience with?,specific,specific,True
+q030,Noa Friedman,skills,medium,What data and analytics tools does the candidate use?,specific,specific,True
+q031,Noa Friedman,skills,medium,Does the candidate have technical knowledge?,specific,broad,False
+q033,Noa Friedman,skills,easy,Does the candidate have A/B testing experience?,specific,specific,True
+q034,Noa Friedman,skills,medium,Does the candidate have data analytics experience?,specific,specific,True
+q035,Noa Friedman,skills,medium,What product management methodologies does the candidate use?,specific,specific,True
+q036,Noa Friedman,skills,medium,Does the candidate have user research experience?,specific,specific,True
+q037,Noa Friedman,skills,easy,Does the candidate have experience with ML products?,specific,broad,False
+q038,Noa Friedman,skills,medium,What visualization and reporting tools does the candidate know?,specific,specific,True
+q039,Noa Friedman,projects,medium,What projects has the candidate worked on?,broad,specific,False
+q040,Noa Friedman,projects,medium,Tell me about the ad mediation project.,specific,specific,True
+q041,Noa Friedman,projects,medium,What was the outcome of the analytics dashboard project?,specific,specific,True
+q042,Noa Friedman,projects,medium,What technologies were used in the LTV modeling project?,specific,specific,True
+q043,Noa Friedman,projects,hard,What is the candidate's most significant project?,specific,specific,True
+q044,Noa Friedman,projects,medium,Has the candidate contributed to open-source projects?,specific,specific,True
+q045,Noa Friedman,projects,hard,What products has the candidate built or launched?,specific,specific,True
+q046,Noa Friedman,projects,medium,Does the candidate have monetization experience?,specific,specific,True
+q047,Noa Friedman,projects,medium,Has the candidate worked on developer-facing products?,specific,specific,True
+q048,Noa Friedman,projects,medium,What is the scale of products the candidate has managed?,specific,broad,False
+q049,Noa Friedman,certifications,medium,What certifications does the candidate have?,specific,broad,False
+q051,Noa Friedman,certifications,easy,Does the candidate have a data analytics certification?,specific,specific,True
+q052,Noa Friedman,certifications,easy,When did the candidate get their Scrum certification?,specific,specific,True
+q053,Noa Friedman,certifications,medium,Does the candidate have any management or methodology certifications?,specific,specific,True
+q015,Tal Ben-David,education,medium,What was the candidate's thesis about?,specific,specific,True
+q016,Tal Ben-David,education,medium,Did the candidate receive any academic honors?,specific,specific,True
+q020,Tal Ben-David,experience,medium,Where has the candidate worked previously?,specific,specific,True
+q021,Tal Ben-David,experience,medium,What was the candidate's first job?,specific,specific,True
+q022,Tal Ben-David,experience,medium,Describe the candidate's work at Amdocs.,specific,specific,True
+q023,Tal Ben-David,experience,medium,Has the candidate held a leadership role?,specific,specific,True
+q024,Tal Ben-David,experience,medium,What industries has the candidate worked in?,specific,specific,True
+q025,Tal Ben-David,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q026,Tal Ben-David,experience,medium,Has the candidate had any teaching experience?,specific,specific,True
+q029,Tal Ben-David,skills,medium,What cloud platforms does the candidate have experience with?,specific,broad,False
+q030,Tal Ben-David,skills,medium,What databases has the candidate worked with?,specific,specific,True
+q031,Tal Ben-David,skills,medium,Does the candidate have DevOps or infrastructure experience?,specific,broad,False
+q032,Tal Ben-David,skills,easy,Does the candidate know Python?,specific,broad,False
+q034,Tal Ben-David,skills,medium,Does the candidate have distributed systems experience?,specific,specific,True
+q035,Tal Ben-David,skills,medium,What architecture patterns does the candidate know?,specific,specific,True
+q036,Tal Ben-David,skills,medium,Does the candidate have observability experience?,specific,broad,False
+q038,Tal Ben-David,skills,medium,What streaming and data processing tools does the candidate know?,specific,specific,True
+q039,Tal Ben-David,projects,medium,What projects has the candidate worked on?,broad,specific,False
+q040,Tal Ben-David,projects,medium,Tell me about the event enrichment pipeline.,specific,specific,True
+q041,Tal Ben-David,projects,medium,What was the outcome of the multi-region architecture project?,specific,specific,True
+q042,Tal Ben-David,projects,medium,What technologies were used in the microservices migration?,specific,specific,True
+q043,Tal Ben-David,projects,hard,What is the candidate's most significant project?,specific,specific,True
+q044,Tal Ben-David,projects,medium,Has the candidate contributed to open-source projects?,specific,specific,True
+q045,Tal Ben-David,projects,hard,What systems has the candidate built?,specific,specific,True
+q046,Tal Ben-David,projects,medium,Does the candidate have high-availability experience?,specific,specific,True
+q047,Tal Ben-David,projects,medium,Has the candidate worked on migration projects?,specific,broad,False
+q048,Tal Ben-David,projects,medium,What is the scale of systems the candidate has worked with?,specific,specific,True
+q049,Tal Ben-David,certifications,medium,What certifications does the candidate have?,specific,specific,True
+q050,Tal Ben-David,certifications,easy,Does the candidate have an AWS certification?,specific,specific,True
+q051,Tal Ben-David,certifications,easy,Does the candidate have a Kafka certification?,specific,specific,True
+q052,Tal Ben-David,certifications,easy,When did the candidate get their Java certification?,specific,specific,True
+q053,Tal Ben-David,certifications,medium,Does the candidate have any management certifications?,specific,specific,True
+q072,Tal Ben-David,complex,hard,Would this candidate be a good fit for a remote backend role in Europe?,broad,specific,False
+p001,Project Knowledge Base,project,easy,What is this project?,broad,specific,False
+p002,Project Knowledge Base,project,easy,Give me a high-level overview of the system.,broad,broad,True
+p003,Project Knowledge Base,project,medium,What reranker does the project use?,specific,specific,True
+p004,Project Knowledge Base,project,medium,How does the skill proficiency estimation work?,specific,specific,True
+p005,Project Knowledge Base,project,medium,What evaluation frameworks does the project use?,specific,specific,True
+p006,Project Knowledge Base,project,medium,What is Reciprocal Rank Fusion used for in the retrieval pipeline?,specific,specific,True
+p007,Project Knowledge Base,project,easy,Which vector database does the project use?,specific,specific,True
+p008,Project Knowledge Base,project,medium,What embedding options does the project support?,specific,broad,False
+p009,Project Knowledge Base,project,hard,How are documents ingested?,specific,specific,True
+p010,Project Knowledge Base,project,medium,What tools does the agent have?,specific,specific,True
+p011,Project Knowledge Base,project,medium,What does the query router do?,specific,broad,False
+p012,Project Knowledge Base,project,medium,How is the recruiter chat deployed and secured?,specific,specific,True
+p013,Project Knowledge Base,project,hard,What is the build-vs-serve split?,specific,specific,True
+p014,Project Knowledge Base,project,easy,What do the 1 to 5 skill proficiency levels mean?,specific,specific,True
+p015,Project Knowledge Base,project,hard,How was the training data for the skill scorer created?,specific,specific,True
+p016,Project Knowledge Base,project,medium,Which LLM does the project use?,specific,specific,True
+p017,Project Knowledge Base,project,hard,What is the per-gate retrieval analysis?,specific,specific,True
+p018,Project Knowledge Base,project,medium,How many synthetic candidates are used for evaluation and how many questions does each have?,specific,specific,True
+p019,Project Knowledge Base,project,medium,What hybrid search methods are combined in retrieval?,specific,specific,True
+p020,Project Knowledge Base,project,medium,Does the project use prompt caching?,specific,specific,True
+p021,Project Knowledge Base,project,medium,How do you decide which tool to call?,specific,specific,True
+p022,Project Knowledge Base,project,medium,What model powers you?,specific,specific,True
+p023,Project Knowledge Base,project,medium,What reranker do you use?,specific,specific,True
+p024,Project Knowledge Base,project,hard,How do you retrieve information from the candidate's documents?,specific,specific,True
+p025,Project Knowledge Base,project,medium,How were you built?,broad,specific,False
+p027,Project Knowledge Base,project,medium,What embedding model do you use?,specific,specific,True
+p028,Project Knowledge Base,project,medium,"Can you run entirely on free, local models without any paid APIs?",specific,specific,True
+p029,Project Knowledge Base,project,medium,How do you avoid making things up?,specific,broad,False
+p030,Project Knowledge Base,project,medium,What do you do when a recruiter asks something out of scope or that you don't know?,specific,broad,False
+p031,Project Knowledge Base,project,hard,How were you evaluated?,specific,broad,False
+p032,Project Knowledge Base,project,medium,Where do you store your knowledge?,specific,specific,True
+p033,Project Knowledge Base,project,easy,How many tools do you have and what are they?,specific,specific,True
+p034,Project Knowledge Base,project,medium,Do you remember the conversation across questions?,specific,specific,True
+p035,Project Knowledge Base,project,medium,How do you keep the candidate's private data secure?,specific,specific,True
+p036,Project Knowledge Base,project,medium,How are you deployed and how much does it cost to run?,specific,specific,True
+p037,Project Knowledge Base,project,easy,What language do you answer in?,specific,broad,False
+p039,Project Knowledge Base,project,medium,How do you expand a search query before retrieving?,specific,specific,True
