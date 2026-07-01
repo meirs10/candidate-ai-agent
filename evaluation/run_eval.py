@@ -101,7 +101,9 @@ if __name__ == "__main__":
     if results["ragas_df"] is not None:
         print("\n-- RAGAS Summary (RAG-only) --")
         df = results["ragas_df"]
-        metric_cols = [c for c in df.columns if c not in ("user_input", "response", "retrieved_contexts", "reference")]
+        metric_cols = [c for c in df.columns if c not in (
+            "user_input", "response", "retrieved_contexts", "reference",
+            "question_id", "candidate_name", "category", "difficulty")]
         for col in metric_cols:
             vals = df[col].dropna()
             if len(vals) > 0:

@@ -18,6 +18,14 @@ import pandas as pd
 
 REPORTS_DIR = Path(__file__).parent / "reports"
 
+# Columns in the RAGAS frame that are NOT metric scores: the RAGAS sample text
+# fields plus the standard per-question identity columns every component CSV now
+# carries. Everything else in ragas_df is treated as a numeric metric to average.
+_RAGAS_NON_METRIC_COLS = (
+    "user_input", "response", "retrieved_contexts", "reference",
+    "question_id", "candidate_name", "category", "difficulty",
+)
+
 
 def select_rag_results(pipeline_results: list[dict]) -> list[dict]:
     """Questions that should enter the RAG quality metrics (RAGAS).
@@ -104,7 +112,7 @@ def _build_overview_section(pipeline_results, eval_results) -> str:
     # RAGAS means
     ragas_df = eval_results.get("ragas_df")
     if ragas_df is not None:
-        metric_cols = [c for c in ragas_df.columns if c not in ("user_input", "response", "retrieved_contexts", "reference")]
+        metric_cols = [c for c in ragas_df.columns if c not in _RAGAS_NON_METRIC_COLS]
         for col in metric_cols:
             vals = ragas_df[col].dropna()
             if len(vals) > 0:
@@ -246,7 +254,7 @@ def _build_merged_df(pipeline_results, eval_results) -> tuple[pd.DataFrame, list
     ragas_cols: list[str] = []
     if ragas_df is not None and len(ragas_df) > 0:
         ragas_cols = [c for c in ragas_df.columns
-                      if c not in ("user_input", "response", "retrieved_contexts", "reference")]
+                      if c not in _RAGAS_NON_METRIC_COLS]
         rag_pred = (lambda r: r.get("final_tool") in ("search_documents", "search_project")
                     and r.get("contexts") and r.get("category") != "negative")
         for col in ragas_cols:
