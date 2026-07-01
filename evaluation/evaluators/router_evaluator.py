@@ -22,7 +22,8 @@ def run_router_evaluation(data: list[dict]) -> pd.DataFrame:
 
     Returns:
         DataFrame with columns:
-            id, question, expected_route, actual_route, route_correct
+            question_id, candidate_name, category, difficulty, question,
+            expected_route, actual_route, route_correct
     """
     rows = []
     for d in data:
@@ -34,7 +35,10 @@ def run_router_evaluation(data: list[dict]) -> pd.DataFrame:
             continue
 
         rows.append({
-            "id": d["id"],
+            "question_id": d["id"],
+            "candidate_name": d.get("candidate_name", ""),
+            "category": d.get("category", ""),
+            "difficulty": d.get("difficulty", ""),
             "question": d["question"],
             "expected_route": expected_route,
             "actual_route": actual_route,
@@ -54,7 +58,7 @@ def run_router_evaluation(data: list[dict]) -> pd.DataFrame:
     false_specific = len(df[(df["expected_route"] == "broad") & (df["actual_route"] == "specific")])
 
     print(f"[Router Eval] Accuracy: {correct}/{total} ({correct/total*100:.1f}%)")
-    print(f"[Router Eval] False-broad (specific → broad): {false_broad}")
-    print(f"[Router Eval] False-specific (broad → specific): {false_specific}")
+    print(f"[Router Eval] False-broad (specific -> broad): {false_broad}")
+    print(f"[Router Eval] False-specific (broad -> specific): {false_specific}")
 
     return df

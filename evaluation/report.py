@@ -229,9 +229,12 @@ def _build_merged_df(pipeline_results, eval_results) -> tuple[pd.DataFrame, list
     # Retrieval gate carries candidate_name → join on the composite key (ids alone
     # are ambiguous across candidates).
     gate_df = eval_results.get("retrieval_gate_df")
+    gate_cols = set(getattr(gate_df, "columns", []))
+    # The id column is "question_id" (current) or "id" (older reports).
+    gid = "question_id" if "question_id" in gate_cols else "id"
     if (gate_df is not None
-            and {"id", "candidate_name", "loss_stage"} <= set(getattr(gate_df, "columns", []))):
-        gmap = {(row["candidate_name"], row["id"]): (row["loss_stage"] == "ok")
+            and {gid, "candidate_name", "loss_stage"} <= gate_cols):
+        gmap = {(row["candidate_name"], row[gid]): (row["loss_stage"] == "ok")
                 for _, row in gate_df.iterrows()}
         base["retrieval_ok"] = [gmap.get((cn, i), pd.NA)
                                 for cn, i in zip(base["candidate_name"], base["id"])]

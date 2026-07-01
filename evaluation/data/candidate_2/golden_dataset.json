@@ -554,7 +554,7 @@
   {
     "id": "q062",
     "question": "How proficient is the candidate in Kubernetes?",
-    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in Kubernetes, inferred from his documents with supporting evidence. Kubernetes is a core, strongly-evidenced skill — he manages 15 clusters with 2,000+ pods and holds the CKA certification.",
+    "ground_truth": "Kubernetes is one of the candidate's core, strongly-evidenced skills. He manages 15 clusters with 2,000+ pods and holds the CKA certification.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "easy",
@@ -563,7 +563,7 @@
   {
     "id": "q063",
     "question": "Rate the candidate's Terraform skills.",
-    "ground_truth": "Provides a model-estimated 1-5 proficiency level for Terraform, inferred from the documents with evidence. Terraform is well-evidenced — used for IaC across 100+ microservices and in the TerraLint open-source tool.",
+    "ground_truth": "Terraform is well-evidenced in the candidate's work. He uses it for infrastructure-as-code across 100+ microservices and built the TerraLint open-source tool.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",
@@ -572,7 +572,7 @@
   {
     "id": "q064",
     "question": "What are the candidate's strongest skills?",
-    "ground_truth": "Provides a ranked list of the candidate's assessed skills (Kubernetes, Terraform, AWS, Go, Prometheus) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "ground_truth": "The candidate's strongest, best-evidenced skills are Kubernetes, Terraform, AWS, Go, and Prometheus — demonstrated across his platform and infrastructure work.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",

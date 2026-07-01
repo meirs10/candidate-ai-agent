@@ -557,7 +557,7 @@
   {
     "id": "q062",
     "question": "How proficient is the candidate in React?",
-    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in React, inferred from her documents with supporting evidence. React is a core, strongly-evidenced skill — she leads a React design system of 60+ components and built the ReactA11y Hooks library.",
+    "ground_truth": "React is one of the candidate's core, strongly-evidenced skills. She leads a React design system of 60+ components and built the ReactA11y Hooks library.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "easy",
@@ -566,7 +566,7 @@
   {
     "id": "q063",
     "question": "Rate the candidate's TypeScript skills.",
-    "ground_truth": "Provides a model-estimated 1-5 proficiency level for TypeScript, inferred from the documents with evidence. TypeScript is well-evidenced — used across her React applications and the Fiverr design system.",
+    "ground_truth": "TypeScript is well-evidenced in the candidate's work. She uses it across her React applications and the Fiverr design system.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",
@@ -575,7 +575,7 @@
   {
     "id": "q064",
     "question": "What are the candidate's strongest skills?",
-    "ground_truth": "Provides a ranked list of the candidate's assessed skills (React, TypeScript, CSS3, Python, Docker) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "ground_truth": "The candidate's strongest, best-evidenced skills are React, TypeScript, CSS3, Python, and Docker — shown across her frontend and design-system work.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",

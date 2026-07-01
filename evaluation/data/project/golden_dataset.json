@@ -11,7 +11,7 @@
   {
     "id": "p002",
     "question": "Give me a high-level overview of the system.",
-    "ground_truth": "An agentic recruiter-facing chat that routes between verified structured facts, a trained 1-5 skill-proficiency scorer, document RAG, and project RAG. It has a build phase (local ingestion, embedding, and skill scoring) and an always-on serve phase (retrieval plus LLM calls).",
+    "ground_truth": "An agentic recruiter-facing chat that routes between verified structured facts, evidence from a trained skill-proficiency scorer, document RAG, and project RAG. It has a build phase (local ingestion, embedding, and skill scoring) and an always-on serve phase (retrieval plus LLM calls).",
     "category": "project",
     "expected_source": "project",
     "expected_route": "broad",
@@ -29,7 +29,7 @@
   {
     "id": "p004",
     "question": "How does the skill proficiency estimation work?",
-    "ground_truth": "A fine-tuned DeBERTa-v3 transformer with a CORAL ordinal regression head scores each listed skill from 1 to 5 using the evidence chunks retrieved from the candidate's documents. The level and its supporting evidence are saved into the structured store, and it runs only at setup time.",
+    "ground_truth": "A fine-tuned DeBERTa-v3 transformer with a CORAL ordinal regression head scores each listed skill from 1 to 5 using the evidence chunks retrieved from the candidate's documents. The score is shown to the candidate as private setup feedback, and only the supporting evidence is saved into the structured store; it runs only at setup time.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",
@@ -83,7 +83,7 @@
   {
     "id": "p010",
     "question": "What tools does the agent have?",
-    "ground_truth": "Four tools: get_structured_data for verified facts, get_skill_proficiency for the 1-5 trained skill score, search_documents for RAG over the candidate's documents, and search_project for RAG over the project's own documentation.",
+    "ground_truth": "Four tools: get_structured_data for verified facts, get_skill_proficiency for the document evidence behind a skill, search_documents for RAG over the candidate's documents, and search_project for RAG over the project's own documentation.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",
@@ -182,7 +182,7 @@
   {
     "id": "p021",
     "question": "How do you decide which tool to call?",
-    "ground_truth": "An LLM agent reasons about each question in a ReAct-style loop and picks among four tools — get_structured_data for verified facts, get_skill_proficiency for the trained 1-5 skill level, search_documents for RAG over the candidate's documents, and search_project for questions about the system itself. It routes by subject and can chain tools, for example falling back to document search if a skill was not assessed.",
+    "ground_truth": "An LLM agent reasons about each question in a ReAct-style loop and picks among four tools — get_structured_data for verified facts, get_skill_proficiency for the document evidence behind a skill, search_documents for RAG over the candidate's documents, and search_project for questions about the system itself. It routes by subject and can chain tools, for example falling back to document search if a skill was not assessed.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",
@@ -227,7 +227,7 @@
   {
     "id": "p026",
     "question": "How do you figure out how good a candidate is at a skill?",
-    "ground_truth": "A trained DeBERTa-v3 model with a CORAL ordinal head scores each skill from 1 to 5 from the evidence chunks retrieved from the candidate's own documents. The level and its evidence are computed at setup time and saved, so I return a verified, model-grounded level rather than guessing from keywords.",
+    "ground_truth": "A trained DeBERTa-v3 model with a CORAL ordinal head scores each skill from 1 to 5 from the evidence chunks retrieved from the candidate's own documents. That score is private feedback for the candidate; only the evidence behind it is saved, so when a recruiter asks I answer from that verified, model-grounded evidence rather than guessing from keywords — describing the skill qualitatively without quoting a numeric score.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",
@@ -254,7 +254,7 @@
   {
     "id": "p029",
     "question": "How do you avoid making things up?",
-    "ground_truth": "I answer only from grounded evidence — verified structured fields, the trained skill scorer, or retrieved document chunks — and the system prompt instructs me never to guess. If the information is not found I say so rather than inventing it, and RAGAS faithfulness is evaluated to check that answers stay grounded.",
+    "ground_truth": "I answer only from grounded evidence — verified structured fields, the curated skill evidence, or retrieved document chunks — and the system prompt instructs me never to guess. If the information is not found I say so rather than inventing it, and RAGAS faithfulness is evaluated to check that answers stay grounded.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",
@@ -281,7 +281,7 @@
   {
     "id": "p032",
     "question": "Where do you store your knowledge?",
-    "ground_truth": "Unstructured knowledge lives in ChromaDB, a persistent on-disk vector index with a separate collection per candidate and a separate collection for this project overview; verified facts and precomputed skill scores live in a small JSON structured store.",
+    "ground_truth": "Unstructured knowledge lives in ChromaDB, a persistent on-disk vector index with a separate collection per candidate and a separate collection for this project overview; verified facts and per-skill evidence live in a small JSON structured store.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",
@@ -290,7 +290,7 @@
   {
     "id": "p033",
     "question": "How many tools do you have and what are they?",
-    "ground_truth": "Four: get_structured_data for verified facts, get_skill_proficiency for the trained 1-5 skill level, search_documents for RAG over the candidate's documents, and search_project for RAG over the project's own documentation.",
+    "ground_truth": "Four: get_structured_data for verified facts, get_skill_proficiency for the document evidence behind a skill, search_documents for RAG over the candidate's documents, and search_project for RAG over the project's own documentation.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",
@@ -335,7 +335,7 @@
   {
     "id": "p038",
     "question": "What's the difference between how you answer a 'how good is she at Python' question and a 'how does the project work' question?",
-    "ground_truth": "A proficiency question routes to get_skill_proficiency, which returns the candidate's trained 1-5 level with its evidence; a question about how the system itself works routes to search_project, which runs RAG over this project documentation. They use different tools and different data sources.",
+    "ground_truth": "A proficiency question routes to get_skill_proficiency, which returns the document evidence found for that skill (described qualitatively, not as a numeric score); a question about how the system itself works routes to search_project, which runs RAG over this project documentation. They use different tools and different data sources.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",
@@ -353,7 +353,7 @@
   {
     "id": "p040",
     "question": "Why might you say a skill wasn't assessed?",
-    "ground_truth": "get_skill_proficiency only has levels for the skills the candidate listed and that were scored at setup time; if a recruiter asks about a skill outside that set, the tool reports it was not assessed and I fall back to searching the documents for evidence.",
+    "ground_truth": "get_skill_proficiency only has evidence for the skills the candidate listed and that were scored at setup time; if a recruiter asks about a skill outside that set, the tool reports it was not assessed and I fall back to searching the documents for evidence.",
     "category": "project",
     "expected_source": "project",
     "expected_route": "specific",

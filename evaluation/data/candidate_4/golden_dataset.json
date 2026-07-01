@@ -560,7 +560,7 @@
   {
     "id": "q062",
     "question": "How proficient is the candidate in PyTorch?",
-    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in PyTorch, inferred from his documents with supporting evidence. PyTorch is a core, well-evidenced skill used in the recommendation engine, fraud detection pipeline, and the capstone drone-navigation project.",
+    "ground_truth": "PyTorch is one of the candidate's core, well-evidenced skills. He uses it in the recommendation engine, the fraud-detection pipeline, and his capstone drone-navigation project.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "easy",
@@ -569,7 +569,7 @@
   {
     "id": "q063",
     "question": "Rate the candidate's Python skills.",
-    "ground_truth": "Provides a model-estimated 1-5 proficiency level for Python, inferred from the documents with evidence. Python is the candidate's primary language, used across all roles and projects.",
+    "ground_truth": "Python is well-evidenced as the candidate's primary language, used across all his roles and projects.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",
@@ -578,7 +578,7 @@
   {
     "id": "q064",
     "question": "What are the candidate's strongest skills?",
-    "ground_truth": "Provides a ranked list of the candidate's assessed skills (Python, PyTorch, AWS, Kubernetes, TensorFlow) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "ground_truth": "The candidate's strongest, best-evidenced skills are Python, PyTorch, AWS, Kubernetes, and TensorFlow — demonstrated across his machine-learning and infrastructure work.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",

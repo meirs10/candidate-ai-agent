@@ -169,9 +169,10 @@ def _seed_documents(candidate_dir: Path, eval_candidate_id: str):
 
 
 def _seed_skill_scores(candidate_dir: Path, eval_candidate_id: str):
-    """Estimate skill proficiencies from the ingested docs and persist them into
-    the seeded structured store — mirroring the production setup page, so the
-    agent's get_skill_proficiency tool has real data during evaluation.
+    """Estimate skills from the ingested docs and persist the EVIDENCE into the
+    seeded structured store — mirroring the production setup page, so the agent's
+    get_skill_proficiency tool has real evidence during evaluation. The model's
+    1-5 level is dropped on save (candidate-private), exactly as in production.
 
     Must run AFTER _seed_structured_data (which writes candidate.json) and
     _seed_documents (so the candidate's ChromaDB collection exists). No-op if the
@@ -189,11 +190,13 @@ def _seed_skill_scores(candidate_dir: Path, eval_candidate_id: str):
     from store.skill_proficiency import estimate_skills
     from store.structured import save_skill_results
 
-    print(f"[Harness] Estimating proficiency for {len(skills)} skill(s): {skills}")
+    print(f"[Harness] Estimating skills for {len(skills)} skill(s): {skills}")
     results = estimate_skills(eval_candidate_id, skills)
     save_skill_results(skills, results)
-    summary = ", ".join("{}={}".format(r["skill"], r["level"]) for r in results)
-    print(f"[Harness] Saved skill_scores for {candidate_dir.name} ({summary})")
+    # Console-only: show the private level so the run is inspectable. It is NOT
+    # written to disk — save_skill_results persists evidence only.
+    summary = ", ".join("{}={}(private)".format(r["skill"], r["level"]) for r in results)
+    print(f"[Harness] Saved skill evidence for {candidate_dir.name} ({summary})")
 
 
 def _cleanup_eval_collections(eval_candidate_id: str):
@@ -245,10 +248,10 @@ def _run_pipeline_on_dataset(
                 top_k=top_k,
             )
             elapsed = time.time() - start
-            print(f"  → Answer: {pipeline_result['answer'][:100]}... ({elapsed:.1f}s)")
-            print(f"  → Tool: {pipeline_result['final_tool']} | Route: {pipeline_result['route']}")
+            print(f"  -> Answer: {pipeline_result['answer'][:100]}... ({elapsed:.1f}s)")
+            print(f"  -> Tool: {pipeline_result['final_tool']} | Route: {pipeline_result['route']}")
         except Exception as e:
-            print(f"  → ERROR: {e}")
+            print(f"  -> ERROR: {e}")
             pipeline_result = {
                 "answer": f"[ERROR] {e}",
                 "contexts": [],
@@ -331,7 +334,7 @@ def _run_project_block(
                     and payload.get("category_filter") == category_filter):
                 if not _collection_has_data(EVAL_PROJECT_ID):
                     _seed_project_kb(EVAL_PROJECT_ID)
-                print(f"[Harness] ↳ Resumed project block from checkpoint "
+                print(f"[Harness] -> Resumed project block from checkpoint "
                       f"({len(payload['results'])} cached results)")
                 return payload["results"]
         except Exception as e:
@@ -354,7 +357,7 @@ def _run_project_block(
         with open(partial_path, "w", encoding="utf-8") as f:
             json.dump({"results": results, "top_k": top_k,
                        "category_filter": category_filter}, f, ensure_ascii=False)
-        print(f"[Harness] ✔ Checkpointed project block → {partial_path.name}")
+        print(f"[Harness] OK Checkpointed project block -> {partial_path.name}")
     except Exception as e:
         print(f"[Harness] WARNING: failed to checkpoint project block: {e}")
 
@@ -603,7 +606,7 @@ def run_evaluation(
                     _cleanup_eval_collections(eval_id)
                     _seed_documents(cand["dir"], eval_id)
                 results = cached
-                print(f"[Harness] ↳ Resumed {cand['name']} from checkpoint "
+                print(f"[Harness] -> Resumed {cand['name']} from checkpoint "
                       f"({len(results)} cached results)")
             else:
                 # Seed structured data
@@ -638,7 +641,7 @@ def run_evaluation(
                             "top_k": top_k,
                             "category_filter": category_filter,
                         }, f, ensure_ascii=False)
-                    print(f"[Harness] ✔ Checkpointed {cand['name']} → {partial_path.name}")
+                    print(f"[Harness] OK Checkpointed {cand['name']} -> {partial_path.name}")
                 except Exception as e:
                     print(f"[Harness] WARNING: failed to checkpoint {cand['name']}: {e}")
 
@@ -655,7 +658,7 @@ def run_evaluation(
                 "doc_files": [(str(f), dt) for f, dt in doc_files],
             })
 
-            print(f"[Harness] ✓ {cand['name']}: {len(results)} results collected")
+            print(f"[Harness] OK{cand['name']}: {len(results)} results collected")
 
         # ── Project knowledge-base questions (about the system itself) ──
         if category_filter in (None, "project"):
@@ -679,7 +682,7 @@ def run_evaluation(
                     "doc_files": [(str(PROJECT_DOC), "project")],
                     "doc_kind": "project",
                 })
-                print(f"[Harness] ✓ Project KB: {len(project_results)} results collected")
+                print(f"[Harness] OKProject KB: {len(project_results)} results collected")
 
         pipeline_elapsed = time.time() - start_time
         print(f"\n[Harness] Pipeline completed in {pipeline_elapsed:.1f}s "
@@ -710,9 +713,9 @@ def run_evaluation(
             print("\n[Harness] Dry run — skipping all evaluations")
         else:
             for component in components:
-                print(f"\n{'─' * 50}")
+                print(f"\n{'-' * 50}")
                 print(f"  Component: {component}")
-                print("─" * 50)
+                print("-" * 50)
 
                 if component == "tool_selection":
                     eval_results["tool_eval_df"] = _run_tool_selection(all_pipeline_results)

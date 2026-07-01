@@ -89,5 +89,21 @@ def run_ragas_evaluation(
     )
 
     df = results.to_pandas()
+
+    # RAGAS returns one row per sample in input order, but drops our metadata.
+    # Prepend question_id / candidate_name / category / difficulty by position so
+    # the CSV carries the same identifying columns as every other component report.
+    if len(df) == len(data):
+        meta = pd.DataFrame([{
+            "question_id": d.get("id", ""),
+            "candidate_name": d.get("candidate_name", ""),
+            "category": d.get("category", ""),
+            "difficulty": d.get("difficulty", ""),
+        } for d in data])
+        df = pd.concat([meta.reset_index(drop=True), df.reset_index(drop=True)], axis=1)
+    else:
+        print(f"[RAGAS] WARNING: {len(df)} score rows != {len(data)} inputs — "
+              f"skipping metadata columns to avoid misalignment.")
+
     print(f"[RAGAS] Evaluation complete.")
     return df

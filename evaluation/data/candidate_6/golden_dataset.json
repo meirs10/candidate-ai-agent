@@ -557,7 +557,7 @@
   {
     "id": "q062",
     "question": "How proficient is the candidate in Java?",
-    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in Java, inferred from his documents with supporting evidence. Java is a core, strongly-evidenced skill — he builds high-throughput streaming systems in Java and holds an Oracle Java SE 11 certification.",
+    "ground_truth": "Java is one of the candidate's core, strongly-evidenced skills. He builds high-throughput streaming systems in Java and holds an Oracle Java SE 11 certification.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "easy",
@@ -566,7 +566,7 @@
   {
     "id": "q063",
     "question": "Rate the candidate's Kafka skills.",
-    "ground_truth": "Provides a model-estimated 1-5 proficiency level for Kafka, inferred from the documents with evidence. Kafka is central to his work — pipelines at 1.2M events/sec, the KafkaFlow library, and Confluent Kafka certification.",
+    "ground_truth": "Kafka is central to the candidate's work. He runs pipelines at 1.2M events/sec, built the KafkaFlow library, and holds a Confluent Kafka certification.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",
@@ -575,7 +575,7 @@
   {
     "id": "q064",
     "question": "What are the candidate's strongest skills?",
-    "ground_truth": "Provides a ranked list of the candidate's assessed skills (Java, Kafka, Flink, Kubernetes, ClickHouse) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "ground_truth": "The candidate's strongest, best-evidenced skills are Java, Kafka, Flink, Kubernetes, and ClickHouse — demonstrated across his streaming and data-platform work.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",

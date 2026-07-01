@@ -557,7 +557,7 @@
   {
     "id": "q062",
     "question": "How proficient is the candidate in Python?",
-    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in Python, inferred from her documents with supporting evidence. Python is a core, well-evidenced skill used across her security tooling, automation, and malware analysis work.",
+    "ground_truth": "Python is one of the candidate's core, well-evidenced skills. She uses it extensively across her security tooling, automation, and malware analysis work.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "easy",
@@ -566,7 +566,7 @@
   {
     "id": "q063",
     "question": "Rate the candidate's Splunk skills.",
-    "ground_truth": "Provides a model-estimated 1-5 proficiency level for Splunk, inferred from the documents with evidence. Splunk is well-evidenced — she built SIEM correlation rules in Splunk and uses it for threat-intelligence correlation.",
+    "ground_truth": "Splunk is well-evidenced in the candidate's background. She built SIEM correlation rules in Splunk and uses it for threat-intelligence correlation.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",
@@ -575,7 +575,7 @@
   {
     "id": "q064",
     "question": "What are the candidate's strongest skills?",
-    "ground_truth": "Provides a ranked list of the candidate's assessed skills (Python, Burp Suite, AWS, Kubernetes, Splunk) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "ground_truth": "The candidate's strongest, best-evidenced skills are Python, Burp Suite, AWS, Kubernetes, and Splunk — shown across her security tooling, cloud, and container work.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",

@@ -1,9 +1,8 @@
 from rag.retriever import retrieve
 from store.structured import (
     get_field,
-    get_skill_score,
-    get_skill_scores,
-    PROFICIENCY_SCALE,
+    get_skill_evidence,
+    get_skill_evidence_for,
 )
 
 CANDIDATE_ID = "candidate_001"  # later: dynamic per candidate
@@ -50,18 +49,22 @@ TOOL_SCHEMAS = [
     {
         "name": "get_skill_proficiency",
         "description": (
-            "Get the candidate's proficiency LEVEL in a skill, on a 1-5 scale "
-            "(1=awareness, 2=working familiarity, 3=competent, 4=strong, 5=expert), "
-            "together with the document evidence behind it. The level is inferred "
-            "from the candidate's uploaded documents by a trained scoring model — "
-            "it is verified, not self-reported.\n"
+            "Get the concrete EVIDENCE the candidate's documents contain for a "
+            "skill — the specific passages a retrieval model surfaced for it. "
+            "This evidence was curated when the candidate set up their profile "
+            "and is the fast, grounded source for skill questions (no re-search "
+            "needed).\n"
             "USE THIS for any question about HOW GOOD / HOW STRONG / HOW PROFICIENT / "
             "HOW SKILLED / HOW EXPERIENCED the candidate is in a specific technology, "
-            "tool, or skill; to rate or score a skill; or to rank/compare their skills "
-            "(e.g. 'How good is she at Python?', 'Rate their AWS', 'What are their "
-            "strongest skills?'). Pass the skill name; omit it to list every assessed "
-            "skill with its level. If the skill was not assessed, this tool says so — "
-            "then fall back to search_documents."
+            "tool, or skill, or to characterize/compare their skills (e.g. 'How "
+            "good is she at Python?', 'How strong is their AWS?', 'What are their "
+            "key skills?'). Pass the skill name; omit it to list every assessed "
+            "skill. If the skill was not assessed, this tool says so — then fall "
+            "back to search_documents.\n"
+            "IMPORTANT: this tool returns EVIDENCE, not a numeric rating. Describe "
+            "what the evidence shows (projects, scope, responsibilities) in your "
+            "own words. Do NOT invent or state a 1-5 score, star rating, or "
+            "percentage — no such score is available to you."
         ),
         "parameters": {
             "type": "object",
@@ -69,9 +72,9 @@ TOOL_SCHEMAS = [
                 "skill": {
                     "type": "string",
                     "description": (
-                        "The skill/technology to get the proficiency level for "
+                        "The skill/technology to get the evidence for "
                         "(e.g. 'Python', 'AWS'). Leave empty to list all assessed "
-                        "skills with their levels."
+                        "skills."
                     )
                 }
             },
@@ -198,45 +201,50 @@ def get_structured_data(**kwargs) -> str:
 
 
 def get_skill_proficiency(**kwargs) -> str:
-    """Return the candidate's model-estimated proficiency for a skill (read from
-    the structured store, where it was saved at ingest time) plus its evidence."""
+    """Return the curated document EVIDENCE for a candidate skill (read from the
+    structured store, where it was saved at profile-setup time).
+
+    Deliberately returns evidence only — never the trained model's 1-5 level,
+    which is candidate-private and not persisted. The agent grounds its answer in
+    these passages and describes the skill qualitatively.
+    """
     # Accept any argument name the LLM uses (skill, query, field, ...)
     skill = kwargs.get("skill", next(iter(kwargs.values()), ""))
     if isinstance(skill, dict):
         skill = skill.get("skill", skill.get("description", str(skill)))
     skill = str(skill).strip()
 
-    scores = get_skill_scores()
-    if not scores:
-        return ("No skill proficiency estimates are available for this candidate. "
+    evidence = get_skill_evidence()
+    if not evidence:
+        return ("No curated skill evidence is available for this candidate. "
                 "Use search_documents to look for skill evidence in the documents.")
 
-    # No specific skill → ranked overview of everything assessed
+    # No specific skill → list everything that was assessed
     if not skill:
-        ranked = sorted(scores, key=lambda s: s.get("level", 0), reverse=True)
-        lines = [f"- {s['skill']}: {s['level']}/5 ({PROFICIENCY_SCALE.get(s['level'], '')})"
-                 for s in ranked]
-        return "Estimated skill proficiencies (1-5):\n" + "\n".join(lines)
+        listed = ", ".join(e["skill"] for e in evidence)
+        return ("Assessed skills (each has supporting evidence from the "
+                f"documents): {listed}.\n"
+                "Ask about any one of them to see the specific evidence, or use "
+                "search_documents for more detail.")
 
-    entry = get_skill_score(skill)
+    entry = get_skill_evidence_for(skill)
     if entry is None:
-        listed = ", ".join(s["skill"] for s in scores)
+        listed = ", ".join(e["skill"] for e in evidence)
         return (f"'{skill}' was not among the candidate's assessed skills "
                 f"(assessed: {listed}). Use search_documents to check the documents directly.")
 
-    level = entry.get("level", 0)
-    lines = [
-        f"{entry['skill']} — estimated proficiency: {level}/5 "
-        f"({PROFICIENCY_SCALE.get(level, '')}).",
-        "Scale: 1=awareness, 2=working familiarity, 3=competent, 4=strong, 5=expert.",
-        "This is model-inferred from the candidate's documents, not self-reported.",
-    ]
     chunks = entry.get("chunks", [])
-    if chunks:
-        lines.append("Evidence it was based on:")
-        for c in chunks[:3]:
-            preview = c[:300] + ("…" if len(c) > 300 else "")
-            lines.append(f"- {preview}")
+    if not chunks:
+        return (f"'{entry['skill']}' was assessed but no supporting passages were "
+                "retrieved for it. Use search_documents to check the documents directly.")
+
+    lines = [
+        f"Document evidence for '{entry['skill']}' (describe what it shows in your "
+        "own words; do not state a numeric rating):",
+    ]
+    for c in chunks[:3]:
+        preview = c[:300] + ("…" if len(c) > 300 else "")
+        lines.append(f"- {preview}")
     return "\n".join(lines)
 
 

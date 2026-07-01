@@ -267,9 +267,13 @@ st.divider()
 st.header("Skills")
 st.markdown(
     "List the skills you want assessed (one per line, or comma-separated). "
-    "Once your documents are uploaded above, the system estimates your "
-    "proficiency in each on a **1–5** scale, inferred *from those documents* — "
-    "not self-reported. The evidence behind each score is shown below."
+    "Once your documents are uploaded above, a trained model estimates how much "
+    "**evidence** your documents show for each skill, on a **1–5** scale.\n\n"
+    ":gray[This score is private feedback for **you** — it helps you see which "
+    "skills are well-supported and which need more evidence. It is **not** shared "
+    "with recruiters and the AI agent never reports it. Only the underlying "
+    "evidence passages are saved, so the agent can answer skill questions from "
+    "real material in your documents.]"
 )
 
 skills_text = st.text_area(
@@ -298,17 +302,40 @@ if st.button("Estimate Skill Proficiency"):
         st.session_state["skill_scores"] = results
         st.success("Skill proficiency estimated and saved.")
 
-# Show the latest estimates (freshly computed this run, else previously saved)
-skill_results = st.session_state.get("skill_scores", data.get("skill_scores", []))
+# Show the latest estimates. The score is only ever in memory this run — it is
+# NOT read back from disk (only evidence is persisted), so previously-saved
+# skills show as evidence-only after a reload.
+skill_results = st.session_state.get("skill_scores", [])
 if skill_results:
-    st.subheader("Estimated proficiency")
-    SCALE = {1: "awareness", 2: "working familiarity", 3: "competent",
-             4: "strong", 5: "expert"}
+    st.subheader("Your evidence strength by skill")
+    st.caption(
+        "Ranked from strongest to weakest evidence. This view is just for you."
+    )
+    # Level → (label, Streamlit color token, emoji) for a visually perceptive
+    # ranking that reads at a glance.
+    SCALE = {
+        5: ("expert",              "green",  "🟢"),
+        4: ("strong",              "green",  "🟢"),
+        3: ("competent",           "orange", "🟡"),
+        2: ("working familiarity", "orange", "🟠"),
+        1: ("awareness",           "red",    "🔴"),
+    }
+    weak = []
     for r in sorted(skill_results, key=lambda x: x.get("level", 0), reverse=True):
-        level = r.get("level", 0)
-        st.markdown(f"**{r['skill']}** — {level}/5 · _{SCALE.get(level, '')}_")
+        level = int(r.get("level", 0))
+        label, color, dot = SCALE.get(level, ("", "gray", "⚪"))
+        st.markdown(
+            f"{dot} **{r['skill']}** — :{color}[{level}/5 · {label}]"
+        )
         st.progress(level / 5)
-        with st.expander("Evidence used for this estimate"):
+        if level <= 2:
+            weak.append(r["skill"])
+            st.caption(
+                "⚠️ Limited evidence. Consider uploading a document (CV bullet, "
+                "project write-up, recommendation) that shows this skill in "
+                "action to strengthen it."
+            )
+        with st.expander("Evidence found for this skill"):
             chunks = r.get("chunks", [])
             if chunks:
                 for c in chunks:
@@ -317,15 +344,30 @@ if skill_results:
             else:
                 st.caption("No supporting text was retrieved from the documents.")
 
+    if weak:
+        st.info(
+            "**Tip:** these skills have the weakest evidence — "
+            f"**{', '.join(weak)}**. Adding documents that demonstrate them will "
+            "give the AI agent stronger material to represent you with."
+        )
+
 st.divider()
 
 # ── Save ────────────────────────────────────────────────────────────────────
 
-# Sync education + skills from this run's inputs into data before saving
+# Sync education + skills from this run's inputs into data before saving.
+# Only the EVIDENCE is persisted — the model's 1-5 level is dropped so it never
+# reaches recruiters or the agent.
 data["education"] = st.session_state.education
 data["skills"] = parse_skills(skills_text)
 if "skill_scores" in st.session_state:
-    data["skill_scores"] = st.session_state["skill_scores"]
+    data["skill_evidence"] = [
+        {"skill": r.get("skill", ""),
+         "chunks": r.get("chunks", []),
+         "doc_ids": r.get("doc_ids", [])}
+        for r in st.session_state["skill_scores"]
+    ]
+data.pop("skill_scores", None)  # never persist the score
 
 if st.button("Save Profile", type="primary", use_container_width=True):
     missing = validate_profile(data)

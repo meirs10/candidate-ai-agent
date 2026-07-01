@@ -61,8 +61,9 @@ def run_tool_evaluation(data: list[dict]) -> pd.DataFrame:
 
     Returns:
         DataFrame with columns:
-            id, question, candidate_id, candidate_name,
-            expected_tool, actual_tool, tool_correct, trajectory_summary
+            question_id, candidate_name, category, difficulty, question,
+            candidate_id, expected_tool, accepted_tools, actual_tool,
+            tool_correct, trajectory_summary
     """
     rows = []
     for d in data:
@@ -80,10 +81,12 @@ def run_tool_evaluation(data: list[dict]) -> pd.DataFrame:
         traj_summary = " → ".join(t["tool"] for t in trajectory) if trajectory else "no tools"
 
         rows.append({
-            "id": d["id"],
+            "question_id": d["id"],
+            "candidate_name": d.get("candidate_name", ""),
+            "category": d.get("category", ""),
+            "difficulty": d.get("difficulty", ""),
             "question": d["question"],
             "candidate_id": d.get("candidate_id", ""),
-            "candidate_name": d.get("candidate_name", ""),
             "expected_tool": expected,
             "accepted_tools": "|".join(sorted(accepted)),
             "actual_tool": actual,

@@ -137,10 +137,11 @@ def run_retrieval_gate_evaluation(
         loss_stage = _classify(in_index, in_fused, in_final)
 
         rows.append({
-            "id": r.get("id", ""),
-            "question": r.get("question", ""),
+            "question_id": r.get("id", ""),
             "candidate_name": r.get("candidate_name", ""),
             "category": r.get("category", ""),
+            "difficulty": r.get("difficulty", ""),
+            "question": r.get("question", ""),
             "target_sim": round(target_sim, 3),
             "in_index": in_index,
             "in_fused_pool": in_fused,

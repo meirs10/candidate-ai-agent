@@ -145,9 +145,11 @@ def run_refusal_evaluation(data: list[dict]) -> pd.DataFrame:
             classification = "FN"  # missed refusal
 
         rows.append({
-            "id": d["id"],
-            "question": question,
+            "question_id": d["id"],
+            "candidate_name": d.get("candidate_name", ""),
             "category": d["category"],
+            "difficulty": d.get("difficulty", ""),
+            "question": question,
             "should_refuse": should_refuse,
             "refused": refused,
             "classification": classification,
@@ -175,12 +177,12 @@ def run_refusal_evaluation(data: list[dict]) -> pd.DataFrame:
     recall = tp / (tp + fn) if (tp + fn) > 0 else 1.0
 
     print(f"\n[Refusal Eval] Confusion Matrix ({len(df)} questions):")
-    print(f"  ┌─────────────────────────┬───────────┬───────────┐")
-    print(f"  │                         │ Refused   │ Answered  │")
-    print(f"  ├─────────────────────────┼───────────┼───────────┤")
-    print(f"  │ Should refuse  (n={total_negative:<3})  │ TP = {tp:<4}│ FN = {fn:<4}│")
-    print(f"  │ Should answer  (n={total_positive:<3})  │ FP = {fp:<4}│ TN = {tn:<4}│")
-    print(f"  └─────────────────────────┴───────────┴───────────┘")
+    print(f"  +-------------------------+-----------+-----------+")
+    print(f"  |                         | Refused   | Answered  |")
+    print(f"  +-------------------------+-----------+-----------+")
+    print(f"  | Should refuse  (n={total_negative:<3})  | TP = {tp:<4}| FN = {fn:<4}|")
+    print(f"  | Should answer  (n={total_positive:<3})  | FP = {fp:<4}| TN = {tn:<4}|")
+    print(f"  +-------------------------+-----------+-----------+")
     print(f"  Accuracy:  {accuracy:.1%}")
     print(f"  Precision: {precision:.1%}")
     print(f"  Recall:    {recall:.1%}")

@@ -554,7 +554,7 @@
   {
     "id": "q062",
     "question": "How proficient is the candidate in SQL?",
-    "ground_truth": "The candidate has a verified, model-estimated proficiency level (1-5) in SQL, inferred from her documents with supporting evidence. SQL is a well-evidenced data skill used for analytics, reporting, and predictive modelling.",
+    "ground_truth": "SQL is a well-evidenced data skill for the candidate, used for analytics, reporting, and predictive modelling.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "easy",
@@ -563,7 +563,7 @@
   {
     "id": "q063",
     "question": "Rate the candidate's Tableau skills.",
-    "ground_truth": "Provides a model-estimated 1-5 proficiency level for Tableau, inferred from the documents with evidence. Tableau is listed among her data and analytics visualization tools.",
+    "ground_truth": "Tableau is evidenced in the candidate's background, listed among her data and analytics visualization tools.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",
@@ -572,7 +572,7 @@
   {
     "id": "q064",
     "question": "What are the candidate's strongest skills?",
-    "ground_truth": "Provides a ranked list of the candidate's assessed skills (SQL, Python, Tableau, Amplitude, Mixpanel) with their estimated 1-5 proficiency levels, inferred from the documents.",
+    "ground_truth": "The candidate's strongest, best-evidenced skills are SQL, Python, Tableau, Amplitude, and Mixpanel — shown across her analytics and product-data work.",
     "expected_source": "skill",
     "category": "proficiency",
     "difficulty": "medium",

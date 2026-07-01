@@ -52,10 +52,12 @@ phase and a serve phase.
 The build phase runs locally and only occasionally. The candidate uploads
 documents; the system parses them, performs section-aware chunking, embeds the
 chunks into a vector store, generates per-document summaries, and runs the
-trained scoring model to estimate skill proficiency. This produces two
-persistent artifacts: a ChromaDB vector index (the unstructured knowledge) and a
-small JSON structured store of verified facts plus precomputed skill scores and
-their evidence. All heavyweight machine learning — document parsing, OCR, the
+trained scoring model to score each listed skill. This produces two persistent
+artifacts: a ChromaDB vector index (the unstructured knowledge) and a small JSON
+structured store of verified facts plus, for each listed skill, the supporting
+evidence found in the documents. The model's 1-to-5 score itself is shown to the
+candidate as private setup feedback and is deliberately not persisted (see the
+skill-proficiency section). All heavyweight machine learning — document parsing, OCR, the
 DeBERTa skill scorer, and optionally a local embedder and reranker — only ever
 runs in this phase, on the candidate's own machine.
 
@@ -127,13 +129,15 @@ desired job title, job description, monthly salary expectation, preferred
 location, availability, work type, and openness to relocation. These are exact
 fields, never retrieved or paraphrased.
 
-get_skill_proficiency returns the candidate's proficiency LEVEL (1 to 5) in a
-named skill, inferred by the trained scoring model from the candidate's
-documents, together with the supporting evidence chunks. With no skill named it
-lists every assessed skill ranked by level. This is the tool for any "how
-good / how strong / how proficient / how skilled / how experienced" question, or
-to rate or rank skills. If a requested skill was not assessed, the tool says so
-and the agent falls back to document search.
+get_skill_proficiency returns the supporting evidence found in the candidate's
+documents for a named skill — the exact passages a retrieval model surfaced for
+it at setup time. With no skill named it lists every assessed skill. This is the
+tool for any "how good / how strong / how proficient / how skilled / how
+experienced" question, or to characterize skills. It intentionally does NOT
+return a numeric rating: the trained model's 1-to-5 score is candidate-private
+(see below), so the agent describes the evidence qualitatively rather than
+quoting a level. If a requested skill was not assessed, the tool says so and the
+agent falls back to document search.
 
 search_documents runs the full RAG pipeline over the candidate's unstructured
 documents for anything not covered by the other two tools: projects, detailed
@@ -259,10 +263,15 @@ day-to-day use, 4 = strong / leads work in it, 5 = expert / authority.
 At setup time, for each skill the candidate lists, the system retrieves that
 skill's supporting evidence chunks from the candidate's documents (routing and
 summary are off here, because a bare skill name is always a specific query) and
-runs the trained scorer. The result — a level plus the exact evidence chunks it
-was based on — is written into the structured store. The recruiter chat then
-surfaces this verified, model-grounded level instantly via get_skill_proficiency
-instead of recomputing or guessing at query time.
+runs the trained scorer. The 1-to-5 result is shown to the candidate right there
+in the setup page as private feedback — a visual, ranked view that tells them
+which skills are well-supported and which need more evidence — so they can
+strengthen a weak profile before sharing it. Only the evidence chunks are written
+into the structured store; the numeric score is deliberately never persisted and
+never exposed to recruiters. The recruiter chat then answers skill questions from
+that curated evidence instantly via get_skill_proficiency — grounded in real
+passages but without quoting a score — instead of recomputing or guessing at
+query time.
 
 The scorer itself is a fine-tuned DeBERTa-v3 transformer with a CORAL ordinal
 regression head. CORAL is used because the 1-to-5 levels are ordered, not
@@ -347,9 +356,10 @@ purpose, to avoid colliding with the skill estimator's own internal flat
 STRUCTURED STORE AND VECTOR STORE
 
 The structured store is a small JSON file holding the verified profile fields
-plus the precomputed skill scores and their evidence. It is the source for
-get_structured_data and get_skill_proficiency, both of which therefore answer
-instantly and deterministically.
+plus, per listed skill, the supporting evidence found in the documents — but not
+the model's numeric score, which is candidate-private and never written to disk.
+It is the source for get_structured_data and get_skill_proficiency, both of which
+therefore answer instantly and deterministically.
 
 The vector store is ChromaDB, used as a persistent on-disk index with cosine
 similarity. Each candidate's chunks live in their own collection, with a paired
@@ -404,7 +414,7 @@ THE EVALUATION DATA
 Evaluation uses six synthetic candidates with deliberately varied document
 formats — PDF, DOCX, TXT, Markdown, and image/PNG specifically to exercise the
 OCR path. Each candidate has a golden dataset of around 75 questions spanning
-personal facts, education, experience, preferences, skills, proficiency levels,
+personal facts, education, experience, preferences, skills, skill proficiency,
 projects, certifications, complex multi-tool questions, and deliberately
 out-of-scope "negative" questions that the agent should refuse. A separate
 project-knowledge dataset asks questions about this system itself; those
@@ -469,7 +479,7 @@ validated training-data pipeline built because the needed labels did not exist;
 and a clean build-versus-serve split with three pluggable provider layers that
 lets one codebase run entirely on free local open-source models or deploy as a
 cheap, secured, always-on cloud service. The guiding principles throughout are
-grounding (never answer beyond the evidence), verifiability (every skill level
+grounding (never answer beyond the evidence), verifiability (every skill claim
 and fact traces back to a source), honesty (refuse the unknown and the
 out-of-scope), and portability (local for building and proving, cloud for
 serving).

@@ -63,7 +63,7 @@ if __name__ == "__main__":
         # Rebuild the HTML from saved data only — skip the whole evaluation.
         from evaluation.regenerate_report import regenerate_html
         out = regenerate_html()
-        print(f"\n✅ HTML report regenerated from saved data: {out}")
+        print(f"\n[OK]HTML report regenerated from saved data: {out}")
         raise SystemExit(0)
 
     results = run_evaluation(
@@ -78,15 +78,15 @@ if __name__ == "__main__":
         resume=RESUME,
     )
 
-    # ── Candidates Summary ──
+    # -- Candidates Summary --
     if results.get("candidates"):
-        print("\n── Candidates ──")
+        print("\n-- Candidates --")
         for c in results["candidates"]:
             print(f"  {c['name']} ({c['eval_id']}): {c['question_count']} questions, {c['doc_count']} docs")
 
-    # ── Tool Selection Summary ──
+    # -- Tool Selection Summary --
     if results["tool_eval_df"] is not None:
-        print("\n── Tool Selection Summary ──")
+        print("\n-- Tool Selection Summary --")
         df = results["tool_eval_df"]
         total = len(df)
         correct = df["tool_correct"].sum()
@@ -97,9 +97,9 @@ if __name__ == "__main__":
                 gc = group["tool_correct"].sum()
                 print(f"    {name}: {gc}/{len(group)} ({gc/len(group)*100:.1f}%)")
 
-    # ── RAGAS Summary ──
+    # -- RAGAS Summary --
     if results["ragas_df"] is not None:
-        print("\n── RAGAS Summary (RAG-only) ──")
+        print("\n-- RAGAS Summary (RAG-only) --")
         df = results["ragas_df"]
         metric_cols = [c for c in df.columns if c not in ("user_input", "response", "retrieved_contexts", "reference")]
         for col in metric_cols:
@@ -107,9 +107,9 @@ if __name__ == "__main__":
             if len(vals) > 0:
                 print(f"  {col:30s}  mean={vals.mean():.4f}  min={vals.min():.4f}  max={vals.max():.4f}")
 
-    # ── Retrieval Gate Summary ──
+    # -- Retrieval Gate Summary --
     if results.get("retrieval_gate_df") is not None and len(results["retrieval_gate_df"]) > 0:
-        print("\n── Retrieval Gate Summary (specific docs questions) ──")
+        print("\n-- Retrieval Gate Summary (specific docs questions) --")
         df = results["retrieval_gate_df"]
         total = len(df)
         for stage in ("ok", "recall", "rerank", "ingestion"):
@@ -118,17 +118,17 @@ if __name__ == "__main__":
                 label = "reached answer" if stage == "ok" else f"lost @ {stage}"
                 print(f"  {label:18s}: {n}/{total} ({n/total*100:.1f}%)")
 
-    # ── GEval Summary ──
+    # -- GEval Summary --
     if results["geval_df"] is not None:
-        print("\n── GEval Correctness Summary ──")
+        print("\n-- GEval Correctness Summary --")
         df = results["geval_df"]
         vals = df["deepeval_correctness"].dropna()
         if len(vals) > 0:
             print(f"  {'Correctness':30s}  mean={vals.mean():.4f}")
 
-    # ── Refusal Summary ──
+    # -- Refusal Summary --
     if results["refusal_df"] is not None:
-        print("\n── Refusal Summary ──")
+        print("\n-- Refusal Summary --")
         df = results["refusal_df"]
         tp = (df["classification"] == "TP").sum()
         tn = (df["classification"] == "TN").sum()
@@ -138,17 +138,17 @@ if __name__ == "__main__":
         print(f"  Accuracy: {accuracy:.1%} (TP={tp} TN={tn} FP={fp} FN={fn})")
         print(f"  Hallucinations: {df['hallucinated'].sum()}")
 
-    # ── Router Summary ──
+    # -- Router Summary --
     if results["router_df"] is not None:
-        print("\n── Router Accuracy Summary ──")
+        print("\n-- Router Accuracy Summary --")
         df = results["router_df"]
         total = len(df)
         correct = df["route_correct"].sum()
         print(f"  Accuracy: {correct}/{total} ({correct/total*100:.1f}%)")
 
-    # ── Ingestion Summary ──
+    # -- Ingestion Summary --
     if results["ingestion_report"] is not None:
-        print("\n── Ingestion Quality Summary ──")
+        print("\n-- Ingestion Quality Summary --")
         for eval_id, entry in results["ingestion_report"].items():
             report = entry["report"]
             name = entry["name"]
@@ -161,4 +161,4 @@ if __name__ == "__main__":
             print(f"    Embedding hit rate: {ep.get('hit_rate', 0)*100:.0f}%")
 
     if results.get("report_path"):
-        print(f"\n✅ Report saved to: {results['report_path']}")
+        print(f"\n[OK]Report saved to: {results['report_path']}")

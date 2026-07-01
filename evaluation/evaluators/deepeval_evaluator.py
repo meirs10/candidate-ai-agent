@@ -106,19 +106,39 @@ def run_deepeval_geval(
 
     correctness = GEval(
         name="Correctness",
-        # NOTE: do NOT specify a numeric scale here (e.g. "score 1 if correct").
-        # GEval scores internally on a 0-10 scale and divides by 10, so telling
-        # the judge "1 = fully correct" makes correct answers come back as 1/10 = 0.1.
-        # Keep the criteria purely qualitative and let GEval handle the scale.
-        criteria=(
-            "Evaluate whether the Actual Output is factually correct and complete "
-            "with respect to the Expected Output. The Actual Output is correct when "
-            "it conveys the same facts as the Expected Output. Penalize factual "
-            "contradictions and missing key facts. Do NOT penalize differences in "
-            "wording, formatting (markdown, bold, links), verbosity, or additional "
-            "relevant context, as long as the core facts agree with the Expected Output."
-        ),
+        # NOTE: do NOT specify a numeric scale in these steps (e.g. "give 1 if
+        # correct"). GEval scores internally on a 0-10 scale and divides by 10, so
+        # anchoring the judge to "1 = fully correct" makes correct answers come
+        # back as 1/10 = 0.1. Keep the rubric qualitative and let GEval map it.
+        #
+        # Explicit evaluation_steps (instead of a free-form `criteria`) so the
+        # judge follows a fixed rubric every run — no per-run step auto-generation.
+        # The rubric is reference-INCLUSION, not reference-equality: the Expected
+        # Output is the set of facts that MUST be present; an answer that contains
+        # all of them is fully correct even if it adds more correct detail or is
+        # phrased/formatted differently. The Input is provided so the judge knows
+        # what was actually asked and which Expected facts are the key ones.
+        evaluation_steps=[
+            "Read the Input (the question), the Expected Output (the reference "
+            "answer, treated as the set of correct key facts), and the Actual "
+            "Output (the answer being judged).",
+            "From the Expected Output, list the key facts needed to answer the "
+            "Input. These are the ONLY facts required for a fully correct answer.",
+            "The Actual Output is fully correct when it states every key fact from "
+            "the Expected Output and contradicts none of them. It does NOT need to "
+            "match the Expected Output word-for-word; a correct answer that also "
+            "includes additional true, relevant detail is still fully correct.",
+            "Reduce the score in proportion to how many key facts from the Expected "
+            "Output are missing from the Actual Output.",
+            "Strongly penalize any factual contradiction: a different value, name, "
+            "date or number, or claiming the information is unavailable/unknown "
+            "when the Expected Output provides it.",
+            "Do NOT penalize differences in wording, phrasing, formatting (markdown, "
+            "bold, links), length or verbosity, or extra correct context, as long "
+            "as all key facts from the Expected Output are present and uncontradicted.",
+        ],
         evaluation_params=[
+            LLMTestCaseParams.INPUT,
             LLMTestCaseParams.ACTUAL_OUTPUT,
             LLMTestCaseParams.EXPECTED_OUTPUT,
         ],
@@ -126,21 +146,28 @@ def run_deepeval_geval(
         threshold=0.5,
     )
 
+    # Keep each source dict next to its test case so per-question metadata
+    # (question_id / candidate_name / category / difficulty) lands in the CSV.
     test_cases = []
     for d in data:
-        test_cases.append(
+        test_cases.append((
+            d,
             LLMTestCase(
                 input=d["question"],
                 actual_output=d["answer"],
                 expected_output=d["ground_truth"],
-            )
-        )
+            ),
+        ))
 
     print(f"[DeepEval] Evaluating {len(test_cases)} test cases for GEval Correctness...")
 
     rows = []
-    for i, tc in enumerate(test_cases):
+    for i, (d, tc) in enumerate(test_cases):
         row = {
+            "question_id": d.get("id", ""),
+            "candidate_name": d.get("candidate_name", ""),
+            "category": d.get("category", ""),
+            "difficulty": d.get("difficulty", ""),
             "question": tc.input,
             "ground_truth": tc.expected_output,
             "actual_answer": tc.actual_output,
