@@ -23,6 +23,10 @@ COMPONENTS = None
 # Filter golden dataset to a specific category, or None for all
 CATEGORY_FILTER = None
 
+# Cap questions per candidate (and the project block) — None = all. Use a small
+# number (e.g. 6) with CANDIDATES=[1] for a quick end-to-end smoke run.
+QUESTION_LIMIT = None
+
 # Report output format: "html", "json", or "csv"
 REPORT_FORMAT = "html"
 
@@ -76,6 +80,7 @@ if __name__ == "__main__":
         report_format=REPORT_FORMAT,
         reuse_results=REUSE_PIPELINE_RESULTS,
         resume=RESUME,
+        question_limit=QUESTION_LIMIT,
     )
 
     # -- Candidates Summary --

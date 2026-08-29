@@ -118,6 +118,7 @@ def _get_doc_files(candidate_dir: Path) -> list[tuple[Path, str]]:
 def _load_golden_dataset(
     candidate_dir: Path,
     category_filter: str | None = None,
+    question_limit: int | None = None,
 ) -> list[dict]:
     """Load golden_dataset.json from the candidate's directory."""
     path = candidate_dir / "golden_dataset.json"
@@ -125,7 +126,18 @@ def _load_golden_dataset(
         dataset = json.load(f)
     if category_filter:
         dataset = [q for q in dataset if q["category"] == category_filter]
+    dataset = _subsample(dataset, question_limit)
     return dataset
+
+
+def _subsample(dataset: list[dict], question_limit: int | None) -> list[dict]:
+    """Down-sample to `question_limit` items, evenly spaced across the dataset so
+    the batch spans all categories (the golden datasets are grouped by category,
+    so taking the first N would be one category only). None → unchanged."""
+    if not question_limit or question_limit >= len(dataset):
+        return dataset
+    step = max(1, len(dataset) // question_limit)
+    return dataset[::step][:question_limit]
 
 
 def _seed_structured_data(candidate_dir: Path) -> str | None:
@@ -258,6 +270,7 @@ def _run_pipeline_on_dataset(
                 "tool_trajectory": [],
                 "final_tool": None,
                 "route": None,
+                "tool_scores": None,
             }
             elapsed = time.time() - start
 
@@ -276,6 +289,7 @@ def _run_pipeline_on_dataset(
             "tool_trajectory": pipeline_result["tool_trajectory"],
             "final_tool": pipeline_result["final_tool"],
             "route": pipeline_result["route"],
+            "tool_scores": pipeline_result.get("tool_scores"),
             "latency_s": round(elapsed, 2),
             "candidate_id": eval_candidate_id,
             "candidate_name": candidate_name,
@@ -301,6 +315,7 @@ def _run_project_block(
     category_filter: str | None,
     resume: bool,
     partial_dir: Path,
+    question_limit: int | None = None,
 ) -> list[dict]:
     """Run the agent over the project-knowledge golden dataset.
 
@@ -317,6 +332,7 @@ def _run_project_block(
         dataset = json.load(f)
     if category_filter:
         dataset = [q for q in dataset if q.get("category") == category_filter]
+    dataset = _subsample(dataset, question_limit)
     if not dataset:
         return []
 
@@ -404,18 +420,21 @@ def _run_rag_quality(pipeline_results: list[dict], judge_model: str) -> pd.DataF
 
 
 def _run_geval(pipeline_results: list[dict], judge_model: str) -> pd.DataFrame | None:
-    """Evaluate answer correctness via GEval on all questions.
+    """Evaluate answer correctness via GEval.
 
-    Includes negative questions — their ground truths are expected refusal
-    statements, so GEval scores whether the agent's refusal wording is correct.
+    Negative (out-of-scope) questions are EXCLUDED: their ground truths are canned
+    refusal statements, and GEval ends up scoring whether the refusal's wording
+    matches rather than answer correctness — noisy and misleading. Refusal
+    behaviour on negatives is already measured by the refusal evaluator.
     """
-    print(f"[Harness] {len(pipeline_results)} questions for GEval")
+    data = [r for r in pipeline_results if r.get("category") != "negative"]
+    print(f"[Harness] {len(data)} questions for GEval (negatives excluded)")
 
-    if not pipeline_results:
+    if not data:
         return None
 
     from evaluation.evaluators.deepeval_evaluator import run_deepeval_geval
-    df = run_deepeval_geval(pipeline_results, judge_model=judge_model)
+    df = run_deepeval_geval(data, judge_model=judge_model)
     df.to_csv(REPORTS_DIR / "geval_scores.csv", index=False)
     return df
 
@@ -501,6 +520,7 @@ def run_evaluation(
     report_format: str = "html",
     reuse_results: bool = False,
     resume: bool = False,
+    question_limit: int | None = None,
 ) -> dict:
     """
     Multi-candidate component-based evaluation pipeline.
@@ -579,7 +599,7 @@ def run_evaluation(
             eval_id = cand["eval_id"]
             eval_candidate_ids.append(eval_id)
 
-            dataset = _load_golden_dataset(cand["dir"], category_filter)
+            dataset = _load_golden_dataset(cand["dir"], category_filter, question_limit)
 
             # Per-candidate checkpoint. Tied to the run config (top_k + category)
             # so a checkpoint from a different setting is never silently reused.
@@ -663,7 +683,7 @@ def run_evaluation(
         # ── Project knowledge-base questions (about the system itself) ──
         if category_filter in (None, "project"):
             project_results = _run_project_block(
-                top_k, category_filter, resume, partial_dir
+                top_k, category_filter, resume, partial_dir, question_limit
             )
             if project_results:
                 all_pipeline_results.extend(project_results)

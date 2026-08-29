@@ -6,7 +6,14 @@ without requiring Streamlit or a running server.
 """
 
 import agent.tools as tools_module
-from agent.agent import run as agent_run
+from agent.agent import run as agent_run, get_last_tool_scores
+
+# Precedence for reducing a multi-tool trajectory to a single "final_tool": the
+# tool that most grounds the answer wins, so retrieval questions still register
+# for the gate / RAGAS filters even when several tools ran.
+_FINAL_TOOL_PRECEDENCE = (
+    "search_documents", "search_project", "get_skill_proficiency", "get_structured_data",
+)
 
 
 def run_agent_answer(question: str) -> tuple[str, list]:
@@ -35,7 +42,12 @@ def run_full_pipeline(
     """
     answer, trajectory = run_agent_answer(question)
 
-    final_tool = trajectory[-1]["tool"] if trajectory else None
+    # Per-tool probabilities from the scored router (all four tools).
+    tool_scores = get_last_tool_scores()
+
+    # Reduce the (possibly multi-tool) trajectory to one grounding tool.
+    ran = {t["tool"] for t in trajectory}
+    final_tool = next((name for name in _FINAL_TOOL_PRECEDENCE if name in ran), None)
 
     # Extract retrieval metadata captured during the agent run
     # (avoids a second retrieval call which would be non-deterministic).
@@ -57,6 +69,7 @@ def run_full_pipeline(
         "final_tool": final_tool,
         "route": route,
         "fused_pool": fused_pool,
+        "tool_scores": tool_scores,
     }
 
 

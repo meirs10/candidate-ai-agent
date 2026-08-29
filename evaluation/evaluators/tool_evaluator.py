@@ -63,7 +63,8 @@ def run_tool_evaluation(data: list[dict]) -> pd.DataFrame:
         DataFrame with columns:
             question_id, candidate_name, category, difficulty, question,
             candidate_id, expected_tool, accepted_tools, actual_tool,
-            tool_correct, trajectory_summary
+            tool_correct, prob_structured, prob_skill, prob_docs, prob_project,
+            trajectory_summary
     """
     rows = []
     for d in data:
@@ -78,7 +79,11 @@ def run_tool_evaluation(data: list[dict]) -> pd.DataFrame:
         accepted = {expected} | set(d.get("accept_sources") or [])
 
         # Build a short summary of the trajectory
-        traj_summary = " → ".join(t["tool"] for t in trajectory) if trajectory else "no tools"
+        traj_summary = " -> ".join(t["tool"] for t in trajectory) if trajectory else "no tools"
+
+        # Per-tool probabilities from the scored router (keyed by source label).
+        # Saved so a threshold can be chosen empirically from a real run.
+        scores = d.get("tool_scores") or {}
 
         rows.append({
             "question_id": d["id"],
@@ -91,6 +96,10 @@ def run_tool_evaluation(data: list[dict]) -> pd.DataFrame:
             "accepted_tools": "|".join(sorted(accepted)),
             "actual_tool": actual,
             "tool_correct": actual in accepted,
+            "prob_structured": scores.get("structured"),
+            "prob_skill": scores.get("skill"),
+            "prob_docs": scores.get("docs"),
+            "prob_project": scores.get("project"),
             "trajectory_summary": traj_summary,
         })
 

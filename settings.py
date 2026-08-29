@@ -57,6 +57,23 @@ ROUTER_MODEL = _get("ROUTER_MODEL", "claude-haiku-4-5") or "claude-haiku-4-5"
 # Local fallback model name when LLM_PROVIDER == "ollama".
 OLLAMA_MODEL = _get("OLLAMA_MODEL", "qwen3") or "qwen3"
 
+# ── Tool selection ───────────────────────────────────────────────────────────
+# The agent scores every tool 0..1 for a question — an INDEPENDENT per-tool
+# relevance probability (see agent/tool_router.py) — then:
+#   1. Runs every tool whose score >= TOOL_SELECT_THRESHOLD, concurrently. A low
+#      bar (0.20) maximizes recall of the correct tool while still averaging ~1.3
+#      tools/question (the scores are confident), and never fires on out-of-scope
+#      questions (they score all-low → no tool → refuse).
+#   2. RESULT-BASED ESCALATION: if every selected tool comes back empty (no chunks
+#      / "Not provided" / skill-not-assessed), run the REMAINING tools concurrently
+#      and add their retrieved context — a pay-per-need safety net for the rare
+#      case the router missed, instead of pre-firing every tool on every question.
+# 0.30 chosen from the tool-score probe (after the improved router prompt): the
+# knee at recall 95.5% / ~1.17 tools per question, above the false-refusal zone;
+# escalation backstops the residual misses. Tune from the probe or the CSV.
+TOOL_SELECT_THRESHOLD = float(_get("TOOL_SELECT_THRESHOLD", "0.30") or "0.30")
+TOOL_ESCALATE_ON_EMPTY = (_get("TOOL_ESCALATE_ON_EMPTY", "1") or "1") not in ("0", "false", "False")
+
 
 # ── Embeddings ───────────────────────────────────────────────────────────────
 # "voyage" → Voyage AI API (no torch; production default).

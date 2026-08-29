@@ -1,128 +1,238 @@
-from agent.llm import LLMClient
-from agent.tools import TOOL_SCHEMAS, execute_tool
+"""
+agent.py — Recruiter-facing agent with probabilistic, multi-tool selection.
 
-SYSTEM_PROMPT = """
-You are an AI representative for a job candidate. 
-Your job is to answer recruiter questions accurately and professionally.
+Flow (one pass, no re-querying):
+  1. score_tools() rates every tool 0..1 for the question and supplies its args.
+  2. Every tool whose score >= settings.TOOL_SELECT_THRESHOLD is selected — so a
+     close call fires more than one tool.
+  3. Selected tools run CONCURRENTLY; their outputs are gathered as context.
+  4. One synthesis LLM call answers the question from all the gathered context.
+     If no tool clears the threshold (e.g. an out-of-scope question), the agent
+     answers with no context and refuses/redirects.
 
-You have four tools at your disposal:
-- get_structured_data: Returns fixed, verified fields (contact info, education summary,
-  job preferences, etc.). Use when the question maps to a specific known field.
-- get_skill_proficiency: Returns the curated document EVIDENCE for a specific skill —
-  the passages found in the candidate's documents for it. Use for questions about how
-  good / strong / proficient / skilled / experienced the candidate is in a technology or
-  skill, or to characterize their skills (e.g. "How good is she at Python?", "What are
-  their key skills?"). Pass the skill name, or omit it to list all assessed skills. It
-  returns evidence only — NOT a numeric score. Describe what the evidence shows; never
-  state or invent a 1-5 rating, star score, or percentage.
-- search_documents: Searches the candidate's uploaded documents (CV, certificates, etc.)
-  using semantic retrieval. Use when the question is about the candidate's projects,
-  detailed experience, what they did with a technology, certifications, achievements, or
-  anything about the candidate requiring richer context.
-- search_project: Searches documentation about THIS app/system itself AND about how YOU,
-  the agent, work — how you were built, your architecture, RAG pipeline, the
-  skill-proficiency model, the evaluation suite, deployment, and design decisions. Use
-  for questions about the project/system/tool itself (e.g. "How does the RAG pipeline
-  work?", "What reranker does this use?", "How is skill proficiency estimated?") AND for
-  second-person questions about how you operate or were built (e.g. "How do you work?",
-  "What model are you?", "What reranker do you use?", "How do you decide which tool to
-  call?", "How do you score skills?"). Here "you" means the agent/system.
-
-Rules:
-- Choose the tool that best fits the question. You may call several if needed.
-- Distinguish the two RAG tools by SUBJECT: a question about the *candidate* (their
-  experience, projects, skills) → search_documents; a question about *this software
-  project / how the system or you (the agent) works* → search_project. Never mix them.
-- Watch out for "you/your": when it refers to how you *operate or were engineered*
-  (your model, your retrieval, your evaluation) → search_project; when it refers to the
-  *candidate's profile* you represent ("your name", "your skills", "your experience",
-  "what did you build") → use the candidate tools (get_structured_data,
-  get_skill_proficiency, or search_documents).
-- A question about *how skilled / how good* the candidate is → use
-  get_skill_proficiency and describe the evidence it returns. A question about *what
-  they did / built / projects* → use search_documents. They complement each other: you
-  may summarize the skill evidence AND then describe the work behind it.
-- get_skill_proficiency returns evidence, not a rating. Never state or fabricate a 1-5
-  level, star score, or percentage for a skill — characterize it qualitatively from the
-  passages ("well-evidenced across several projects", "mentioned but with limited
-  detail", etc.).
-- If a tool's result is incomplete or doesn't fully answer the question, call another
-  tool before responding. For example, if get_skill_proficiency says a skill was not
-  assessed, fall back to search_documents.
-- Never guess or make up information. If you don't find it, say so.
-- Keep answers concise and professional.
-- Always answer in the same language the recruiter used.
+The per-tool probabilities are exposed via get_last_tool_scores() so the eval
+pipeline can record them.
 """
 
-MAX_TOOL_ROUNDS = 5  # safety cap to prevent infinite loops
+from concurrent.futures import ThreadPoolExecutor
+
+import settings as config
+import agent.tools as tools_module
+from agent.tools import execute_tool
+from agent.tool_router import score_tools, TOOL_SOURCE, SOURCE_ORDER, TOOL_NAMES
+from agent.llm import LLMClient
+from rag.retriever import retrieve
 
 llm = LLMClient()
+
+SYNTHESIS_SYSTEM = """You are an AI representative for a job candidate, answering
+recruiter questions accurately and professionally.
+
+You are given the recruiter's question and the information retrieved for it — from
+the candidate's verified profile, the skill evidence, the candidate's documents,
+and/or this system's own documentation. Answer using ONLY that retrieved
+information.
+
+Rules:
+- Ground every claim in the retrieved information. Never invent facts.
+- If the retrieved information does not answer the question — or nothing was
+  retrieved — say briefly that you don't have that information. For personal or
+  out-of-scope questions (politics, religion, marital status, health, finances,
+  etc.), reply that you can only share professional, career-related information —
+  without mentioning tools, fields, or how you work internally.
+- The skill evidence has NO numeric rating — describe a skill qualitatively from
+  the evidence; never state or invent a 1-5 score, stars, or a percentage.
+- Be concise and professional. Always answer in the same language the recruiter
+  used.
+"""
+
+# Per-tool probabilities from the most recent run(), keyed by source label
+# (structured/skill/docs/project). Read by the eval pipeline via get_last_tool_scores.
+_LAST_TOOL_SCORES: dict = {}
+
+
+def get_last_tool_scores() -> dict:
+    """Return the per-tool probabilities from the most recent run()."""
+    return dict(_LAST_TOOL_SCORES)
+
+
+def _args_for(name: str, entry: dict) -> dict:
+    """Build the call arguments for a tool from its router entry."""
+    if name == "get_structured_data":
+        return {"field": entry.get("field", "")}
+    if name == "get_skill_proficiency":
+        return {"skill": entry.get("skill", "")}
+    return {"query": entry.get("query", "")}  # search_documents / search_project
+
+
+def select_tools(user_message: str, history: list | None = None) -> tuple[dict, list, dict]:
+    """Score every tool and select which to run, WITHOUT executing them.
+
+    Single threshold: run every tool with score >= TOOL_SELECT_THRESHOLD. If none
+    clear it (out-of-scope), nothing is selected and the agent refuses. Missed
+    tools are recovered at runtime by escalation in run() (not by a lower bar).
+
+    Returns (tool_scores, selected, scores):
+      tool_scores  {source_label: prob} for all four tools (for eval capture)
+      selected     ordered list of (tool_name, args) to run
+      scores       the raw router output (per-tool score + args) — kept so run()
+                   can build args for the remaining tools if it escalates.
+    """
+    scores = score_tools(llm, user_message, history)
+    tool_scores = {TOOL_SOURCE[n]: round(scores[n]["score"], 4) for n in TOOL_NAMES}
+
+    selected = [(n, _args_for(n, scores[n])) for n in TOOL_NAMES
+                if scores[n]["score"] >= config.TOOL_SELECT_THRESHOLD]
+    selected.sort(key=lambda na: SOURCE_ORDER.index(TOOL_SOURCE[na[0]]))
+    return tool_scores, selected, scores
+
+
+def _looks_empty(name: str, text: str) -> bool:
+    """True when a tool returned no usable content (used to trigger escalation)."""
+    t = (text or "").strip()
+    if not t:
+        return True
+    if name == "get_structured_data":
+        return t.endswith("Not provided")
+    if name == "get_skill_proficiency":
+        return any(m in t for m in (
+            "No curated skill evidence",
+            "was not among the candidate's assessed skills",
+            "no supporting passages were retrieved",
+        ))
+    # search tools
+    return t.startswith("No relevant information found")
+
+
+def _run_one_tool(name: str, args: dict):
+    """Execute a single tool. For the search tools we call retrieve() directly so
+    each call's metadata is captured locally (thread-safe — no shared global).
+
+    Returns (name, args, text, meta, empty); meta is None for non-search tools,
+    empty is True when the tool found nothing usable.
+    """
+    if name in ("search_documents", "search_project"):
+        collection = (tools_module.CANDIDATE_ID if name == "search_documents"
+                      else tools_module.PROJECT_ID)
+        res = retrieve(str(args.get("query") or ""), collection)
+        chunks = res["chunks"]
+        if chunks:
+            text = "\n\n".join(chunks)
+        else:
+            text = ("No relevant information found in documents."
+                    if name == "search_documents"
+                    else "No relevant information found about the project.")
+        meta = {"route": res["route"], "expanded_queries": res["expanded_queries"],
+                "chunks": chunks, "fused_pool": res.get("fused_pool")}
+        return name, args, text, meta, not chunks
+
+    text = execute_tool(name, args)
+    return name, args, text, None, _looks_empty(name, text)
+
+
+def _run_tools_concurrently(pairs: list) -> list:
+    """Run a list of (name, args) tools concurrently; return their result tuples."""
+    if not pairs:
+        return []
+    with ThreadPoolExecutor(max_workers=len(pairs)) as pool:
+        futures = [pool.submit(_run_one_tool, n, a) for (n, a) in pairs]
+        return [f.result() for f in futures]
+
+
+def _set_retrieval_meta(results: list):
+    """Aggregate the search tools' metadata into tools.get_last_retrieval_meta()'s
+    backing store so the eval pipeline can capture contexts/route/fused_pool.
+
+    Chunks are the union across search tools (order-preserving, de-duplicated);
+    route/fused_pool come from candidate docs when present, else the project search.
+    """
+    search = [(n, m) for (n, a, t, m, e) in results if m is not None]
+    if not search:
+        tools_module._last_retrieval_meta = {}
+        return
+    seen, chunks = set(), []
+    for _, m in search:
+        for c in m.get("chunks", []):
+            if c not in seen:
+                seen.add(c)
+                chunks.append(c)
+    primary = next((m for (n, m) in search if n == "search_documents"), search[0][1])
+    tools_module._last_retrieval_meta = {
+        "route": primary.get("route"),
+        "expanded_queries": primary.get("expanded_queries"),
+        "chunks": chunks,
+        "fused_pool": primary.get("fused_pool"),
+    }
+
+
+def _synthesize(question: str, history: list, results: list) -> str:
+    """One LLM call that answers the question from all gathered tool context."""
+    if results:
+        context = "\n\n".join(f"[{TOOL_SOURCE[n]}]\n{t}" for (n, a, t, m, e) in results)
+    else:
+        context = "(no information sources were selected for this question)"
+
+    # Prior turns (exclude the just-appended current user message) for continuity.
+    convo = ""
+    prior = [m for m in history if m.get("role") in ("user", "assistant")][:-1][-4:]
+    if prior:
+        convo = ("Recent conversation:\n"
+                 + "\n".join(f"{m['role']}: {m.get('content', '')}" for m in prior)
+                 + "\n\n")
+
+    prompt = (f"{convo}Recruiter question: {question}\n\n"
+              f"Retrieved information:\n{context}\n\n"
+              "Answer the question using only the retrieved information above.")
+    return llm.complete(prompt, system=SYNTHESIS_SYSTEM, max_tokens=1024)
 
 
 def run(conversation_history: list, user_message: str) -> tuple[str, list, list]:
     """
     Main agent turn.
-    Supports multiple sequential tool calls so the LLM can fall back
-    from structured data to document search when needed.
-    Returns (answer_text, updated_conversation_history, tool_trajectory)
 
-    tool_trajectory is a list of dicts:
-        [{"tool": "get_structured_data", "args": {"field": "full_name"},
-          "result_preview": "full_name: Ofir Ohan"}]
+    Scores all tools, runs every tool above the threshold concurrently, and
+    synthesizes one grounded answer from the gathered context.
 
-    conversation_history holds only plain {role, content} text turns (no tool
-    plumbing), so it stays simple and serializable for Streamlit session state.
-    The tool_use / tool_result exchange lives in a per-turn working copy.
+    Returns (answer_text, updated_conversation_history, tool_trajectory), where
+    tool_trajectory is a list of
+        {"tool", "args", "result_preview", "score"}
+    for each tool that actually ran. The full per-tool probability vector (all
+    four tools, whether or not they ran) is available via get_last_tool_scores().
     """
+    global _LAST_TOOL_SCORES
 
-    # Add new user message to the persisted history.
     conversation_history.append({"role": "user", "content": user_message})
 
-    # Per-turn working messages — starts from history, then accumulates the
-    # assistant tool_use / tool_result exchange for this turn only.
-    messages = [dict(m) for m in conversation_history]
+    # 1. Score every tool (one call). 2. Select tools above the threshold.
+    _LAST_TOOL_SCORES, selected, scores = select_tools(user_message, conversation_history)
 
-    tool_trajectory = []
-    answer = ""
+    # 3. Run the selected tools concurrently.
+    results = _run_tools_concurrently(selected)
 
-    for _ in range(MAX_TOOL_ROUNDS):
-        reply = llm.chat(system=SYSTEM_PROMPT, messages=messages, tools=TOOL_SCHEMAS)
+    # 3b. Result-based escalation: if we ran tools but they ALL came back empty,
+    # the router likely missed — run the REMAINING tools concurrently and add
+    # whatever they retrieve. (Skipped when nothing was selected: that is an
+    # out-of-scope question we intend to refuse, not a miss.)
+    if (config.TOOL_ESCALATE_ON_EMPTY and results
+            and all(empty for (_n, _a, _t, _m, empty) in results)):
+        chosen = {n for (n, _a, _t, _m, _e) in results}
+        rest = [(n, _args_for(n, scores[n])) for n in TOOL_NAMES if n not in chosen]
+        results.extend(_run_tools_concurrently(rest))
 
-        # No tool calls → this is the final answer.
-        if not reply.tool_calls:
-            answer = reply.text
-            break
+    # Deterministic order by source precedence (project last-word etc.).
+    results.sort(key=lambda r: SOURCE_ORDER.index(TOOL_SOURCE[r[0]]))
 
-        # Record the assistant's tool-call turn.
-        messages.append({
-            "role": "assistant",
-            "content": reply.text,
-            "tool_calls": reply.tool_calls,
-        })
+    _set_retrieval_meta(results)
 
-        # Execute every requested tool and feed the results back.
-        for tc in reply.tool_calls:
-            tool_result = execute_tool(tc["name"], tc["arguments"])
-            print(f"[Agent] Tool '{tc['name']}' returned: {tool_result[:200]}")
-            tool_trajectory.append({
-                "tool": tc["name"],
-                "args": tc["arguments"],
-                "result_preview": tool_result[:300],
-            })
-            messages.append({
-                "role": "tool",
-                "tool_call_id": tc["id"],
-                "content": tool_result,
-            })
-        # Loop continues — the LLM will now either call another tool
-        # (e.g. fallback to search_documents) or produce a final answer.
-    else:
-        # Safety: if we exhausted all rounds, do one final pass with no tools so
-        # the model is forced to produce a text answer rather than another call.
-        reply = llm.chat(system=SYSTEM_PROMPT, messages=messages, tools=None)
-        answer = reply.text
-
-    # Persist only the final assistant text.
+    # 4. Synthesize one answer from all gathered context.
+    answer = _synthesize(user_message, conversation_history, results)
     conversation_history.append({"role": "assistant", "content": answer})
 
-    return answer, conversation_history, tool_trajectory
+    trajectory = [{
+        "tool": n,
+        "args": a,
+        "result_preview": (t or "")[:300],
+        "score": _LAST_TOOL_SCORES[TOOL_SOURCE[n]],
+    } for (n, a, t, m, e) in results]
+
+    return answer, conversation_history, trajectory

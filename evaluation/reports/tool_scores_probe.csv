@@ -1,0 +1,491 @@
+question_id,candidate_name,category,difficulty,expected_source,accept_sources,question,prob_structured,prob_skill,prob_docs,prob_project
+q001,Dana Levy,personal,easy,structured,,What is the candidate's full name?,1.0,0.0,0.0,0.0
+q002,Dana Levy,personal,easy,structured,,What is the candidate's email address?,1.0,0.0,0.0,0.0
+q003,Dana Levy,personal,easy,structured,,What is the candidate's phone number?,1.0,0.0,0.0,0.0
+q004,Dana Levy,personal,easy,structured,,What is the candidate's LinkedIn profile?,1.0,0.0,0.0,0.0
+q005,Dana Levy,personal,easy,structured,,What is the candidate's GitHub profile URL?,1.0,0.0,0.0,0.0
+q006,Dana Levy,personal,medium,structured,,How can I contact the candidate?,1.0,0.0,0.1,0.0
+q007,Dana Levy,personal,easy,structured,,What country is the candidate based in?,1.0,0.0,0.0,0.0
+q008,Dana Levy,personal,easy,structured,,What is the candidate's country dialing code?,1.0,0.0,0.0,0.0
+q009,Dana Levy,education,easy,structured,,What degree does the candidate hold?,1.0,0.0,0.1,0.0
+q010,Dana Levy,education,easy,structured,,What did the candidate study?,1.0,0.0,0.1,0.0
+q011,Dana Levy,education,easy,structured,,Where did the candidate study?,0.9,0.0,0.2,0.0
+q012,Dana Levy,education,easy,structured,,When did the candidate graduate?,0.9,0.0,0.1,0.0
+q013,Dana Levy,education,easy,structured,,What is the candidate's GPA?,1.0,0.0,0.0,0.0
+q014,Dana Levy,education,medium,docs,,Tell me about the candidate's educational background.,0.8,0.0,0.9,0.0
+q015,Dana Levy,education,medium,docs,,What was the candidate's thesis about?,0.1,0.0,0.9,0.0
+q016,Dana Levy,education,medium,docs,,Did the candidate receive any academic honors?,0.2,0.0,0.8,0.0
+q017,Dana Levy,experience,easy,structured,,How many years of experience does the candidate have?,1.0,0.0,0.1,0.0
+q018,Dana Levy,experience,easy,structured,,What is the candidate's current role?,1.0,0.0,0.1,0.0
+q019,Dana Levy,experience,medium,structured,,Describe the candidate's current job responsibilities.,0.4,0.0,0.9,0.0
+q020,Dana Levy,experience,medium,docs,,Where has the candidate worked previously?,0.2,0.0,0.9,0.0
+q021,Dana Levy,experience,medium,docs,,What was the candidate's first job?,0.0,0.0,0.9,0.0
+q022,Dana Levy,experience,medium,docs,,Describe the candidate's work at Check Point.,0.4,0.0,0.9,0.0
+q023,Dana Levy,experience,medium,docs,,Has the candidate held a leadership role?,0.4,0.2,0.9,0.0
+q024,Dana Levy,experience,medium,docs,,What industries has the candidate worked in?,0.0,0.0,0.9,0.0
+q025,Dana Levy,experience,hard,docs,,What is a key technical achievement the candidate accomplished?,0.2,0.3,0.9,0.0
+q026,Dana Levy,experience,medium,docs,,Has the candidate had any teaching experience?,0.2,0.0,0.9,0.0
+q027,Dana Levy,skills,easy,docs,,What programming languages does the candidate know?,0.1,0.2,0.9,0.0
+q028,Dana Levy,skills,medium,docs,,What are the candidate's primary security tools and frameworks?,0.2,0.1,0.9,0.0
+q029,Dana Levy,skills,medium,docs,,What cloud platforms does the candidate have experience with?,0.1,0.2,0.9,0.0
+q030,Dana Levy,skills,medium,docs,,What databases has the candidate worked with?,0.1,0.1,0.9,0.0
+q031,Dana Levy,skills,medium,docs,,Does the candidate have DevSecOps experience?,0.1,0.6,0.9,0.0
+q032,Dana Levy,skills,easy,docs,skill,Does the candidate know Python?,0.1,0.9,0.4,0.0
+q033,Dana Levy,skills,easy,docs,,Does the candidate have experience with penetration testing?,0.0,0.5,0.8,0.0
+q034,Dana Levy,skills,medium,docs,,Does the candidate have SIEM experience?,0.2,0.1,0.9,0.0
+q035,Dana Levy,skills,medium,docs,,What threat analysis experience does the candidate have?,0.2,0.3,0.9,0.0
+q036,Dana Levy,skills,medium,docs,,Does the candidate have identity and access management experience?,0.2,0.5,0.9,0.0
+q037,Dana Levy,skills,easy,docs,skill,Does the candidate have experience with Kubernetes?,0.1,1.0,0.4,0.0
+q038,Dana Levy,skills,medium,docs,,What networking skills does the candidate have?,0.1,0.3,0.8,0.0
+q039,Dana Levy,projects,medium,docs,,What projects has the candidate worked on?,0.1,0.2,0.9,0.0
+q040,Dana Levy,projects,medium,docs,,Tell me about the zero-trust architecture project.,0.1,0.0,0.9,0.0
+q041,Dana Levy,projects,medium,docs,,What was the outcome of the threat intelligence project?,0.1,0.0,0.9,0.0
+q042,Dana Levy,projects,medium,docs,,What technologies were used in the red team automation project?,0.1,0.0,0.9,0.0
+q043,Dana Levy,projects,hard,docs,,What is the candidate's most significant project?,0.0,0.0,0.9,0.0
+q044,Dana Levy,projects,medium,docs,,Has the candidate contributed to open-source projects?,0.2,0.1,0.9,0.0
+q045,Dana Levy,projects,hard,docs,,What systems has the candidate built?,0.1,0.1,0.9,0.0
+q046,Dana Levy,projects,medium,docs,,Does the candidate have red team experience?,0.2,0.3,0.9,0.0
+q047,Dana Levy,projects,medium,docs,,Has the candidate worked on any research projects?,0.2,0.1,0.9,0.0
+q048,Dana Levy,projects,medium,docs,,What is the scale of systems the candidate has worked with?,0.2,0.1,0.9,0.0
+q049,Dana Levy,certifications,medium,docs,,What certifications does the candidate have?,0.1,0.0,0.9,0.0
+q050,Dana Levy,certifications,easy,docs,,Does the candidate have an OSCP certification?,0.0,0.0,1.0,0.0
+q051,Dana Levy,certifications,easy,docs,,Does the candidate have a CISSP certification?,0.2,0.0,0.9,0.0
+q052,Dana Levy,certifications,easy,docs,,When did the candidate get their AWS security certification?,0.2,0.0,0.9,0.0
+q053,Dana Levy,certifications,medium,docs,,Does the candidate have any management certifications?,0.1,0.0,0.9,0.0
+q054,Dana Levy,preferences,easy,structured,,What is the candidate's salary expectation?,1.0,0.0,0.3,0.0
+q055,Dana Levy,preferences,easy,structured,,Where does the candidate prefer to work?,1.0,0.0,0.0,0.0
+q056,Dana Levy,preferences,easy,structured,,When is the candidate available to start?,1.0,0.0,0.2,0.0
+q057,Dana Levy,preferences,easy,structured,,"Does the candidate prefer remote, hybrid, or onsite work?",0.9,0.0,0.2,0.0
+q058,Dana Levy,preferences,easy,structured,,Is the candidate open to relocation?,1.0,0.0,0.2,0.0
+q059,Dana Levy,preferences,easy,structured,,What job title is the candidate looking for?,1.0,0.0,0.1,0.0
+q060,Dana Levy,preferences,medium,structured,,Would the candidate work fully onsite?,1.0,0.0,0.2,0.0
+q061,Dana Levy,preferences,easy,structured,,When can the candidate start working?,0.2,0.0,0.8,0.0
+q062,Dana Levy,proficiency,easy,skill,,How proficient is the candidate in Python?,0.0,1.0,0.4,0.0
+q063,Dana Levy,proficiency,medium,skill,,Rate the candidate's Splunk skills.,0.0,1.0,0.4,0.0
+q064,Dana Levy,proficiency,medium,skill,,What are the candidate's strongest skills?,0.1,0.5,0.8,0.0
+q065,Dana Levy,proficiency,medium,docs,,How strong is the candidate at Go?,0.1,1.0,0.4,0.0
+q066,Dana Levy,negative,easy,none,,What is the candidate's blood type?,0.0,0.0,0.0,0.0
+q067,Dana Levy,negative,easy,none,,What are the candidate's political opinions?,0.0,0.0,0.0,0.0
+q068,Dana Levy,negative,easy,none,,Is the candidate married?,0.0,0.0,0.0,0.0
+q069,Dana Levy,negative,easy,none,,What is the candidate's religion?,0.0,0.0,0.0,0.0
+q070,Dana Levy,negative,easy,none,,What is the candidate's credit score?,0.0,0.0,0.0,0.0
+q071,Dana Levy,complex,hard,docs,,Is this candidate overqualified for a junior security analyst role?,0.2,0.0,0.9,0.0
+q072,Dana Levy,complex,hard,docs,,Would this candidate be a good fit for a remote security role in Europe?,0.4,0.3,0.9,0.0
+q073,Dana Levy,complex,hard,docs,,Compare the candidate's academic and professional experience.,0.4,0.0,0.9,0.0
+q074,Dana Levy,complex,hard,docs,,What unique combination of skills does this candidate offer?,0.2,0.1,0.9,0.0
+q075,Dana Levy,complex,hard,docs,,Summarize why I should consider this candidate for a principal security engineer position.,0.4,0.3,0.9,0.0
+q001,Yoni Abergel,personal,easy,structured,,What is the candidate's full name?,1.0,0.0,0.0,0.0
+q002,Yoni Abergel,personal,easy,structured,,What is the candidate's email address?,1.0,0.0,0.1,0.0
+q003,Yoni Abergel,personal,easy,structured,,What is the candidate's phone number?,1.0,0.0,0.0,0.0
+q004,Yoni Abergel,personal,easy,structured,,What is the candidate's LinkedIn profile?,1.0,0.0,0.0,0.0
+q005,Yoni Abergel,personal,easy,structured,,What is the candidate's GitHub profile URL?,1.0,0.0,0.0,0.0
+q006,Yoni Abergel,personal,medium,structured,,How can I contact the candidate?,1.0,0.0,0.1,0.0
+q007,Yoni Abergel,personal,easy,structured,,What country is the candidate based in?,1.0,0.0,0.0,0.0
+q008,Yoni Abergel,personal,easy,structured,,What is the candidate's country dialing code?,1.0,0.0,0.0,0.0
+q009,Yoni Abergel,education,easy,structured,,What degree does the candidate hold?,0.9,0.0,0.1,0.0
+q010,Yoni Abergel,education,easy,structured,,What did the candidate study?,0.9,0.0,0.3,0.0
+q011,Yoni Abergel,education,easy,structured,,Where did the candidate study?,0.9,0.0,0.2,0.0
+q012,Yoni Abergel,education,easy,structured,,When did the candidate graduate?,1.0,0.0,0.1,0.0
+q013,Yoni Abergel,education,easy,structured,,What is the candidate's GPA?,0.9,0.0,0.2,0.0
+q014,Yoni Abergel,education,medium,docs,,Tell me about the candidate's educational background.,0.9,0.0,0.3,0.0
+q015,Yoni Abergel,education,medium,docs,,What was the candidate's capstone project about?,0.2,0.0,0.9,0.0
+q016,Yoni Abergel,education,medium,docs,,Did the candidate receive any academic honors?,0.2,0.0,0.8,0.0
+q017,Yoni Abergel,experience,easy,structured,,How many years of experience does the candidate have?,1.0,0.0,0.1,0.0
+q018,Yoni Abergel,experience,easy,structured,,What is the candidate's current role?,1.0,0.0,0.1,0.0
+q019,Yoni Abergel,experience,medium,structured,,Describe the candidate's current job responsibilities.,0.9,0.0,0.5,0.0
+q020,Yoni Abergel,experience,medium,docs,,Where has the candidate worked previously?,0.1,0.0,0.9,0.0
+q021,Yoni Abergel,experience,medium,docs,,What was the candidate's first job?,0.2,0.1,0.8,0.0
+q022,Yoni Abergel,experience,medium,docs,,Describe the candidate's work at Wix.,0.2,0.1,0.9,0.0
+q023,Yoni Abergel,experience,medium,docs,,Has the candidate held a leadership role?,0.3,0.0,0.9,0.0
+q024,Yoni Abergel,experience,medium,docs,,What industries has the candidate worked in?,0.2,0.0,0.9,0.0
+q025,Yoni Abergel,experience,hard,docs,,What is a key technical achievement the candidate accomplished?,0.2,0.3,0.9,0.0
+q026,Yoni Abergel,experience,medium,docs,,Has the candidate had any teaching or mentoring experience?,0.2,0.1,0.9,0.0
+q027,Yoni Abergel,skills,easy,docs,,What programming languages does the candidate know?,0.1,0.2,0.9,0.0
+q028,Yoni Abergel,skills,medium,docs,,What are the candidate's primary technical frameworks and tools?,0.1,0.1,0.9,0.0
+q029,Yoni Abergel,skills,medium,docs,,What cloud platforms does the candidate have experience with?,0.1,0.1,0.9,0.0
+q030,Yoni Abergel,skills,medium,docs,,What databases has the candidate worked with?,0.1,0.1,0.9,0.0
+q031,Yoni Abergel,skills,medium,docs,,Does the candidate have DevOps or infrastructure experience?,0.2,0.1,0.9,0.0
+q032,Yoni Abergel,skills,easy,docs,,Does the candidate know Python?,0.1,1.0,0.4,0.0
+q033,Yoni Abergel,skills,easy,docs,skill,Does the candidate have experience with Kubernetes?,0.0,1.0,0.4,0.0
+q034,Yoni Abergel,skills,medium,docs,,Does the candidate have CI/CD experience?,0.1,0.2,0.8,0.0
+q035,Yoni Abergel,skills,medium,docs,,What observability experience does the candidate have?,0.1,0.2,0.9,0.0
+q036,Yoni Abergel,skills,medium,docs,,Does the candidate have Infrastructure-as-Code experience?,0.2,0.3,0.9,0.0
+q037,Yoni Abergel,skills,easy,docs,,Does the candidate have experience with service mesh?,0.1,0.8,0.9,0.0
+q038,Yoni Abergel,skills,medium,docs,,What networking and security tools does the candidate know?,0.1,0.2,0.9,0.0
+q039,Yoni Abergel,projects,medium,docs,,What projects has the candidate worked on?,0.1,0.2,0.9,0.0
+q040,Yoni Abergel,projects,medium,docs,,Tell me about the multi-cloud migration project.,0.0,0.0,1.0,0.0
+q041,Yoni Abergel,projects,medium,docs,,What was the outcome of the deployment platform project?,0.0,0.0,0.9,0.0
+q042,Yoni Abergel,projects,medium,docs,,What technologies were used in the autoscaler project?,0.0,0.0,0.0,1.0
+q043,Yoni Abergel,projects,hard,docs,,What is the candidate's most significant project?,0.2,0.0,0.9,0.0
+q044,Yoni Abergel,projects,medium,docs,,Has the candidate contributed to open-source projects?,0.2,0.1,0.9,0.0
+q045,Yoni Abergel,projects,hard,docs,,What systems has the candidate built?,0.1,0.0,0.9,0.0
+q046,Yoni Abergel,projects,medium,docs,,Does the candidate have experience with cost optimization?,0.2,0.3,0.8,0.0
+q047,Yoni Abergel,projects,medium,docs,,Has the candidate worked on any developer productivity projects?,0.1,0.0,0.9,0.0
+q048,Yoni Abergel,projects,medium,docs,,What is the scale of systems the candidate has worked with?,0.1,0.0,0.9,0.0
+q049,Yoni Abergel,certifications,medium,docs,,What certifications does the candidate have?,0.2,0.1,0.9,0.0
+q050,Yoni Abergel,certifications,easy,docs,,Does the candidate have an AWS certification?,1.0,0.0,0.1,0.0
+q051,Yoni Abergel,certifications,easy,docs,,Does the candidate have a Kubernetes certification?,0.0,0.0,0.9,0.0
+q052,Yoni Abergel,certifications,easy,docs,,When did the candidate get their Terraform certification?,0.3,0.1,0.9,0.0
+q053,Yoni Abergel,certifications,medium,docs,,Does the candidate have any management certifications?,0.0,0.1,0.9,0.0
+q054,Yoni Abergel,preferences,easy,structured,,What is the candidate's salary expectation?,1.0,0.0,0.1,0.0
+q055,Yoni Abergel,preferences,easy,structured,,Where does the candidate prefer to work?,1.0,0.0,0.2,0.0
+q056,Yoni Abergel,preferences,easy,structured,,When is the candidate available to start?,0.9,0.1,0.3,0.0
+q057,Yoni Abergel,preferences,easy,structured,,"Does the candidate prefer remote, hybrid, or onsite work?",0.9,0.0,0.2,0.0
+q058,Yoni Abergel,preferences,easy,structured,,Is the candidate open to relocation?,1.0,0.0,0.1,0.0
+q059,Yoni Abergel,preferences,easy,structured,,What job title is the candidate looking for?,1.0,0.0,0.0,0.0
+q060,Yoni Abergel,preferences,medium,structured,,Would the candidate work fully onsite?,0.8,0.0,0.7,0.0
+q061,Yoni Abergel,preferences,easy,structured,,When can the candidate start working?,0.8,0.0,0.2,0.0
+q062,Yoni Abergel,proficiency,easy,skill,,How proficient is the candidate in Kubernetes?,0.1,1.0,0.4,0.0
+q063,Yoni Abergel,proficiency,medium,skill,,Rate the candidate's Terraform skills.,0.0,1.0,0.4,0.0
+q064,Yoni Abergel,proficiency,medium,skill,,What are the candidate's strongest skills?,0.1,0.5,0.8,0.0
+q065,Yoni Abergel,proficiency,medium,docs,,How strong is the candidate at Istio?,0.0,1.0,0.4,0.0
+q066,Yoni Abergel,negative,easy,none,,What is the candidate's blood type?,0.0,0.0,0.0,0.0
+q067,Yoni Abergel,negative,easy,none,,What are the candidate's political opinions?,0.0,0.0,0.0,0.0
+q068,Yoni Abergel,negative,easy,none,,Is the candidate married?,0.0,0.0,0.0,0.0
+q069,Yoni Abergel,negative,easy,none,,What is the candidate's religion?,0.0,0.0,0.0,0.0
+q070,Yoni Abergel,negative,easy,none,,What is the candidate's credit score?,0.0,0.0,0.0,0.0
+q071,Yoni Abergel,complex,hard,docs,,Is this candidate overqualified for a junior DevOps role?,0.3,0.1,0.9,0.0
+q072,Yoni Abergel,complex,hard,docs,,Would this candidate be a good fit for a remote DevOps role in Europe?,0.4,0.3,0.8,0.0
+q073,Yoni Abergel,complex,hard,docs,,Compare the candidate's academic and professional experience.,0.4,0.0,0.9,0.0
+q074,Yoni Abergel,complex,hard,docs,,What unique combination of skills does this candidate offer?,0.2,0.3,0.9,0.0
+q075,Yoni Abergel,complex,hard,docs,,Summarize why I should consider this candidate for a staff DevOps engineer position.,0.4,0.2,0.9,0.0
+q001,Maya Chen,personal,easy,structured,,What is the candidate's full name?,1.0,0.0,0.0,0.0
+q002,Maya Chen,personal,easy,structured,,What is the candidate's email address?,1.0,0.0,0.0,0.0
+q003,Maya Chen,personal,easy,structured,,What is the candidate's phone number?,1.0,0.0,0.0,0.0
+q004,Maya Chen,personal,easy,structured,,What is the candidate's LinkedIn profile?,1.0,0.0,0.1,0.0
+q005,Maya Chen,personal,easy,structured,,What is the candidate's GitHub profile URL?,1.0,0.0,0.0,0.0
+q006,Maya Chen,personal,medium,structured,,How can I contact the candidate?,1.0,0.0,0.1,0.0
+q007,Maya Chen,personal,easy,structured,,What country is the candidate based in?,1.0,0.0,0.0,0.0
+q008,Maya Chen,personal,easy,structured,,What is the candidate's country dialing code?,1.0,0.0,0.1,0.0
+q009,Maya Chen,education,easy,structured,,What degree does the candidate hold?,0.9,0.0,0.1,0.0
+q010,Maya Chen,education,easy,structured,,What did the candidate study?,0.2,0.0,0.9,0.0
+q011,Maya Chen,education,easy,structured,,Where did the candidate study?,0.9,0.0,0.2,0.0
+q012,Maya Chen,education,easy,structured,,When did the candidate graduate?,0.9,0.0,0.2,0.0
+q013,Maya Chen,education,easy,structured,,What is the candidate's GPA?,0.9,0.0,0.2,0.0
+q014,Maya Chen,education,medium,docs,,Tell me about the candidate's educational background.,0.9,0.0,0.8,0.0
+q015,Maya Chen,education,medium,docs,,What was the candidate's capstone project about?,0.1,0.0,0.9,0.0
+q016,Maya Chen,education,medium,docs,,Did the candidate receive any academic honors?,0.2,0.0,0.8,0.0
+q017,Maya Chen,experience,easy,structured,,How many years of experience does the candidate have?,1.0,0.0,0.2,0.0
+q018,Maya Chen,experience,easy,structured,,What is the candidate's current role?,1.0,0.0,0.0,0.0
+q019,Maya Chen,experience,medium,structured,,Describe the candidate's current job responsibilities.,0.4,0.0,0.9,0.0
+q020,Maya Chen,experience,medium,docs,,Where has the candidate worked previously?,0.2,0.0,0.9,0.0
+q021,Maya Chen,experience,medium,docs,,What was the candidate's first job?,0.2,0.0,0.9,0.0
+q022,Maya Chen,experience,medium,docs,,Describe the candidate's work at Wix.,0.4,0.0,0.9,0.0
+q023,Maya Chen,experience,medium,docs,,Has the candidate held a leadership role?,0.2,0.1,0.9,0.0
+q024,Maya Chen,experience,medium,docs,,What industries has the candidate worked in?,0.2,0.0,0.9,0.0
+q025,Maya Chen,experience,hard,docs,,What is a key technical achievement the candidate accomplished?,0.1,0.2,0.9,0.0
+q026,Maya Chen,experience,medium,docs,,Has the candidate had any teaching or mentoring experience?,0.2,0.1,0.9,0.0
+q027,Maya Chen,skills,easy,docs,,What programming languages does the candidate know?,0.1,0.2,0.9,0.0
+q028,Maya Chen,skills,medium,docs,,What are the candidate's primary technical frameworks and tools?,0.1,0.2,0.9,0.0
+q029,Maya Chen,skills,medium,docs,,What cloud platforms does the candidate have experience with?,0.1,0.2,0.9,0.0
+q030,Maya Chen,skills,medium,docs,,What databases has the candidate worked with?,0.1,0.1,0.9,0.0
+q031,Maya Chen,skills,medium,docs,,Does the candidate have DevOps experience?,0.1,0.2,0.9,0.0
+q032,Maya Chen,skills,easy,docs,skill,Does the candidate know Python?,0.0,1.0,0.4,0.0
+q033,Maya Chen,skills,easy,docs,skill,Does the candidate have experience with React?,0.1,0.2,0.9,0.0
+q034,Maya Chen,skills,medium,docs,,Does the candidate have testing experience?,0.1,0.2,0.9,0.0
+q035,Maya Chen,skills,medium,docs,,What accessibility experience does the candidate have?,0.1,0.2,0.9,0.0
+q036,Maya Chen,skills,medium,docs,,Does the candidate have design system experience?,0.1,0.2,0.9,0.0
+q037,Maya Chen,skills,easy,docs,,Does the candidate have experience with build tools?,0.1,0.2,0.9,0.0
+q038,Maya Chen,skills,medium,docs,,What backend and API skills does the candidate have?,0.1,0.2,0.9,0.0
+q039,Maya Chen,projects,medium,docs,,What projects has the candidate worked on?,0.0,0.0,1.0,0.0
+q040,Maya Chen,projects,medium,docs,,Tell me about the design system project.,0.0,0.0,0.9,0.0
+q041,Maya Chen,projects,medium,docs,,What was the outcome of the collaborative editor project?,0.1,0.1,0.9,0.0
+q042,Maya Chen,projects,medium,docs,,What technologies were used in the performance optimization project?,0.0,0.0,1.0,0.0
+q043,Maya Chen,projects,hard,docs,,What is the candidate's most significant project?,0.1,0.2,0.9,0.0
+q044,Maya Chen,projects,medium,docs,,Has the candidate contributed to open-source projects?,0.2,0.0,0.9,0.0
+q045,Maya Chen,projects,hard,docs,,What systems has the candidate built?,0.1,0.2,0.9,0.0
+q046,Maya Chen,projects,medium,docs,,Does the candidate have web performance experience?,0.2,0.7,0.9,0.0
+q047,Maya Chen,projects,medium,docs,,Has the candidate worked on real-time applications?,0.1,0.1,0.9,0.0
+q048,Maya Chen,projects,medium,docs,,What is the scale of systems the candidate has worked with?,0.1,0.2,0.9,0.0
+q049,Maya Chen,certifications,medium,docs,,What certifications does the candidate have?,0.0,0.0,0.9,0.0
+q050,Maya Chen,certifications,easy,docs,,Does the candidate have a Google Cloud certification?,0.2,0.0,0.9,0.0
+q051,Maya Chen,certifications,easy,docs,,Does the candidate have an accessibility certification?,0.9,0.2,0.1,0.0
+q052,Maya Chen,certifications,easy,docs,,When did the candidate get their Meta certification?,0.2,0.0,0.9,0.0
+q053,Maya Chen,certifications,medium,docs,,Does the candidate have any management certifications?,0.3,0.1,0.9,0.0
+q054,Maya Chen,preferences,easy,structured,,What is the candidate's salary expectation?,1.0,0.0,0.1,0.0
+q055,Maya Chen,preferences,easy,structured,,Where does the candidate prefer to work?,1.0,0.0,0.2,0.0
+q056,Maya Chen,preferences,easy,structured,,When is the candidate available to start?,1.0,0.0,0.2,0.0
+q057,Maya Chen,preferences,easy,structured,,"Does the candidate prefer remote, hybrid, or onsite work?",1.0,0.0,0.0,0.0
+q058,Maya Chen,preferences,easy,structured,,Is the candidate open to relocation?,1.0,0.0,0.0,0.0
+q059,Maya Chen,preferences,easy,structured,,What job title is the candidate looking for?,1.0,0.0,0.0,0.0
+q060,Maya Chen,preferences,medium,structured,,Would the candidate work fully onsite?,0.8,0.0,0.4,0.0
+q061,Maya Chen,preferences,easy,structured,,When can the candidate start working?,1.0,0.0,0.0,0.0
+q062,Maya Chen,proficiency,easy,skill,,How proficient is the candidate in React?,0.0,1.0,0.4,0.0
+q063,Maya Chen,proficiency,medium,skill,,Rate the candidate's TypeScript skills.,0.0,1.0,0.4,0.0
+q064,Maya Chen,proficiency,medium,skill,,What are the candidate's strongest skills?,0.1,0.5,0.8,0.0
+q065,Maya Chen,proficiency,medium,docs,,How strong is the candidate at PostgreSQL?,0.0,1.0,0.2,0.0
+q066,Maya Chen,negative,easy,none,,What is the candidate's blood type?,0.0,0.0,0.0,0.0
+q067,Maya Chen,negative,easy,none,,What are the candidate's political opinions?,0.0,0.0,0.0,0.0
+q068,Maya Chen,negative,easy,none,,Is the candidate married?,0.0,0.0,0.0,0.0
+q069,Maya Chen,negative,easy,none,,What is the candidate's religion?,0.0,0.0,0.0,0.0
+q070,Maya Chen,negative,easy,none,,What is the candidate's credit score?,0.0,0.0,0.0,0.0
+q071,Maya Chen,complex,hard,docs,,Is this candidate overqualified for a junior frontend role?,0.2,0.2,0.9,0.0
+q072,Maya Chen,complex,hard,docs,,Would this candidate be a good fit for a remote frontend role in Europe?,0.4,0.2,0.9,0.0
+q073,Maya Chen,complex,hard,docs,,Compare the candidate's academic and professional experience.,0.4,0.0,0.9,0.0
+q074,Maya Chen,complex,hard,docs,,What unique combination of skills does this candidate offer?,0.2,0.1,0.9,0.0
+q075,Maya Chen,complex,hard,docs,,Summarize why I should consider this candidate for a senior frontend engineer position.,0.4,0.2,0.9,0.0
+q001,Ofir Ohan,personal,easy,structured,,What is the candidate's full name?,1.0,0.0,0.1,0.0
+q002,Ofir Ohan,personal,easy,structured,,What is the candidate's email address?,1.0,0.0,0.1,0.0
+q003,Ofir Ohan,personal,easy,structured,,What is the candidate's phone number?,1.0,0.0,0.0,0.0
+q004,Ofir Ohan,personal,easy,structured,,What is the candidate's LinkedIn profile?,1.0,0.0,0.0,0.0
+q005,Ofir Ohan,personal,easy,structured,,What is the candidate's GitHub profile URL?,1.0,0.0,0.0,0.0
+q006,Ofir Ohan,personal,medium,structured,,How can I contact the candidate?,0.0,0.0,0.0,0.0
+q007,Ofir Ohan,personal,easy,structured,,What country is the candidate based in?,1.0,0.0,0.0,0.0
+q008,Ofir Ohan,personal,easy,structured,,What is the candidate's country dialing code?,1.0,0.0,0.0,0.0
+q009,Ofir Ohan,education,easy,structured,,What degree does the candidate hold?,1.0,0.0,0.2,0.0
+q010,Ofir Ohan,education,easy,structured,,What did the candidate study?,1.0,0.0,0.3,0.0
+q011,Ofir Ohan,education,easy,structured,,Where did the candidate study?,0.9,0.0,0.1,0.0
+q012,Ofir Ohan,education,easy,structured,,When did the candidate graduate?,0.9,0.0,0.2,0.0
+q013,Ofir Ohan,education,easy,structured,,What is the candidate's GPA?,1.0,0.0,0.1,0.0
+q014,Ofir Ohan,education,medium,docs,,Tell me about the candidate's educational background.,0.6,0.0,0.9,0.0
+q015,Ofir Ohan,education,medium,docs,,What was the candidate's capstone project about?,0.1,0.0,0.9,0.0
+q016,Ofir Ohan,education,medium,docs,,Was the candidate on the Dean's List?,0.2,0.0,0.9,0.0
+q017,Ofir Ohan,experience,easy,structured,,How many years of experience does the candidate have?,0.9,0.0,0.2,0.0
+q018,Ofir Ohan,experience,easy,structured,,What is the candidate's current role?,1.0,0.0,0.0,0.0
+q019,Ofir Ohan,experience,medium,structured,,Describe the candidate's current job responsibilities.,0.4,0.0,0.9,0.0
+q020,Ofir Ohan,experience,medium,docs,,Where has the candidate worked previously?,0.2,0.0,0.9,0.0
+q021,Ofir Ohan,experience,medium,docs,,What was the candidate's first job?,0.2,0.0,0.9,0.0
+q022,Ofir Ohan,experience,medium,docs,,Describe the candidate's work at TechStart Solutions.,0.2,0.1,0.9,0.0
+q023,Ofir Ohan,experience,medium,docs,,Has the candidate led a team?,0.2,0.0,0.9,0.0
+q024,Ofir Ohan,experience,medium,docs,,What industries has the candidate worked in?,0.1,0.0,0.9,0.0
+q025,Ofir Ohan,experience,hard,docs,,How did the candidate reduce model inference latency?,0.1,0.2,0.9,0.0
+q026,Ofir Ohan,experience,medium,docs,,Has the candidate worked as a teaching assistant?,0.2,0.0,0.9,0.0
+q027,Ofir Ohan,skills,easy,docs,,What programming languages does the candidate know?,0.0,0.2,0.9,0.0
+q028,Ofir Ohan,skills,medium,docs,,What ML and deep learning frameworks does the candidate use?,0.1,0.2,0.9,0.0
+q029,Ofir Ohan,skills,medium,docs,,What cloud platforms does the candidate have experience with?,0.1,0.2,0.9,0.0
+q030,Ofir Ohan,skills,medium,docs,,What databases has the candidate worked with?,0.1,0.1,0.9,0.0
+q031,Ofir Ohan,skills,medium,docs,,Does the candidate have DevOps experience?,0.1,0.2,0.9,0.0
+q032,Ofir Ohan,skills,easy,docs,skill,Does the candidate know Python?,0.1,1.0,0.4,0.0
+q033,Ofir Ohan,skills,easy,docs,skill,Does the candidate have experience with PyTorch?,0.0,0.5,0.9,0.0
+q034,Ofir Ohan,skills,medium,docs,,Does the candidate have frontend development skills?,0.0,0.0,0.9,0.0
+q035,Ofir Ohan,skills,medium,docs,,What NLP experience does the candidate have?,0.2,0.5,0.9,0.0
+q036,Ofir Ohan,skills,medium,docs,,Does the candidate have computer vision experience?,0.1,0.5,0.9,0.0
+q037,Ofir Ohan,skills,easy,docs,skill,Does the candidate have experience with Kubernetes?,0.0,1.0,0.4,0.0
+q038,Ofir Ohan,skills,medium,docs,,What data engineering tools does the candidate know?,0.1,0.2,0.9,0.0
+q039,Ofir Ohan,projects,medium,docs,,What projects has the candidate worked on?,0.1,0.2,0.9,0.0
+q040,Ofir Ohan,projects,medium,docs,,Tell me about the recommendation engine project.,0.0,0.0,0.0,1.0
+q041,Ofir Ohan,projects,medium,docs,,What was the outcome of the fraud detection project?,0.1,0.0,0.9,0.0
+q042,Ofir Ohan,projects,medium,docs,,What technologies were used in the chatbot project?,0.1,0.0,0.9,0.0
+q043,Ofir Ohan,projects,hard,docs,,What is the candidate's most significant project?,0.1,0.0,0.9,0.0
+q044,Ofir Ohan,projects,medium,docs,,Has the candidate contributed to open-source projects?,0.1,0.0,0.9,0.0
+q045,Ofir Ohan,projects,hard,docs,,What ML models has the candidate built?,0.1,0.2,0.9,0.0
+q046,Ofir Ohan,projects,medium,docs,,Does the candidate have real-time systems experience?,0.2,0.8,0.7,0.0
+q047,Ofir Ohan,projects,medium,docs,,Has the candidate worked on any NLP projects?,0.1,0.2,0.9,0.0
+q048,Ofir Ohan,projects,medium,docs,,What is the largest dataset the candidate has worked with?,0.1,0.1,0.9,0.0
+q049,Ofir Ohan,certifications,medium,docs,,What certifications does the candidate have?,0.1,0.1,0.9,0.0
+q050,Ofir Ohan,certifications,easy,docs,,Does the candidate have any AWS certifications?,0.1,0.1,0.9,0.0
+q051,Ofir Ohan,certifications,easy,docs,,Does the candidate have a deep learning certification?,0.3,0.0,0.9,0.0
+q052,Ofir Ohan,certifications,easy,docs,,When did the candidate get their AWS certification?,0.2,0.0,0.9,0.0
+q053,Ofir Ohan,certifications,medium,docs,,Does the candidate have any project management certifications?,0.2,0.0,0.9,0.0
+q054,Ofir Ohan,preferences,easy,structured,,What is the candidate's salary expectation?,1.0,0.0,0.2,0.0
+q055,Ofir Ohan,preferences,easy,structured,,Where does the candidate prefer to work?,1.0,0.0,0.1,0.0
+q056,Ofir Ohan,preferences,easy,structured,,When is the candidate available to start?,0.9,0.0,0.2,0.0
+q057,Ofir Ohan,preferences,easy,structured,,"Does the candidate prefer remote, hybrid, or onsite work?",1.0,0.0,0.1,0.0
+q058,Ofir Ohan,preferences,easy,structured,,Is the candidate open to relocation?,1.0,0.0,0.3,0.0
+q059,Ofir Ohan,preferences,easy,structured,,What job title is the candidate looking for?,1.0,0.0,0.0,0.0
+q060,Ofir Ohan,preferences,medium,structured,,Would the candidate work fully onsite?,1.0,0.0,0.2,0.0
+q061,Ofir Ohan,preferences,easy,structured,,When can the candidate start working?,1.0,0.0,0.0,0.0
+q062,Ofir Ohan,proficiency,easy,skill,,How proficient is the candidate in PyTorch?,0.1,1.0,0.4,0.0
+q063,Ofir Ohan,proficiency,medium,skill,,Rate the candidate's Python skills.,0.0,1.0,0.4,0.0
+q064,Ofir Ohan,proficiency,medium,skill,,What are the candidate's strongest skills?,0.1,0.5,0.8,0.0
+q065,Ofir Ohan,proficiency,medium,docs,,How strong is the candidate at Kafka?,0.0,1.0,0.4,0.0
+q066,Ofir Ohan,negative,easy,none,,What is the candidate's blood type?,0.0,0.0,0.0,0.0
+q067,Ofir Ohan,negative,easy,none,,What are the candidate's political opinions?,0.0,0.0,0.0,0.0
+q068,Ofir Ohan,negative,easy,none,,Is the candidate married?,0.0,0.0,0.0,0.0
+q069,Ofir Ohan,negative,easy,none,,What is the candidate's religion?,0.0,0.0,0.0,0.0
+q070,Ofir Ohan,negative,easy,none,,What is the candidate's credit score?,0.0,0.0,0.0,0.0
+q071,Ofir Ohan,complex,hard,docs,,Is this candidate overqualified for a junior data scientist role?,0.4,0.0,0.9,0.0
+q072,Ofir Ohan,complex,hard,docs,,Would this candidate be a good fit for a remote ML role in Europe?,0.4,0.3,0.9,0.0
+q073,Ofir Ohan,complex,hard,docs,,Compare the candidate's academic and professional experience.,0.4,0.0,0.9,0.0
+q074,Ofir Ohan,complex,hard,docs,,What unique combination of skills does this candidate offer?,0.0,0.0,0.9,0.0
+q075,Ofir Ohan,complex,hard,docs,,Summarize why I should consider this candidate for a senior ML engineer position.,0.2,0.2,0.9,0.0
+q001,Noa Friedman,personal,easy,structured,,What is the candidate's full name?,1.0,0.0,0.0,0.0
+q002,Noa Friedman,personal,easy,structured,,What is the candidate's email address?,1.0,0.0,0.1,0.0
+q003,Noa Friedman,personal,easy,structured,,What is the candidate's phone number?,1.0,0.0,0.0,0.0
+q004,Noa Friedman,personal,easy,structured,,What is the candidate's LinkedIn profile?,1.0,0.0,0.0,0.0
+q005,Noa Friedman,personal,easy,structured,,What is the candidate's GitHub profile URL?,1.0,0.0,0.0,0.0
+q006,Noa Friedman,personal,medium,structured,,How can I contact the candidate?,1.0,0.0,0.1,0.0
+q007,Noa Friedman,personal,easy,structured,,What country is the candidate based in?,1.0,0.0,0.1,0.0
+q008,Noa Friedman,personal,easy,structured,,What is the candidate's country dialing code?,1.0,0.0,0.1,0.0
+q009,Noa Friedman,education,easy,docs,,What degree does the candidate hold?,0.9,0.0,0.2,0.0
+q010,Noa Friedman,education,easy,docs,,What did the candidate study?,0.9,0.0,0.2,0.0
+q011,Noa Friedman,education,easy,docs,,Where did the candidate study?,0.9,0.0,0.2,0.0
+q012,Noa Friedman,education,easy,docs,,When did the candidate graduate?,1.0,0.0,0.2,0.0
+q013,Noa Friedman,education,easy,docs,,What is the candidate's GPA?,1.0,0.0,0.1,0.0
+q014,Noa Friedman,education,medium,docs,,Tell me about the candidate's educational background.,0.9,0.0,0.3,0.0
+q015,Noa Friedman,education,medium,docs,,What was the candidate's MBA project about?,0.1,0.0,0.9,0.0
+q016,Noa Friedman,education,medium,docs,,Did the candidate receive any academic honors?,0.2,0.0,0.8,0.0
+q017,Noa Friedman,experience,easy,structured,,How many years of experience does the candidate have?,0.9,0.0,0.1,0.0
+q018,Noa Friedman,experience,easy,structured,,What is the candidate's current role?,1.0,0.0,0.0,0.0
+q019,Noa Friedman,experience,medium,structured,,Describe the candidate's current job responsibilities.,0.4,0.0,0.9,0.0
+q020,Noa Friedman,experience,medium,docs,,Where has the candidate worked previously?,0.2,0.0,0.9,0.0
+q021,Noa Friedman,experience,medium,docs,,What was the candidate's first job?,0.2,0.0,0.9,0.0
+q022,Noa Friedman,experience,medium,docs,,Describe the candidate's work at ironSource.,0.2,0.1,0.9,0.0
+q023,Noa Friedman,experience,medium,docs,,Has the candidate held a leadership role?,0.3,0.0,0.8,0.0
+q024,Noa Friedman,experience,medium,docs,,What industries has the candidate worked in?,0.2,0.0,0.9,0.0
+q025,Noa Friedman,experience,hard,docs,,What is a key technical achievement the candidate accomplished?,0.2,0.1,0.9,0.0
+q026,Noa Friedman,experience,medium,docs,,Has the candidate had any mentoring experience?,0.2,0.1,0.9,0.0
+q027,Noa Friedman,skills,easy,docs,,What programming languages does the candidate know?,0.1,0.2,0.9,0.0
+q028,Noa Friedman,skills,medium,docs,,What are the candidate's primary product tools?,0.1,0.0,0.9,0.0
+q029,Noa Friedman,skills,medium,docs,,What cloud platforms does the candidate have experience with?,0.1,0.1,0.9,0.0
+q030,Noa Friedman,skills,medium,docs,,What data and analytics tools does the candidate use?,0.1,0.0,0.9,0.0
+q031,Noa Friedman,skills,medium,docs,,Does the candidate have technical knowledge?,0.2,0.1,0.9,0.0
+q032,Noa Friedman,skills,easy,docs,skill,Does the candidate know Python?,0.1,0.8,0.4,0.0
+q033,Noa Friedman,skills,easy,docs,,Does the candidate have A/B testing experience?,0.1,0.2,0.9,0.0
+q034,Noa Friedman,skills,medium,docs,,Does the candidate have data analytics experience?,0.2,0.1,0.9,0.0
+q035,Noa Friedman,skills,medium,docs,,What product management methodologies does the candidate use?,0.1,0.2,0.9,0.0
+q036,Noa Friedman,skills,medium,docs,,Does the candidate have user research experience?,0.4,0.3,0.8,0.0
+q037,Noa Friedman,skills,easy,docs,,Does the candidate have experience with ML products?,0.2,0.3,0.9,0.0
+q038,Noa Friedman,skills,medium,docs,,What visualization and reporting tools does the candidate know?,0.1,0.2,0.9,0.0
+q039,Noa Friedman,projects,medium,docs,,What projects has the candidate worked on?,0.1,0.0,0.9,0.0
+q040,Noa Friedman,projects,medium,docs,,Tell me about the ad mediation project.,0.1,0.0,0.9,0.0
+q041,Noa Friedman,projects,medium,docs,,What was the outcome of the analytics dashboard project?,0.1,0.2,0.9,0.0
+q042,Noa Friedman,projects,medium,docs,,What technologies were used in the LTV modeling project?,0.1,0.0,0.9,0.0
+q043,Noa Friedman,projects,hard,docs,,What is the candidate's most significant project?,0.1,0.0,0.9,0.0
+q044,Noa Friedman,projects,medium,docs,,Has the candidate contributed to open-source projects?,0.1,0.1,0.9,0.0
+q045,Noa Friedman,projects,hard,docs,,What products has the candidate built or launched?,0.1,0.0,0.9,0.0
+q046,Noa Friedman,projects,medium,docs,,Does the candidate have monetization experience?,0.2,0.5,0.9,0.0
+q047,Noa Friedman,projects,medium,docs,,Has the candidate worked on developer-facing products?,0.3,0.2,0.9,0.0
+q048,Noa Friedman,projects,medium,docs,,What is the scale of products the candidate has managed?,0.2,0.0,0.9,0.0
+q049,Noa Friedman,certifications,medium,docs,,What certifications does the candidate have?,0.1,0.2,0.9,0.0
+q050,Noa Friedman,certifications,easy,docs,,Does the candidate have a product management certification?,0.0,0.0,1.0,0.0
+q051,Noa Friedman,certifications,easy,docs,,Does the candidate have a data analytics certification?,0.2,0.0,0.9,0.0
+q052,Noa Friedman,certifications,easy,docs,,When did the candidate get their Scrum certification?,0.2,0.0,0.9,0.0
+q053,Noa Friedman,certifications,medium,docs,,Does the candidate have any management or methodology certifications?,0.2,0.0,0.9,0.0
+q054,Noa Friedman,preferences,easy,structured,,What is the candidate's salary expectation?,1.0,0.0,0.3,0.0
+q055,Noa Friedman,preferences,easy,structured,,Where does the candidate prefer to work?,1.0,0.0,0.0,0.0
+q056,Noa Friedman,preferences,easy,structured,,When is the candidate available to start?,1.0,0.0,0.0,0.0
+q057,Noa Friedman,preferences,easy,structured,,"Does the candidate prefer remote, hybrid, or onsite work?",1.0,0.0,0.0,0.0
+q058,Noa Friedman,preferences,easy,structured,,Is the candidate open to relocation?,0.9,0.0,0.1,0.0
+q059,Noa Friedman,preferences,easy,structured,,What job title is the candidate looking for?,1.0,0.0,0.1,0.0
+q060,Noa Friedman,preferences,medium,structured,,Would the candidate work fully onsite?,0.8,0.0,0.5,0.0
+q061,Noa Friedman,preferences,easy,structured,,When can the candidate start working?,1.0,0.0,0.2,0.0
+q062,Noa Friedman,proficiency,easy,skill,,How proficient is the candidate in SQL?,0.0,1.0,0.4,0.0
+q063,Noa Friedman,proficiency,medium,skill,,Rate the candidate's Tableau skills.,0.0,1.0,0.4,0.0
+q064,Noa Friedman,proficiency,medium,skill,,What are the candidate's strongest skills?,0.2,0.2,0.8,0.0
+q065,Noa Friedman,proficiency,medium,docs,,How strong is the candidate at Looker?,0.1,1.0,0.2,0.0
+q066,Noa Friedman,negative,easy,none,,What is the candidate's blood type?,0.0,0.0,0.0,0.0
+q067,Noa Friedman,negative,easy,none,,What are the candidate's political opinions?,0.0,0.0,0.0,0.0
+q068,Noa Friedman,negative,easy,none,,Is the candidate married?,0.0,0.0,0.0,0.0
+q069,Noa Friedman,negative,easy,none,,What is the candidate's religion?,0.0,0.0,0.0,0.0
+q070,Noa Friedman,negative,easy,none,,What is the candidate's credit score?,0.0,0.0,0.0,0.0
+q071,Noa Friedman,complex,hard,docs,,Is this candidate overqualified for a junior product manager role?,0.4,0.2,0.9,0.0
+q072,Noa Friedman,complex,hard,docs,,Would this candidate be a good fit for a remote product role in Europe?,0.4,0.2,0.9,0.0
+q073,Noa Friedman,complex,hard,docs,,Compare the candidate's academic and professional experience.,0.4,0.2,0.9,0.0
+q074,Noa Friedman,complex,hard,docs,,What unique combination of skills does this candidate offer?,0.2,0.1,0.9,0.0
+q075,Noa Friedman,complex,hard,docs,,Summarize why I should consider this candidate for a director of product position.,0.2,0.2,0.9,0.0
+q001,Tal Ben-David,personal,easy,structured,,What is the candidate's full name?,1.0,0.0,0.0,0.0
+q002,Tal Ben-David,personal,easy,structured,,What is the candidate's email address?,1.0,0.0,0.1,0.0
+q003,Tal Ben-David,personal,easy,structured,,What is the candidate's phone number?,1.0,0.0,0.0,0.0
+q004,Tal Ben-David,personal,easy,structured,,What is the candidate's LinkedIn profile?,1.0,0.0,0.0,0.0
+q005,Tal Ben-David,personal,easy,structured,,What is the candidate's GitHub profile URL?,1.0,0.0,0.0,0.0
+q006,Tal Ben-David,personal,medium,structured,,How can I contact the candidate?,1.0,0.0,0.1,0.0
+q007,Tal Ben-David,personal,easy,structured,,What country is the candidate based in?,1.0,0.0,0.0,0.0
+q008,Tal Ben-David,personal,easy,structured,,What is the candidate's country dialing code?,1.0,0.0,0.0,0.0
+q009,Tal Ben-David,education,easy,structured,,What degree does the candidate hold?,1.0,0.0,0.1,0.0
+q010,Tal Ben-David,education,easy,structured,,What did the candidate study?,0.9,0.0,0.3,0.0
+q011,Tal Ben-David,education,easy,structured,,Where did the candidate study?,1.0,0.0,0.0,0.0
+q012,Tal Ben-David,education,easy,structured,,When did the candidate graduate?,0.9,0.0,0.1,0.0
+q013,Tal Ben-David,education,easy,structured,,What is the candidate's GPA?,1.0,0.0,0.0,0.0
+q014,Tal Ben-David,education,medium,docs,,Tell me about the candidate's educational background.,0.9,0.0,0.4,0.0
+q015,Tal Ben-David,education,medium,docs,,What was the candidate's thesis about?,0.1,0.0,0.9,0.0
+q016,Tal Ben-David,education,medium,docs,,Did the candidate receive any academic honors?,0.2,0.0,0.8,0.0
+q017,Tal Ben-David,experience,easy,structured,,How many years of experience does the candidate have?,1.0,0.0,0.0,0.0
+q018,Tal Ben-David,experience,easy,structured,,What is the candidate's current role?,1.0,0.0,0.1,0.0
+q019,Tal Ben-David,experience,medium,structured,,Describe the candidate's current job responsibilities.,0.2,0.1,0.9,0.0
+q020,Tal Ben-David,experience,medium,docs,,Where has the candidate worked previously?,0.2,0.0,0.9,0.0
+q021,Tal Ben-David,experience,medium,docs,,What was the candidate's first job?,0.2,0.1,0.8,0.0
+q022,Tal Ben-David,experience,medium,docs,,Describe the candidate's work at Amdocs.,0.2,0.0,0.9,0.0
+q023,Tal Ben-David,experience,medium,docs,,Has the candidate held a leadership role?,0.3,0.0,0.9,0.0
+q024,Tal Ben-David,experience,medium,docs,,What industries has the candidate worked in?,0.2,0.0,0.9,0.0
+q025,Tal Ben-David,experience,hard,docs,,What is a key technical achievement the candidate accomplished?,0.2,0.1,0.9,0.0
+q026,Tal Ben-David,experience,medium,docs,,Has the candidate had any teaching experience?,0.2,0.1,0.9,0.0
+q027,Tal Ben-David,skills,easy,docs,,What programming languages does the candidate know?,0.1,0.2,0.9,0.0
+q028,Tal Ben-David,skills,medium,docs,,What are the candidate's primary technical frameworks and tools?,0.2,0.1,0.9,0.0
+q029,Tal Ben-David,skills,medium,docs,,What cloud platforms does the candidate have experience with?,0.1,0.2,0.9,0.0
+q030,Tal Ben-David,skills,medium,docs,,What databases has the candidate worked with?,0.1,0.1,0.9,0.0
+q031,Tal Ben-David,skills,medium,docs,,Does the candidate have DevOps or infrastructure experience?,0.2,0.1,0.9,0.0
+q032,Tal Ben-David,skills,easy,docs,,Does the candidate know Python?,0.1,1.0,0.4,0.0
+q033,Tal Ben-David,skills,easy,docs,skill,Does the candidate have experience with Kafka?,0.1,1.0,0.4,0.0
+q034,Tal Ben-David,skills,medium,docs,,Does the candidate have distributed systems experience?,0.2,0.5,0.9,0.0
+q035,Tal Ben-David,skills,medium,docs,,What architecture patterns does the candidate know?,0.1,0.2,0.9,0.0
+q036,Tal Ben-David,skills,medium,docs,,Does the candidate have observability experience?,0.0,0.5,0.8,0.0
+q037,Tal Ben-David,skills,easy,docs,skill,Does the candidate have experience with Kubernetes?,0.1,1.0,0.4,0.0
+q038,Tal Ben-David,skills,medium,docs,,What streaming and data processing tools does the candidate know?,0.1,0.1,0.9,0.0
+q039,Tal Ben-David,projects,medium,docs,,What projects has the candidate worked on?,0.1,0.0,0.9,0.0
+q040,Tal Ben-David,projects,medium,docs,,Tell me about the event enrichment pipeline.,0.0,0.0,0.0,1.0
+q041,Tal Ben-David,projects,medium,docs,,What was the outcome of the multi-region architecture project?,0.0,0.0,0.9,0.0
+q042,Tal Ben-David,projects,medium,docs,,What technologies were used in the microservices migration?,0.1,0.0,0.9,0.0
+q043,Tal Ben-David,projects,hard,docs,,What is the candidate's most significant project?,0.1,0.1,0.9,0.0
+q044,Tal Ben-David,projects,medium,docs,,Has the candidate contributed to open-source projects?,0.1,0.1,0.9,0.0
+q045,Tal Ben-David,projects,hard,docs,,What systems has the candidate built?,0.1,0.1,0.9,0.0
+q046,Tal Ben-David,projects,medium,docs,,Does the candidate have high-availability experience?,0.2,0.1,0.9,0.0
+q047,Tal Ben-David,projects,medium,docs,,Has the candidate worked on migration projects?,0.2,0.3,0.9,0.0
+q048,Tal Ben-David,projects,medium,docs,,What is the scale of systems the candidate has worked with?,0.3,0.1,0.9,0.0
+q049,Tal Ben-David,certifications,medium,docs,,What certifications does the candidate have?,0.1,0.2,0.9,0.0
+q050,Tal Ben-David,certifications,easy,docs,,Does the candidate have an AWS certification?,0.2,0.0,0.9,0.0
+q051,Tal Ben-David,certifications,easy,docs,,Does the candidate have a Kafka certification?,0.2,0.0,0.9,0.0
+q052,Tal Ben-David,certifications,easy,docs,,When did the candidate get their Java certification?,0.2,0.0,0.9,0.0
+q053,Tal Ben-David,certifications,medium,docs,,Does the candidate have any management certifications?,0.3,0.1,0.9,0.0
+q054,Tal Ben-David,preferences,easy,structured,,What is the candidate's salary expectation?,1.0,0.0,0.1,0.0
+q055,Tal Ben-David,preferences,easy,structured,,Where does the candidate prefer to work?,1.0,0.0,0.0,0.0
+q056,Tal Ben-David,preferences,easy,structured,,When is the candidate available to start?,1.0,0.0,0.0,0.0
+q057,Tal Ben-David,preferences,easy,structured,,"Does the candidate prefer remote, hybrid, or onsite work?",1.0,0.0,0.2,0.0
+q058,Tal Ben-David,preferences,easy,structured,,Is the candidate open to relocation?,1.0,0.0,0.0,0.0
+q059,Tal Ben-David,preferences,easy,structured,,What job title is the candidate looking for?,1.0,0.0,0.0,0.0
+q060,Tal Ben-David,preferences,medium,structured,,Would the candidate work fully onsite?,0.8,0.0,0.3,0.0
+q061,Tal Ben-David,preferences,easy,structured,,When can the candidate start working?,1.0,0.0,0.2,0.0
+q062,Tal Ben-David,proficiency,easy,skill,,How proficient is the candidate in Java?,0.0,1.0,0.4,0.0
+q063,Tal Ben-David,proficiency,medium,skill,,Rate the candidate's Kafka skills.,0.0,1.0,0.4,0.0
+q064,Tal Ben-David,proficiency,medium,skill,,What are the candidate's strongest skills?,0.1,0.2,0.8,0.0
+q065,Tal Ben-David,proficiency,medium,docs,,How strong is the candidate at Kotlin?,0.1,1.0,0.4,0.0
+q066,Tal Ben-David,negative,easy,none,,What is the candidate's blood type?,0.0,0.0,0.0,0.0
+q067,Tal Ben-David,negative,easy,none,,What are the candidate's political opinions?,0.0,0.0,0.0,0.0
+q068,Tal Ben-David,negative,easy,none,,Is the candidate married?,0.0,0.0,0.0,0.0
+q069,Tal Ben-David,negative,easy,none,,What is the candidate's religion?,0.0,0.0,0.0,0.0
+q070,Tal Ben-David,negative,easy,none,,What is the candidate's credit score?,0.0,0.0,0.0,0.0
+q071,Tal Ben-David,complex,hard,docs,,Is this candidate overqualified for a junior backend role?,0.2,0.2,0.9,0.0
+q072,Tal Ben-David,complex,hard,docs,,Would this candidate be a good fit for a remote backend role in Europe?,0.4,0.2,0.9,0.0
+q073,Tal Ben-David,complex,hard,docs,,Compare the candidate's academic and professional experience.,0.4,0.0,0.9,0.0
+q074,Tal Ben-David,complex,hard,docs,,What unique combination of skills does this candidate offer?,0.2,0.3,0.9,0.0
+q075,Tal Ben-David,complex,hard,docs,,Summarize why I should consider this candidate for a principal engineer position.,0.2,0.2,0.9,0.0
+p001,Project Knowledge Base,project,easy,project,,What is this project?,0.0,0.0,0.9,0.0
+p002,Project Knowledge Base,project,easy,project,,Give me a high-level overview of the system.,0.0,0.0,0.0,1.0
+p003,Project Knowledge Base,project,medium,project,,What reranker does the project use?,0.0,0.0,0.0,1.0
+p004,Project Knowledge Base,project,medium,project,,How does the skill proficiency estimation work?,0.0,0.0,0.1,1.0
+p005,Project Knowledge Base,project,medium,project,,What evaluation frameworks does the project use?,0.0,0.0,0.0,1.0
+p006,Project Knowledge Base,project,medium,project,,What is Reciprocal Rank Fusion used for in the retrieval pipeline?,0.0,0.0,0.0,1.0
+p007,Project Knowledge Base,project,easy,project,,Which vector database does the project use?,0.0,0.0,0.0,1.0
+p008,Project Knowledge Base,project,medium,project,,What embedding options does the project support?,0.0,0.0,0.0,1.0
+p009,Project Knowledge Base,project,hard,project,,How are documents ingested?,0.0,0.0,0.0,1.0
+p010,Project Knowledge Base,project,medium,project,,What tools does the agent have?,0.0,0.0,0.0,1.0
+p011,Project Knowledge Base,project,medium,project,,What does the query router do?,0.0,0.0,0.0,1.0
+p012,Project Knowledge Base,project,medium,project,,How is the recruiter chat deployed and secured?,0.0,0.0,0.0,1.0
+p013,Project Knowledge Base,project,hard,project,,What is the build-vs-serve split?,0.0,0.0,0.0,1.0
+p014,Project Knowledge Base,project,easy,project,,What do the 1 to 5 skill proficiency levels mean?,0.0,0.0,0.0,1.0
+p015,Project Knowledge Base,project,hard,project,,How was the training data for the skill scorer created?,0.0,0.0,0.0,1.0
+p016,Project Knowledge Base,project,medium,project,,Which LLM does the project use?,0.0,0.0,0.0,1.0
+p017,Project Knowledge Base,project,hard,project,,What is the per-gate retrieval analysis?,0.0,0.0,0.0,1.0
+p018,Project Knowledge Base,project,medium,project,,How many synthetic candidates are used for evaluation and how many questions does each have?,0.0,0.0,0.0,1.0
+p019,Project Knowledge Base,project,medium,project,,What hybrid search methods are combined in retrieval?,0.0,0.0,0.0,1.0
+p020,Project Knowledge Base,project,medium,project,,Does the project use prompt caching?,0.0,0.0,0.0,1.0
+p021,Project Knowledge Base,project,medium,project,,How do you decide which tool to call?,0.0,0.0,0.0,1.0
+p022,Project Knowledge Base,project,medium,project,,What model powers you?,0.0,0.0,0.0,1.0
+p023,Project Knowledge Base,project,medium,project,,What reranker do you use?,0.0,0.0,0.0,1.0
+p024,Project Knowledge Base,project,hard,project,,How do you retrieve information from the candidate's documents?,0.0,0.0,0.0,1.0
+p025,Project Knowledge Base,project,medium,project,,How were you built?,0.0,0.0,0.0,1.0
+p026,Project Knowledge Base,project,medium,project,,How do you figure out how good a candidate is at a skill?,0.1,0.5,0.3,0.8
+p027,Project Knowledge Base,project,medium,project,,What embedding model do you use?,0.0,0.0,0.0,1.0
+p028,Project Knowledge Base,project,medium,project,,"Can you run entirely on free, local models without any paid APIs?",0.0,0.0,0.0,1.0
+p029,Project Knowledge Base,project,medium,project,,How do you avoid making things up?,0.0,0.0,0.0,1.0
+p030,Project Knowledge Base,project,medium,project,,What do you do when a recruiter asks something out of scope or that you don't know?,0.0,0.0,0.0,1.0
+p031,Project Knowledge Base,project,hard,project,,How were you evaluated?,0.1,0.0,0.9,0.0
+p032,Project Knowledge Base,project,medium,project,,Where do you store your knowledge?,0.0,0.0,0.0,1.0
+p033,Project Knowledge Base,project,easy,project,,How many tools do you have and what are they?,0.0,0.0,0.0,1.0
+p034,Project Knowledge Base,project,medium,project,,Do you remember the conversation across questions?,0.0,0.0,0.0,0.0
+p035,Project Knowledge Base,project,medium,project,,How do you keep the candidate's private data secure?,0.0,0.0,0.0,1.0
+p036,Project Knowledge Base,project,medium,project,,How are you deployed and how much does it cost to run?,0.0,0.0,0.0,1.0
+p037,Project Knowledge Base,project,easy,project,,What language do you answer in?,0.0,0.0,0.0,1.0
+p038,Project Knowledge Base,project,hard,project,,What's the difference between how you answer a 'how good is she at Python' question and a 'how does the project work' question?,0.0,1.0,0.0,1.0
+p039,Project Knowledge Base,project,medium,project,,How do you expand a search query before retrieving?,0.0,0.0,0.0,1.0
+p040,Project Knowledge Base,project,medium,project,,Why might you say a skill wasn't assessed?,0.0,0.2,0.9,0.0

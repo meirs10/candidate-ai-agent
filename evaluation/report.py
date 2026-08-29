@@ -16,7 +16,13 @@ from pathlib import Path
 
 import pandas as pd
 
+import settings as config
+from agent.tool_router import TOOL_SOURCE  # {"get_structured_data": "structured", ...}
+
 REPORTS_DIR = Path(__file__).parent / "reports"
+
+_SOURCE_TO_PROB_COL = {"structured": "prob_structured", "skill": "prob_skill",
+                        "docs": "prob_docs", "project": "prob_project"}
 
 # Columns in the RAGAS frame that are NOT metric scores: the RAGAS sample text
 # fields plus the standard per-question identity columns every component CSV now
@@ -30,17 +36,25 @@ _RAGAS_NON_METRIC_COLS = (
 def select_rag_results(pipeline_results: list[dict]) -> list[dict]:
     """Questions that should enter the RAG quality metrics (RAGAS).
 
-    Single source of truth for the RAG filter so the harness (which scores) and
-    the report (which aligns per-question rows to the score DataFrames by index)
-    stay in lock-step. Negative/out-of-scope questions are excluded: by design no
-    document chunk is relevant to them, so context precision/recall are meaningless
-    and were dragging the aggregate down.
+    Single source of truth for the RAG filter, used by the harness (which scores)
+    and the report (which joins per-question rows back onto the score DataFrame).
+
+    Filters on expected_source in ("docs", "project") — i.e. questions the golden
+    dataset actually designed to be answered from retrieved documents/project
+    docs. This deliberately excludes structured/skill-expected questions even
+    when search_documents also fired as part of the multi-tool selection: RAGAS
+    would then score that incidental, irrelevant-by-design context against a
+    reference that was never meant to come from retrieval (e.g. a 'preferences'
+    question whose answer is the structured work_type field — the agent
+    correctly answers it from get_structured_data, but if search_documents also
+    ran, its unrelated CV chunks would tank context_recall/precision/relevancy
+    for a question RAG was never supposed to answer). Negative/out-of-scope
+    questions are excluded too (their expected_source is "none").
     """
     return [
         r for r in pipeline_results
-        if r.get("final_tool") in ("search_documents", "search_project")
+        if r.get("expected_source") in ("docs", "project")
         and r.get("contexts")
-        and r.get("category") != "negative"
     ]
 
 
@@ -71,6 +85,205 @@ def _pct(num, total) -> str:
     if total == 0:
         return "N/A"
     return f"{num/total*100:.1f}%"
+
+
+# ── Tool-selection recomputation (recall-style, with diagnostics) ────────────
+#
+# The raw 'tool_correct' column in tool_eval_df is PRECEDENCE-based: it reduces
+# a (possibly multi-tool) trajectory to one 'actual_tool' and checks that against
+# the accepted set. Since the agent deliberately runs several tools when several
+# are relevant, a correct tool that ran alongside a higher-precedence one gets
+# marked wrong even though its context reached the answer. This recomputes
+# tool-selection success as RECALL — "did any accepted tool run, whether picked
+# up front (score >= threshold) or added later via escalation" — which is what
+# the multi-tool design is actually optimizing for, and derives the selection
+# diagnostics (initial vs escalation catches, threshold misses, escalation
+# yield, tools/prompt) from the same per-question reconstruction.
+
+
+def _parse_accepted(accepted_str) -> set[str]:
+    return {t for t in str(accepted_str or "").split("|") if t}
+
+
+def _parse_trajectory_sources(traj_str) -> set[str]:
+    """trajectory_summary like 'get_structured_data -> search_documents' or
+    'no tools' → the set of source labels (structured/skill/docs/project) that
+    actually ran."""
+    s = str(traj_str or "").strip()
+    if not s or s == "no tools":
+        return set()
+    names = [n.strip() for n in s.split("->")]
+    return {TOOL_SOURCE[n] for n in names if n in TOOL_SOURCE}
+
+
+def _recompute_tool_selection(tool_df: pd.DataFrame) -> tuple[pd.Series, dict]:
+    """Recompute tool-selection correctness as recall (see module note above).
+
+    Returns (recomputed_correct, stats) where recomputed_correct is a bool
+    Series aligned to tool_df.index, and stats is the diagnostics dict for the
+    Tool Selection Diagnostics report section. If the probability columns are
+    missing (an older report), the original 'tool_correct' column is kept
+    unchanged and stats is empty.
+    """
+    n = len(tool_df)
+    prob_cols_present = all(c in tool_df.columns for c in _SOURCE_TO_PROB_COL.values())
+    if n == 0 or not prob_cols_present:
+        correct = (tool_df["tool_correct"].astype(bool) if "tool_correct" in tool_df.columns
+                   else pd.Series([], dtype=bool))
+        return correct, {}
+
+    threshold = config.TOOL_SELECT_THRESHOLD
+    correct_final, correct_prob, stage = [], [], []
+    escalation_fired, escalation_needed, n_tools_ran = [], [], []
+    # "avg score of the correct tool" / "below threshold" only apply to
+    # tool-expected questions — a negative question has no correct tool to score.
+
+    for _, r in tool_df.iterrows():
+        accepted = _parse_accepted(r.get("accepted_tools"))
+        probs = {s: float(r.get(col) or 0.0) for s, col in _SOURCE_TO_PROB_COL.items()}
+        initial = {s for s, v in probs.items() if v >= threshold}
+        ran = _parse_trajectory_sources(r.get("trajectory_summary"))
+        n_tools_ran.append(len(ran))
+
+        fired = len(ran) > len(initial)  # escalation adds tools beyond the initial pick
+        escalation_fired.append(fired)
+
+        # "none" is the sentinel for out-of-scope questions: correct means NO
+        # tool ran, not a literal tool named "none" — the set-intersection check
+        # below never matches that string against a real tool name, so handle it
+        # separately (matches _classify_actual_tool's "none" semantics).
+        wants_none = accepted == {"none"}
+        if wants_none:
+            caught_initial = not initial
+            caught_after = not ran
+        else:
+            caught_initial = bool(initial & accepted)
+            caught_after = bool(ran & accepted)
+        needed = not caught_initial  # the initial pick alone would have missed it
+        escalation_needed.append(needed)
+
+        if caught_initial:
+            stage.append("initial")
+        elif fired and caught_after:
+            stage.append("escalation")
+        else:
+            stage.append("missed")
+
+        correct_final.append(caught_after)
+        if not wants_none:
+            correct_prob.append(max((probs[s] for s in accepted if s in probs), default=0.0))
+
+    correct_series = pd.Series(correct_final, index=tool_df.index)
+
+    fired_needed = sum(1 for f, nd in zip(escalation_fired, escalation_needed) if f and nd)
+    fired_not_needed = sum(1 for f, nd in zip(escalation_fired, escalation_needed) if f and not nd)
+
+    n_expected = len(correct_prob)  # tool-expected questions only (excludes negatives)
+    stats = {
+        "n": n,
+        "n_tool_expected": n_expected,
+        "threshold": threshold,
+        "accuracy": sum(correct_final) / n,
+        "avg_correct_prob": (sum(correct_prob) / n_expected) if n_expected else 0.0,
+        "below_threshold_pct": (sum(1 for cp in correct_prob if cp < threshold) / n_expected) if n_expected else 0.0,
+        "caught_initial": stage.count("initial"),
+        "caught_escalation": stage.count("escalation"),
+        "missed": stage.count("missed"),
+        "escalations_fired": sum(escalation_fired),
+        "escalations_needed_and_fired": fired_needed,
+        "escalations_not_needed_but_fired": fired_not_needed,
+        "avg_tools_per_prompt": sum(n_tools_ran) / n,
+    }
+    return correct_series, stats
+
+
+def _apply_tool_recompute(eval_results: dict) -> tuple[dict, dict]:
+    """Return a shallow-copied eval_results with tool_eval_df's 'tool_correct'
+    replaced by the recall-style value (see _recompute_tool_selection), plus the
+    diagnostics stats dict for the Tool Selection Diagnostics section. Every
+    downstream reader of tool_eval_df / tool_correct — the overview card, the
+    regime breakdowns — picks this up automatically since they just read the
+    column.
+    """
+    tool_df = eval_results.get("tool_eval_df")
+    if tool_df is None or len(tool_df) == 0:
+        return eval_results, {}
+
+    recomputed, stats = _recompute_tool_selection(tool_df)
+    new_tool_df = tool_df.copy()
+    new_tool_df["tool_correct"] = recomputed
+
+    eval_results = dict(eval_results)
+    eval_results["tool_eval_df"] = new_tool_df
+    return eval_results, stats
+
+
+def _build_tool_selection_section(stats: dict) -> str:
+    """Tool Selection Diagnostics: how selection + escalation actually behaved."""
+    if not stats:
+        return ("<p>No tool-selection probability data in this report "
+                "(older report, or prob_* columns missing).</p>")
+
+    n = stats["n"]
+    thr = stats["threshold"]
+
+    top = f"""
+    <div class="summary-stat"><strong style="color:{_score_color(stats['accuracy'])}">{stats['accuracy']*100:.1f}%</strong> Accuracy (recall-style — any accepted tool ran)</div>
+    <div class="summary-stat"><strong style="color:{_score_color(stats['avg_correct_prob'])}">{stats['avg_correct_prob']:.3f}</strong> Avg score of the correct tool</div>
+    <div class="summary-stat"><strong style="color:{_score_color(1 - stats['below_threshold_pct'])}">{stats['below_threshold_pct']*100:.1f}%</strong> Correct tool scored below threshold ({thr:.2f})</div>
+    <div class="summary-stat"><strong style="color:#38bdf8">{stats['avg_tools_per_prompt']:.2f}</strong> Avg tools called per prompt</div>
+    """
+
+    caught_rows = f"""
+    <table style="width:auto;margin:1rem 0">
+      <thead><tr><th>Caught at</th><th>N</th><th>% of all questions</th></tr></thead>
+      <tbody>
+        <tr><td>Initial selection (score ≥ {thr:.2f})</td><td>{stats['caught_initial']}</td><td>{_pct(stats['caught_initial'], n)}</td></tr>
+        <tr><td>Escalation (result-based retry)</td><td>{stats['caught_escalation']}</td><td>{_pct(stats['caught_escalation'], n)}</td></tr>
+        <tr><td style="color:#ef4444">Missed entirely</td><td style="color:#ef4444">{stats['missed']}</td><td style="color:#ef4444">{_pct(stats['missed'], n)}</td></tr>
+      </tbody>
+    </table>"""
+
+    esc_total = stats["escalations_fired"]
+    esc_needed = stats["escalations_needed_and_fired"]
+    esc_not_needed = stats["escalations_not_needed_but_fired"]
+    esc_html = f"""
+    <p style="color:#94a3b8;margin:0.5rem 0">Escalation fires when every initially-selected tool comes back empty,
+    and runs the remaining tools as a safety net. "Needed" = the initial selection would have missed the
+    right tool anyway; "not needed" = the right tool was already selected but returned nothing (e.g. a genuine
+    no-data case), so escalation ran without changing the outcome.</p>
+    <div class="summary-stat"><strong style="color:#38bdf8">{esc_total}</strong> Escalations fired ({_pct(esc_total, n)} of questions)</div>
+    <div class="summary-stat"><strong style="color:#22c55e">{esc_needed}</strong> …needed ({_pct(esc_needed, esc_total)} of escalations)</div>
+    <div class="summary-stat"><strong style="color:#eab308">{esc_not_needed}</strong> …not needed ({_pct(esc_not_needed, esc_total)} of escalations)</div>
+    """
+
+    return f"{top}{caught_rows}{esc_html}"
+
+
+def _filter_ragas_df(ragas_df, pipeline_results: list[dict]):
+    """Restrict ragas_df to questions select_rag_results() actually wants
+    (expected_source in docs/project), via a key lookup on (candidate_name,
+    question_id) against pipeline_results (which carries expected_source;
+    ragas_df itself does not). This is the shared filter used by both the
+    overview cards and the regime breakdowns, so a structured/skill-expected
+    question whose incidental search_documents call happened to get RAGAS-
+    scored (e.g. a 'preferences' question answered from structured data) is
+    excluded everywhere in the report, not just some of it.
+
+    Falls back to returning ragas_df unchanged when it lacks identity columns
+    (a legacy report saved before question_id/candidate_name were added).
+    """
+    if ragas_df is None or len(ragas_df) == 0:
+        return ragas_df
+    rcols = set(ragas_df.columns)
+    rid = "question_id" if "question_id" in rcols else ("id" if "id" in rcols else None)
+    if not (rid and "candidate_name" in rcols):
+        return ragas_df
+    expected_map = {(r.get("candidate_name"), r.get("id")): r.get("expected_source")
+                    for r in pipeline_results}
+    mask = [expected_map.get((cn, i)) in ("docs", "project")
+            for cn, i in zip(ragas_df["candidate_name"], ragas_df[rid])]
+    return ragas_df[mask]
 
 
 # ── Top-line overview cards ──────────────────────────────────────────────────
@@ -109,9 +322,11 @@ def _build_overview_section(pipeline_results, eval_results) -> str:
       <div class="metric-label">Tool Accuracy</div>
     </div>"""
 
-    # RAGAS means
-    ragas_df = eval_results.get("ragas_df")
-    if ragas_df is not None:
+    # RAGAS means — filtered to expected_source in docs/project (see
+    # _filter_ragas_df) so structured/skill-expected questions whose incidental
+    # search_documents call got RAGAS-scored don't drag these top-line cards down.
+    ragas_df = _filter_ragas_df(eval_results.get("ragas_df"), pipeline_results)
+    if ragas_df is not None and len(ragas_df) > 0:
         metric_cols = [c for c in ragas_df.columns if c not in _RAGAS_NON_METRIC_COLS]
         for col in metric_cols:
             vals = ragas_df[col].dropna()
@@ -226,9 +441,12 @@ def _build_merged_df(pipeline_results, eval_results) -> tuple[pd.DataFrame, list
 
     # Full, ordered: these evaluators score every question, in pipeline order.
     _assign_full(eval_results.get("tool_eval_df"), "tool_correct", "tool_correct")
-    _assign_full(eval_results.get("geval_df"), "deepeval_correctness", "answer_correctness")
     _assign_full(eval_results.get("refusal_df"), "classification", "refusal_correct",
                  transform=lambda c: c in ("TP", "TN"))
+
+    # Ordered subset: GEval excludes negative (out-of-scope) questions.
+    _assign_subset(eval_results.get("geval_df"), "deepeval_correctness", "answer_correctness",
+                   predicate=lambda r: r.get("category") != "negative")
 
     # Ordered subset: router scored only questions that carry an expected_route.
     _assign_subset(eval_results.get("router_df"), "route_correct", "route_correct",
@@ -249,16 +467,34 @@ def _build_merged_df(pipeline_results, eval_results) -> tuple[pd.DataFrame, list
     else:
         base["retrieval_ok"] = pd.NA
 
-    # RAGAS — ordered subset matching select_rag_results' filter.
-    ragas_df = eval_results.get("ragas_df")
+    # RAGAS — filtered to questions select_rag_results() actually wants (see
+    # _filter_ragas_df), then key-joined on (candidate_name, question_id). A key
+    # join is used — rather than re-deriving a predicate and position-matching
+    # it against ragas_df's row order — because the CSV now carries real
+    # identity columns, and because a saved ragas_df from before this fix may
+    # include structured/skill-expected rows that must be OMITTED, not
+    # repositioned: re-deriving today's predicate over pipeline_results and
+    # aligning by position would silently misalign those rows onto the wrong
+    # scores instead of dropping them.
+    ragas_df = _filter_ragas_df(eval_results.get("ragas_df"), pipeline_results)
     ragas_cols: list[str] = []
     if ragas_df is not None and len(ragas_df) > 0:
-        ragas_cols = [c for c in ragas_df.columns
-                      if c not in _RAGAS_NON_METRIC_COLS]
-        rag_pred = (lambda r: r.get("final_tool") in ("search_documents", "search_project")
-                    and r.get("contexts") and r.get("category") != "negative")
-        for col in ragas_cols:
-            _assign_subset(ragas_df, col, col, predicate=rag_pred)
+        ragas_cols = [c for c in ragas_df.columns if c not in _RAGAS_NON_METRIC_COLS]
+        rcols = set(ragas_df.columns)
+        rid = "question_id" if "question_id" in rcols else ("id" if "id" in rcols else None)
+        if rid and "candidate_name" in rcols:
+            rmap = {(row["candidate_name"], row[rid]): row for _, row in ragas_df.iterrows()}
+            for col in ragas_cols:
+                base[col] = [rmap[(cn, i)][col] if (cn, i) in rmap else pd.NA
+                            for cn, i in zip(base["candidate_name"], base["id"])]
+        else:
+            # Legacy CSV without identity columns — fall back to positional
+            # alignment (only correct if this ragas_df was produced by exactly
+            # today's select_rag_results predicate).
+            rag_pred = (lambda r: r.get("expected_source") in ("docs", "project")
+                        and r.get("contexts"))
+            for col in ragas_cols:
+                _assign_subset(ragas_df, col, col, predicate=rag_pred)
 
     # Coerce every metric column to numeric (bools → 1/0, missing → NaN) so the
     # group means are well-defined.
@@ -341,7 +577,9 @@ def _build_breakdowns(pipeline_results, eval_results) -> str:
         '<p style="color:#94a3b8;margin:0.5rem 0 1rem">Each cell is the mean score '
         'over the <em>applicable</em> questions in that group (— = metric does not '
         'apply to any question there). '
-        '<strong>Tool</strong> = tool-selection accuracy · '
+        '<strong>Tool</strong> = tool-selection accuracy (recall-style: any accepted '
+        'tool ran, whether via the initial threshold or escalation — see Tool '
+        'Selection Diagnostics below) · '
         '<strong>Answer</strong> = GEval answer correctness · '
         '<strong>Router</strong> = broad/specific routing accuracy · '
         '<strong>Refusal</strong> = refusal confusion accuracy · '
@@ -550,8 +788,14 @@ def _generate_html(pipeline_results, eval_results) -> str:
     """Generate a self-contained INSIGHT HTML report (summary + breakdowns)."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    # Recompute tool-selection correctness as recall (see module note above) —
+    # this updates the overview card and the regime breakdowns' "Tool" column,
+    # and produces the diagnostics for the new Tool Selection section below.
+    eval_results, tool_stats = _apply_tool_recompute(eval_results)
+
     overview_cards = _build_overview_section(pipeline_results, eval_results)
     breakdowns = _build_breakdowns(pipeline_results, eval_results)
+    tool_selection_section = _build_tool_selection_section(tool_stats)
     refusal_section = _build_refusal_summary(eval_results.get("refusal_df"))
     retrieval_gate_section = _build_retrieval_gate_summary(eval_results.get("retrieval_gate_df"))
     ingestion_section = _build_ingestion_section(eval_results.get("ingestion_report"))
@@ -607,6 +851,11 @@ Per-question detail is in the JSON/CSV reports and the per-component CSVs.</div>
 <div class="component-section">
 <h2>Scores by Regime</h2>
 {breakdowns}
+</div>
+
+<div class="component-section">
+<h2>Tool Selection Diagnostics</h2>
+{tool_selection_section}
 </div>
 
 <div class="component-section">
