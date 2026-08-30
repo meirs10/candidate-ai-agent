@@ -62,25 +62,36 @@ LLM_PROVIDER = (_get("LLM_PROVIDER", "openrouter") or "openrouter").lower()
 ANTHROPIC_API_KEY = _get("ANTHROPIC_API_KEY", "") or ""
 OPENROUTER_API_KEY = _get("OPENROUTER_API_KEY", "") or ""
 
-# Model id format is provider-specific (bare "claude-haiku-4-5" for direct
-# Anthropic vs. prefixed "anthropic/claude-haiku-4.5" on OpenRouter), so the
-# default tracks LLM_PROVIDER; override with the AGENT_MODEL/ROUTER_MODEL env
-# vars to pin an exact id regardless of provider.
-_DEFAULT_MODEL = {
+# Model ids are provider-specific (bare "claude-haiku-4-5" for direct Anthropic
+# vs. prefixed "anthropic/claude-haiku-4.5" on OpenRouter), so defaults track
+# LLM_PROVIDER; override with the AGENT_MODEL/ROUTER_MODEL env vars to pin an
+# exact id. OpenRouter can serve both vendors, which is what lets the two roles
+# below use different models.
+_DEFAULT_AGENT = {
     "anthropic": "claude-haiku-4-5",
     "openrouter": "anthropic/claude-haiku-4.5",
 }.get(LLM_PROVIDER, "claude-haiku-4-5")
 
-# The agent that answers recruiters (synthesis). Haiku 4.5 is the objective
-# pick here too: strong instruction-following for the grounding/refusal rules
-# at mini/flash-tier cost — no evidence a same-tier alternative (GPT-5 mini,
-# Gemini 2.5 Flash) does meaningfully better on this task.
-AGENT_MODEL = _get("AGENT_MODEL", _DEFAULT_MODEL) or _DEFAULT_MODEL
-# Auxiliary single-shot calls (BROAD/SPECIFIC routing, query expansion,
-# summaries, and the tool-selection scorer). Same tier as AGENT_MODEL
-# deliberately — this call drives independent-probability tool selection,
-# not a cheaper classification task, so it shouldn't be downgraded for cost.
-ROUTER_MODEL = _get("ROUTER_MODEL", _DEFAULT_MODEL) or _DEFAULT_MODEL
+_DEFAULT_ROUTER = {
+    "anthropic": "claude-haiku-4-5",           # no cheap non-Claude option here
+    "openrouter": "google/gemini-2.5-flash-lite",
+}.get(LLM_PROVIDER, "claude-haiku-4-5")
+
+# The recruiter-facing answer (synthesis). This is the ONLY user-visible output,
+# so it keeps the stronger model: grounding discipline, refusal wording, and
+# tone are judged directly by the recruiter.
+AGENT_MODEL = _get("AGENT_MODEL", _DEFAULT_AGENT) or _DEFAULT_AGENT
+
+# Everything else: tool-selection scoring, BROAD/SPECIFIC routing, query
+# expansion, build-time summaries. Invisible plumbing judged only by whether it
+# picked right — ~68% of per-turn spend on work the recruiter never sees.
+# Gemini 2.5 Flash Lite is ~10x cheaper than Haiku ($0.10/$0.40 vs $1/$5) and
+# well above the 8B-class local model this pipeline was originally tuned on.
+# NOTE: unvalidated against the tool-selection probe. The failure mode to watch
+# is the null class — out-of-scope questions need ALL FOUR tools scored low at
+# once, and weaker routers tend to fire a tool anyway (a false answer where a
+# refusal belongs). collect_tool_scores.analyze() reports this as neg_fire_rate.
+ROUTER_MODEL = _get("ROUTER_MODEL", _DEFAULT_ROUTER) or _DEFAULT_ROUTER
 # Local fallback model name when LLM_PROVIDER == "ollama".
 OLLAMA_MODEL = _get("OLLAMA_MODEL", "qwen3") or "qwen3"
 
