@@ -42,6 +42,35 @@ def _get(key: str, default: str | None = None) -> str | None:
     return default
 
 
+def _ensure_tesseract_on_path() -> None:
+    """Make the Tesseract binary discoverable for OCR ingestion (PNG documents).
+
+    pytesseract resolves `tesseract` through PATH only, and the Windows
+    installer does not add itself to PATH when run silently — so image
+    ingestion fails with TesseractNotFoundError even though it is installed.
+    Prepend the install dir for THIS PROCESS only, rather than editing the
+    machine's PATH. No-op on Linux (the pod installs tesseract via apt, which
+    is already on PATH) and no-op if it is already resolvable.
+    """
+    import shutil
+
+    if shutil.which("tesseract"):
+        return
+    candidates = [_get("TESSERACT_DIR")] if _get("TESSERACT_DIR") else []
+    candidates += [
+        r"C:\Program Files\Tesseract-OCR",
+        r"C:\Program Files (x86)\Tesseract-OCR",
+        os.path.expanduser(r"~\AppData\Local\Programs\Tesseract-OCR"),
+    ]
+    for d in candidates:
+        if d and os.path.isfile(os.path.join(d, "tesseract.exe")):
+            os.environ["PATH"] = d + os.pathsep + os.environ.get("PATH", "")
+            return
+
+
+_ensure_tesseract_on_path()
+
+
 # ── Deployment mode ──────────────────────────────────────────────────────────
 # "production" → recruiter chat only (the Candidate Setup page is hidden so a
 #                recruiter can never edit your profile or trigger ingestion).
