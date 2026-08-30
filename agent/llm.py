@@ -38,6 +38,35 @@ COMPLETE_MAX_TOKENS = 512
 
 _THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL)
 
+# One pooled, retrying Session shared by every OpenRouter call. The eval harness
+# scores tools concurrently, and bare requests.post has no retry: transient
+# connection resets under concurrency would abort a whole run. (The Anthropic SDK
+# does this internally; the REST backend has to do it explicitly.)
+_SESSION = None
+
+
+def _openrouter_session():
+    global _SESSION
+    if _SESSION is None:
+        import requests
+        from requests.adapters import HTTPAdapter
+        from urllib3.util.retry import Retry
+
+        retry = Retry(
+            total=5,
+            connect=5,
+            read=5,
+            backoff_factor=0.8,          # 0.8s, 1.6s, 3.2s, 6.4s, 12.8s
+            status_forcelist=(408, 409, 429, 500, 502, 503, 504),
+            allowed_methods=frozenset(["POST"]),  # POST is not retried by default
+            raise_on_status=False,
+        )
+        session = requests.Session()
+        adapter = HTTPAdapter(max_retries=retry, pool_connections=16, pool_maxsize=16)
+        session.mount("https://", adapter)
+        _SESSION = session
+    return _SESSION
+
 
 @dataclass
 class Reply:
@@ -98,23 +127,27 @@ class LLMClient:
     # -- OpenRouter backend (OpenAI-compatible REST) --------------------------
     def _complete_openrouter(self, prompt: str, system: str | None,
                               max_tokens: int, model: str) -> str:
-        import requests
-
         messages = []
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
-        resp = requests.post(
+
+        resp = _openrouter_session().post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {config.OPENROUTER_API_KEY}",
                 "X-Title": "candidate-ai-agent",
             },
             json={"model": model, "messages": messages, "max_tokens": max_tokens},
-            timeout=60,
+            timeout=90,
         )
         resp.raise_for_status()
-        content = resp.json()["choices"][0]["message"]["content"] or ""
+        body = resp.json()
+        # OpenRouter can return HTTP 200 with an error payload (upstream refusal,
+        # provider outage) — surface it rather than KeyError-ing on "choices".
+        if "choices" not in body:
+            raise RuntimeError(f"OpenRouter error: {body.get('error') or body}")
+        content = body["choices"][0]["message"].get("content") or ""
         return _THINK_RE.sub("", content).strip()
 
     # -- Tool-calling chat (the agent loop) ---------------------------------
@@ -123,6 +156,16 @@ class LLMClient:
              max_tokens: int = AGENT_MAX_TOKENS) -> Reply:
         if self.provider == "ollama":
             return self._chat_ollama(system, messages, tools)
+        if self.provider == "openrouter":
+            # Unused: the agent is single-pass (score_tools + complete()), so no
+            # caller needs a tool-calling loop. Fail loudly rather than silently
+            # falling through to the Anthropic client, which would send an
+            # OpenRouter-style model id ("anthropic/claude-haiku-4.5") to
+            # api.anthropic.com and demand an ANTHROPIC_API_KEY.
+            raise NotImplementedError(
+                "LLMClient.chat() has no OpenRouter backend. The agent uses "
+                "complete() only; add a tool-calling backend here if that changes."
+            )
         return self._chat_anthropic(system, messages, tools, max_tokens)
 
     # -- Anthropic backend ---------------------------------------------------
