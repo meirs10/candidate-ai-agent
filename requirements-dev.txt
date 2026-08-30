@@ -18,6 +18,14 @@ python-docx
 pytesseract
 Pillow
 unstructured[md,pdf,docx]
+# The [pdf] extra above does NOT reliably pull this; without it
+# unstructured.partition.auto raises ModuleNotFoundError on import.
+unstructured-inference
+# unstructured imports `magic` (python-magic) for file-type sniffing. On Linux
+# libmagic comes from the OS; on Windows nothing ships it, and python-magic then
+# does a ctypes.CDLL load against a missing DLL that spins at 100% CPU and then
+# dies with an access violation (exit 139) — before touching any document.
+python-magic-bin; sys_platform == "win32"
 langchain-text-splitters
 
 # Optional local LLM / embeddings / reranker (the original local stack)
