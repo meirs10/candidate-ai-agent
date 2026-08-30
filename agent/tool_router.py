@@ -14,6 +14,8 @@ from __future__ import annotations
 import json
 import re
 
+import settings as config
+
 # Tool name -> short "source" label used across the evaluator + report vocabulary
 # (expected_tool / actual_tool are already structured/skill/docs/project).
 TOOL_SOURCE = {
@@ -138,7 +140,11 @@ def score_tools(llm, question: str, history: list | None = None) -> dict:
     prompt = (f"{convo}Recruiter question: {question}\n\n"
               "Score each tool as instructed and return only the JSON object.")
 
-    raw = _THINK_RE.sub("", llm.complete(prompt, system=ROUTER_SYSTEM, max_tokens=400)).strip()
+    # Explicit model: this call alone runs on TOOL_SELECT_MODEL. The other
+    # complete() callers (query expansion, BROAD/SPECIFIC routing, summaries)
+    # default to ROUTER_MODEL.
+    raw = _THINK_RE.sub("", llm.complete(prompt, system=ROUTER_SYSTEM, max_tokens=400,
+                                         model=config.TOOL_SELECT_MODEL)).strip()
 
     data = {}
     try:

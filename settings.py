@@ -72,7 +72,7 @@ _DEFAULT_AGENT = {
     "openrouter": "anthropic/claude-haiku-4.5",
 }.get(LLM_PROVIDER, "claude-haiku-4-5")
 
-_DEFAULT_ROUTER = {
+_DEFAULT_TOOL_SELECT = {
     "anthropic": "claude-haiku-4-5",           # no cheap non-Claude option here
     "openrouter": "google/gemini-2.5-flash-lite",
 }.get(LLM_PROVIDER, "claude-haiku-4-5")
@@ -82,16 +82,23 @@ _DEFAULT_ROUTER = {
 # tone are judged directly by the recruiter.
 AGENT_MODEL = _get("AGENT_MODEL", _DEFAULT_AGENT) or _DEFAULT_AGENT
 
-# Everything else: tool-selection scoring, BROAD/SPECIFIC routing, query
-# expansion, build-time summaries. Invisible plumbing judged only by whether it
-# picked right — ~68% of per-turn spend on work the recruiter never sees.
-# Gemini 2.5 Flash Lite is ~10x cheaper than Haiku ($0.10/$0.40 vs $1/$5) and
-# well above the 8B-class local model this pipeline was originally tuned on.
+# Retrieval-shaping calls: BROAD/SPECIFIC routing, query expansion, and
+# build-time summaries. Cheap per call, but they decide WHICH chunks reach the
+# answer — a bad expansion or route silently degrades every downstream metric,
+# and unlike tool selection there is no escalation path to recover. Stays on the
+# stronger model.
+ROUTER_MODEL = _get("ROUTER_MODEL", _DEFAULT_AGENT) or _DEFAULT_AGENT
+
+# Tool selection only (agent/tool_router.score_tools). Isolated on the cheap
+# model because it is the single most expensive call — a fixed ~1,300-token
+# system prompt re-sent to classify a ~10-token question — and it is the one
+# routing decision with a built-in safety net: result-based escalation reruns
+# the remaining tools when everything selected comes back empty.
 # NOTE: unvalidated against the tool-selection probe. The failure mode to watch
 # is the null class — out-of-scope questions need ALL FOUR tools scored low at
 # once, and weaker routers tend to fire a tool anyway (a false answer where a
 # refusal belongs). collect_tool_scores.analyze() reports this as neg_fire_rate.
-ROUTER_MODEL = _get("ROUTER_MODEL", _DEFAULT_ROUTER) or _DEFAULT_ROUTER
+TOOL_SELECT_MODEL = _get("TOOL_SELECT_MODEL", _DEFAULT_TOOL_SELECT) or _DEFAULT_TOOL_SELECT
 # Local fallback model name when LLM_PROVIDER == "ollama".
 OLLAMA_MODEL = _get("OLLAMA_MODEL", "qwen3") or "qwen3"
 
