@@ -9,9 +9,11 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 streamlit
+python-dotenv  # loads .env (single local secrets file — see .env.example)
 chromadb
 rank_bm25
 
 # LLM + embeddings + reranker, all via API
-anthropic
+requests   # OpenRouter (production default LLM_PROVIDER)
+anthropic  # LLM_PROVIDER="anthropic" alternative
 voyageai

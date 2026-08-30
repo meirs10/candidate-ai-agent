@@ -2,10 +2,11 @@
 llm.py — Provider-pluggable LLM client.
 
 Exposes one provider-neutral interface used by the agent loop and the retrieval
-helpers, with two backends selected via config.LLM_PROVIDER:
+helpers, with three backends selected via config.LLM_PROVIDER:
 
-    "anthropic" → Claude API (production default; always-on, no local model server)
-    "ollama"    → local Ollama model (the original local stack; free for eval)
+    "openrouter" → any model via OpenRouter's unified API (production default)
+    "anthropic"  → Claude API directly (no local model server)
+    "ollama"     → local Ollama model (the original local stack; free for eval)
 
 Neutral message format (what callers build):
     {"role": "user",      "content": str}
@@ -64,7 +65,12 @@ class LLMClient:
 
     # -- Single-shot completion (router, query expansion, summaries) --------
     def complete(self, prompt: str, system: str | None = None,
-                 max_tokens: int = COMPLETE_MAX_TOKENS) -> str:
+                 max_tokens: int = COMPLETE_MAX_TOKENS, model: str | None = None) -> str:
+        """model defaults to router_model (the caller for most complete() call
+        sites — routing/query-expansion/tool-scoring); pass model=self.agent_model
+        explicitly for the recruiter-facing synthesis call."""
+        model = model or self.router_model
+
         if self.provider == "ollama":
             import ollama
 
@@ -75,9 +81,12 @@ class LLMClient:
             resp = ollama.chat(model=config.OLLAMA_MODEL, messages=messages, options={"num_predict": 4096})
             return _THINK_RE.sub("", resp["message"]["content"]).strip()
 
+        if self.provider == "openrouter":
+            return self._complete_openrouter(prompt, system, max_tokens, model)
+
         # Anthropic
         kwargs = {
-            "model": self.router_model,
+            "model": model,
             "max_tokens": max_tokens,
             "messages": [{"role": "user", "content": prompt}],
         }
@@ -85,6 +94,28 @@ class LLMClient:
             kwargs["system"] = system
         resp = self._client().messages.create(**kwargs)
         return "".join(b.text for b in resp.content if b.type == "text").strip()
+
+    # -- OpenRouter backend (OpenAI-compatible REST) --------------------------
+    def _complete_openrouter(self, prompt: str, system: str | None,
+                              max_tokens: int, model: str) -> str:
+        import requests
+
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+        resp = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {config.OPENROUTER_API_KEY}",
+                "X-Title": "candidate-ai-agent",
+            },
+            json={"model": model, "messages": messages, "max_tokens": max_tokens},
+            timeout=60,
+        )
+        resp.raise_for_status()
+        content = resp.json()["choices"][0]["message"]["content"] or ""
+        return _THINK_RE.sub("", content).strip()
 
     # -- Tool-calling chat (the agent loop) ---------------------------------
     def chat(self, system: str, messages: list[dict],

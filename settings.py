@@ -4,12 +4,16 @@ config.py — Single source of truth for runtime configuration.
 Everything (LLM provider, embeddings provider, reranker provider, API keys, the
 deployment mode, and the recruiter access code) is resolved here, in this order:
 
-    1. Environment variable        (best for CI, the eval harness, local shells)
-    2. Streamlit secrets           (best for Streamlit Community Cloud / HF Spaces)
+    1. Environment variable        (loaded from the single local secrets file,
+                                     .env at the repo root — see .env.example;
+                                     also how CI / the eval harness / RunPod set them)
+    2. Streamlit secrets           (only path for Streamlit Community Cloud / HF
+                                     Spaces — those platforms have no local .env;
+                                     paste the same keys into their Secrets UI)
     3. Hard-coded default          (Option A: all-API, production-safe)
 
 This is what makes the project *pluggable*: flip EMBED_PROVIDER / RERANK_PROVIDER /
-LLM_PROVIDER to "voyage"/"anthropic" (the production default) for the always-on
+LLM_PROVIDER to "voyage"/"openrouter" (the production default) for the always-on
 hosted service, or to "nomic"/"qwen3"/"ollama" to run the original local
 open-source stack on your own machine. No code changes — just configuration.
 """
@@ -18,9 +22,13 @@ from __future__ import annotations
 
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()  # populates os.environ from a local .env, if present; no-op otherwise
+
 
 def _get(key: str, default: str | None = None) -> str | None:
-    """Resolve a setting: env var → Streamlit secrets → default."""
+    """Resolve a setting: env var (incl. from .env) → Streamlit secrets → default."""
     if key in os.environ and os.environ[key] != "":
         return os.environ[key]
     try:
@@ -46,14 +54,33 @@ APP_PASSWORD = _get("APP_PASSWORD", "") or ""
 
 
 # ── LLM (agent loop, query router, query expansion, build-time summaries) ─────
-LLM_PROVIDER = (_get("LLM_PROVIDER", "anthropic") or "anthropic").lower()
+# "anthropic"  → Claude API directly.
+# "openrouter" → any model via OpenRouter's unified API (production default —
+#                lets AGENT_MODEL/ROUTER_MODEL name any provider's model).
+# "ollama"     → local Ollama model (the original local stack; free for eval).
+LLM_PROVIDER = (_get("LLM_PROVIDER", "openrouter") or "openrouter").lower()
 ANTHROPIC_API_KEY = _get("ANTHROPIC_API_KEY", "") or ""
+OPENROUTER_API_KEY = _get("OPENROUTER_API_KEY", "") or ""
 
-# The agent that answers recruiters. Start on Haiku (fast + cheap); bump to
-# claude-sonnet-4-6 if you want richer answers.
-AGENT_MODEL = _get("AGENT_MODEL", "claude-haiku-4-5") or "claude-haiku-4-5"
-# Auxiliary single-shot calls (BROAD/SPECIFIC routing, query expansion, summaries).
-ROUTER_MODEL = _get("ROUTER_MODEL", "claude-haiku-4-5") or "claude-haiku-4-5"
+# Model id format is provider-specific (bare "claude-haiku-4-5" for direct
+# Anthropic vs. prefixed "anthropic/claude-haiku-4.5" on OpenRouter), so the
+# default tracks LLM_PROVIDER; override with the AGENT_MODEL/ROUTER_MODEL env
+# vars to pin an exact id regardless of provider.
+_DEFAULT_MODEL = {
+    "anthropic": "claude-haiku-4-5",
+    "openrouter": "anthropic/claude-haiku-4.5",
+}.get(LLM_PROVIDER, "claude-haiku-4-5")
+
+# The agent that answers recruiters (synthesis). Haiku 4.5 is the objective
+# pick here too: strong instruction-following for the grounding/refusal rules
+# at mini/flash-tier cost — no evidence a same-tier alternative (GPT-5 mini,
+# Gemini 2.5 Flash) does meaningfully better on this task.
+AGENT_MODEL = _get("AGENT_MODEL", _DEFAULT_MODEL) or _DEFAULT_MODEL
+# Auxiliary single-shot calls (BROAD/SPECIFIC routing, query expansion,
+# summaries, and the tool-selection scorer). Same tier as AGENT_MODEL
+# deliberately — this call drives independent-probability tool selection,
+# not a cheaper classification task, so it shouldn't be downgraded for cost.
+ROUTER_MODEL = _get("ROUTER_MODEL", _DEFAULT_MODEL) or _DEFAULT_MODEL
 # Local fallback model name when LLM_PROVIDER == "ollama".
 OLLAMA_MODEL = _get("OLLAMA_MODEL", "qwen3") or "qwen3"
 

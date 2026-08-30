@@ -183,7 +183,7 @@ def _synthesize(question: str, history: list, results: list) -> str:
     prompt = (f"{convo}Recruiter question: {question}\n\n"
               f"Retrieved information:\n{context}\n\n"
               "Answer the question using only the retrieved information above.")
-    return llm.complete(prompt, system=SYNTHESIS_SYSTEM, max_tokens=1024)
+    return llm.complete(prompt, system=SYNTHESIS_SYSTEM, max_tokens=1024, model=llm.agent_model)
 
 
 def run(conversation_history: list, user_message: str) -> tuple[str, list, list]:
