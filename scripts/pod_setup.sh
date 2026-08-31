@@ -22,13 +22,33 @@ warn() { echo "  [WARN] $*"; }
 fail() { echo "  [FAIL] $*"; }
 
 echo "=== 1. Ephemeral system packages (gone on every fresh pod) ==="
+apt-get update -qq >/dev/null 2>&1
 if command -v tesseract >/dev/null 2>&1; then
   ok "tesseract present: $(tesseract --version 2>&1 | head -1)"
 else
   echo "  installing tesseract-ocr (candidate_5 is all-PNG; ingestion dies without it)..."
-  apt-get update -qq && apt-get install -y -qq tesseract-ocr >/dev/null 2>&1 \
+  apt-get install -y -qq tesseract-ocr >/dev/null 2>&1 \
     && ok "tesseract installed" || fail "tesseract install FAILED — candidate_5 will crash"
 fi
+# ollama's installer unpacks a zstd archive; without it the install aborts.
+command -v zstd >/dev/null 2>&1 || apt-get install -y -qq zstd >/dev/null 2>&1
+
+echo
+echo "=== 1b. Python interpreter the venv was built against ==="
+# The venv on the volume is pinned to the exact python MINOR version that built
+# it (its bin/python is a symlink to /usr/bin/pythonX.Y, and site-packages holds
+# version-specific .so files). Pod images vary — one shipping only 3.10/3.11
+# leaves the venv with a dangling symlink: `ls` shows bin/python, but running it
+# gives "No such file or directory". Reinstalling the interpreter revives the
+# whole venv; rebuilding it from scratch would mean re-downloading ~19GB.
+VENV_PY_VER=$(sed -n 's/^version *= *\([0-9]*\.[0-9]*\).*/\1/p' "$VENV/pyvenv.cfg" 2>/dev/null)
+if [ -n "$VENV_PY_VER" ] && ! "$PY" --version >/dev/null 2>&1; then
+  warn "venv python$VENV_PY_VER is missing on this image — installing it"
+  apt-get install -y -qq "python$VENV_PY_VER" "python$VENV_PY_VER-venv" >/dev/null 2>&1
+fi
+"$PY" --version >/dev/null 2>&1 \
+  && ok "venv python works: $("$PY" --version 2>&1)" \
+  || fail "venv python$VENV_PY_VER unusable — install it, or rebuild the venv"
 
 echo
 echo "=== 2. Python deps (venv is on the volume, but these are new) ==="
@@ -45,7 +65,14 @@ done
 
 echo
 echo "=== 3. Ollama (judges) — binary is ephemeral, qwen3 weights persist ==="
-export OLLAMA_MODELS=/workspace/ollama_models   # keep weights on the volume
+# OLLAMA_MODELS must point at the dir CONTAINING manifests/ and blobs/. Pointing
+# one level too high makes `ollama list` come back empty and silently re-download
+# 5.2GB, so derive it from where the manifests actually are.
+OLLAMA_MODELS=$(dirname "$(dirname "$(find /workspace -type d -name manifests -path '*ollama*' 2>/dev/null | head -1)")" 2>/dev/null)
+[ -d "${OLLAMA_MODELS:-}/manifests" ] || OLLAMA_MODELS=/workspace/.ollama/models
+export OLLAMA_MODELS
+ok "OLLAMA_MODELS=$OLLAMA_MODELS"
+
 if ! command -v ollama >/dev/null 2>&1; then
   echo "  installing ollama..."
   curl -fsSL https://ollama.com/install.sh | sh >/dev/null 2>&1 \
@@ -53,8 +80,8 @@ if ! command -v ollama >/dev/null 2>&1; then
 fi
 if ! curl -s -m 3 http://localhost:11434/api/tags >/dev/null 2>&1; then
   echo "  starting ollama server..."
-  nohup ollama serve > /workspace/ollama.log 2>&1 &
-  for i in $(seq 1 30); do
+  nohup env OLLAMA_MODELS="$OLLAMA_MODELS" ollama serve > /workspace/ollama.log 2>&1 &
+  for i in $(seq 1 40); do
     curl -s -m 2 http://localhost:11434/api/tags >/dev/null 2>&1 && break; sleep 1
   done
 fi
@@ -91,20 +118,34 @@ else
 fi
 
 echo
-echo "=== 6. Stale state from the previous LOCAL-stack run ==="
-# Old ChromaDB holds 768-dim nomic vectors; Voyage queries are 1024-dim.
-# A non-resume run wipes + re-ingests automatically, so this is belt-and-braces
-# — but RESUME=True would skip re-ingestion and blow up on dimension mismatch.
+echo "=== 6. Step-5 inputs (generation ran on another machine) ==="
+# Five components need only pipeline_results.json. `ingestion` and
+# `retrieval_gates` additionally read the LIVE ChromaDB collections, which live
+# wherever GENERATION ran — so chroma_db must be shipped over with the results
+# or those two silently come back empty.
+RES="$REPO/evaluation/reports/pipeline_results.json"
+if [ -f "$RES" ]; then
+  "$PY" - "$RES" <<'PY'
+import json, sys
+d = json.load(open(sys.argv[1], encoding="utf-8"))
+print(f"  [OK]   pipeline_results.json: {len(d)} questions, "
+      f"{len({r.get('candidate_name') for r in d})} collections")
+n = sum(1 for r in d if r.get("fused_pool"))
+print(f"  {'[OK]  ' if n else '[WARN]'} fused_pool on {n} rows (retrieval_gates needs it)")
+PY
+else
+  fail "pipeline_results.json MISSING — scp step 4's output over"
+fi
 if [ -d "$REPO/chroma_db" ]; then
-  warn "chroma_db exists (nomic-era vectors). Safe ONLY if RESUME=False."
-  echo "         to be certain:  rm -rf $REPO/chroma_db"
+  "$PY" -c "
+import chromadb
+c = chromadb.PersistentClient(path='$REPO/chroma_db').list_collections()
+print(f'  [OK]   chroma_db: {len(c)} collections')" 2>/dev/null \
+    || fail "chroma_db present but unreadable"
+else
+  fail "chroma_db/ MISSING — 'ingestion' + 'retrieval_gates' will produce nothing"
+  echo "         ship it:  bash scripts/package_for_pod.sh   (on the generating machine)"
 fi
-if [ -d "$REPO/evaluation/reports/partial" ]; then
-  warn "reports/partial/ has checkpoints from the local-stack run."
-  echo "         to be certain:  rm -rf $REPO/evaluation/reports/partial"
-fi
-grep -qE '^RESUME\s*=\s*False' "$REPO/evaluation/run_eval.py" \
-  && ok "RESUME = False in run_eval.py" || fail "RESUME is not False — fix before running"
 
 echo
 echo "=== 7. ragas / langchain shim (patched into site-packages on the volume) ==="
@@ -133,8 +174,9 @@ except Exception as e:
 PYEOF
 
 echo
-echo "Setup checks complete. Resolve any [FAIL] above before running the eval."
-echo "Then, in order:"
-echo "  1) python -m evaluation.collect_tool_scores --workers 6   # threshold probe"
-echo "  2) QUESTION_LIMIT=6 / CANDIDATES=[1] in run_eval.py        # smoke subset"
-echo "  3) python -m evaluation.run_eval                           # full eval"
+echo "Setup checks complete. Resolve any [FAIL] above before scoring."
+echo "Then, to score the answers generated on the other machine:"
+echo "  $PY -m scripts.step5_score"
+echo
+echo "Results land in $REPO/evaluation/reports/ — tar them back afterwards:"
+echo "  cd $REPO/evaluation/reports && tar -czf /workspace/step5_results.tar.gz *.csv *.html *.json"

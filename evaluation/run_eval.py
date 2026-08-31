@@ -49,6 +49,16 @@ REUSE_PIPELINE_RESULTS = False
 # force a clean run. Ignored when REUSE_PIPELINE_RESULTS is True.
 RESUME = False
 
+# If True, keep ChromaDB collections a previous run already built instead of
+# deleting and re-ingesting them, and leave them in place afterwards. Document
+# parsing + embedding + per-document summaries are the slow (and only paid) part
+# of setup, and they are deterministic — so on unchanged documents re-running
+# them buys nothing.
+# Set False to force a clean rebuild. Do that whenever the source documents, the
+# chunker, or EMBED_PROVIDER change: stale vectors would otherwise be silently
+# reused, and switching embedding provider also changes the vector dimension.
+REUSE_INGESTION = True
+
 # Number of chunks the retriever returns.
 # NOTE: this is a label for the report/checkpoint only — it does NOT drive
 # retrieval. The agent calls rag.retriever.retrieve() with its own default
@@ -81,6 +91,7 @@ if __name__ == "__main__":
         reuse_results=REUSE_PIPELINE_RESULTS,
         resume=RESUME,
         question_limit=QUESTION_LIMIT,
+        reuse_ingestion=REUSE_INGESTION,
     )
 
     # -- Candidates Summary --

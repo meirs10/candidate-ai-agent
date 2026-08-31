@@ -316,6 +316,7 @@ def _run_project_block(
     resume: bool,
     partial_dir: Path,
     question_limit: int | None = None,
+    reuse_ingestion: bool = True,
 ) -> list[dict]:
     """Run the agent over the project-knowledge golden dataset.
 
@@ -356,7 +357,11 @@ def _run_project_block(
         except Exception as e:
             print(f"[Harness] Could not read project checkpoint: {e}")
 
-    _seed_project_kb(EVAL_PROJECT_ID)
+    if reuse_ingestion and _collection_has_data(EVAL_PROJECT_ID):
+        print(f"[Harness] Reusing existing collection '{EVAL_PROJECT_ID}' "
+              f"(skipping ingestion)")
+    else:
+        _seed_project_kb(EVAL_PROJECT_ID)
 
     # Point BOTH the project tool and the (fallback) candidate tool at the project
     # collection so retrieval — and the retrieval-gate analysis, which loads the
@@ -521,6 +526,7 @@ def run_evaluation(
     reuse_results: bool = False,
     resume: bool = False,
     question_limit: int | None = None,
+    reuse_ingestion: bool = True,
 ) -> dict:
     """
     Multi-candidate component-based evaluation pipeline.
@@ -532,6 +538,18 @@ def run_evaluation(
 
     Then runs component evaluations on the COMBINED result set and generates
     a report with both per-candidate and aggregate breakdowns.
+
+    reuse_ingestion (default True): when a candidate's ChromaDB collection
+    already holds data, keep it instead of deleting and re-ingesting. Document
+    parsing + embedding + the per-document summary calls are the slowest and
+    only paid part of setup, and they are deterministic, so repeating them
+    across runs on unchanged documents buys nothing. Collections are then also
+    left in place afterwards so the next run can reuse them again.
+    Set False to force a clean rebuild — do that whenever the documents, the
+    chunker, or EMBED_PROVIDER change, since stale vectors would otherwise be
+    silently reused (and a provider switch changes the vector dimension).
+    Structured data and skill evidence are re-seeded either way: they are local,
+    unpaid, and the agent needs them present for every run.
     """
     if components is None:
         components = ALL_COMPONENTS
@@ -632,9 +650,13 @@ def run_evaluation(
                 # Seed structured data
                 backup_path = _seed_structured_data(cand["dir"])
 
-                # Clean + ingest documents
-                _cleanup_eval_collections(eval_id)
-                _seed_documents(cand["dir"], eval_id)
+                # Ingest documents — or keep the collection a previous run built.
+                if reuse_ingestion and _collection_has_data(eval_id):
+                    print(f"[Harness] Reusing existing collection '{eval_id}' "
+                          f"(skipping ingestion)")
+                else:
+                    _cleanup_eval_collections(eval_id)
+                    _seed_documents(cand["dir"], eval_id)
 
                 # Set candidate ID for the agent
                 set_candidate_id(eval_id)
@@ -683,7 +705,8 @@ def run_evaluation(
         # ── Project knowledge-base questions (about the system itself) ──
         if category_filter in (None, "project"):
             project_results = _run_project_block(
-                top_k, category_filter, resume, partial_dir, question_limit
+                top_k, category_filter, resume, partial_dir, question_limit,
+                reuse_ingestion
             )
             if project_results:
                 all_pipeline_results.extend(project_results)
@@ -776,9 +799,14 @@ def run_evaluation(
             restore_candidate_id()
             if backup_path:
                 _restore_structured_data(backup_path)
-            # Cleanup all eval collections
-            for eval_id in eval_candidate_ids:
-                _cleanup_eval_collections(eval_id)
+            # Keep the collections when they are meant to be reused next run;
+            # deleting them here is what forced every run to re-ingest.
+            if not reuse_ingestion:
+                for eval_id in eval_candidate_ids:
+                    _cleanup_eval_collections(eval_id)
+            else:
+                print(f"[Harness] Keeping {len(eval_candidate_ids)} eval collection(s) "
+                      f"for reuse (reuse_ingestion=True)")
 
     print("\n" + "=" * 70)
     print("  EVALUATION COMPLETE")
