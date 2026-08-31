@@ -190,7 +190,7 @@ def retrieve(
     is_broad = use_routing and is_broad_query_llm(query)
 
     if is_broad and use_summary:
-        print(f"[Retriever] Broad query detected → searching summary index")
+        print("[Retriever] Broad query detected -> searching summary index")
         summary_collection = client.get_or_create_collection(
             f"{candidate_id}_summaries",
             metadata={"hnsw:space": "cosine"},
