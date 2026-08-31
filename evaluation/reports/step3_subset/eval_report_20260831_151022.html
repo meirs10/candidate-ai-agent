@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Evaluation Insight Report</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0f172a; color: #e2e8f0;
+    padding: 2rem; line-height: 1.6;
+  }
+  h1 { color: #f8fafc; margin-bottom: 0.5rem; font-size: 1.8rem; }
+  h2 { color: #94a3b8; margin: 2rem 0 1rem; font-size: 1.3rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
+  h3 { color: #94a3b8; }
+  .meta { color: #64748b; margin-bottom: 2rem; font-size: 0.9rem; }
+  .metrics-grid {
+    display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0;
+  }
+  .metric-card {
+    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+    padding: 1.2rem 1.5rem; min-width: 140px; text-align: center;
+  }
+  .metric-score { font-size: 1.6rem; font-weight: 700; }
+  .metric-label { font-size: 0.75rem; color: #94a3b8; margin-top: 0.3rem; }
+  table {
+    width: 100%; border-collapse: collapse; margin: 1rem 0;
+    background: #1e293b; border-radius: 8px; overflow: hidden;
+  }
+  th { background: #334155; color: #e2e8f0; padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; }
+  td { padding: 0.6rem 1rem; border-bottom: 1px solid #334155; font-size: 0.85rem; }
+  tr:hover { background: #33415555; }
+  .summary-stat { display: inline-block; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 0.8rem 1.2rem; margin: 0.3rem; }
+  .summary-stat strong { color: #38bdf8; }
+  .component-section { margin: 2rem 0; padding: 1.5rem; background: #1e293b22; border-radius: 12px; border: 1px solid #334155; }
+</style>
+</head>
+<body>
+
+<h1>Evaluation Insight Report</h1>
+<div class="meta">Generated: 2026-08-31 15:10:22 | Questions: 42 | Candidates: Dana Levy, Maya Chen, Noa Friedman, Ofir Ohan, Project Knowledge Base, Tal Ben-David, Yoni Abergel<br>
+Per-question detail is in the JSON/CSV reports and the per-component CSVs.</div>
+
+<h2>Overview</h2>
+<div class="metrics-grid">
+  
+    <div class="metric-card">
+      <div class="metric-score" style="color:#38bdf8">7</div>
+      <div class="metric-label">Candidates</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#38bdf8">42</div>
+      <div class="metric-label">Total Questions</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#38bdf8">5.76s</div>
+      <div class="metric-label">Avg Latency</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">95.2%</div>
+      <div class="metric-label">Tool Accuracy</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">0.983</div>
+      <div class="metric-label">RAG: Faithfulness</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">0.866</div>
+      <div class="metric-label">RAG: Answer Relevancy</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">0.856</div>
+      <div class="metric-label">RAG: Llm Context Precision With Reference</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">0.877</div>
+      <div class="metric-label">RAG: Context Recall</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">0.890</div>
+      <div class="metric-label">Answer Correctness</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">97.6%</div>
+      <div class="metric-label">Refusal Accuracy</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-score" style="color:#22c55e">95.7%</div>
+      <div class="metric-label">Router Accuracy</div>
+    </div>
+</div>
+
+<div class="component-section">
+<h2>Scores by Regime</h2>
+
+    <p style="color:#94a3b8;margin:0.5rem 0 1rem">Each cell is the mean score over the <em>applicable</em> questions in that group (— = metric does not apply to any question there). <strong>Tool</strong> = tool-selection accuracy (recall-style: any accepted tool ran, whether via the initial threshold or escalation — see Tool Selection Diagnostics below) · <strong>Answer</strong> = GEval answer correctness · <strong>Router</strong> = broad/specific routing accuracy · <strong>Refusal</strong> = refusal confusion accuracy · <strong>Retrieval</strong> = share of specific-doc questions whose evidence reached the final context · RAGAS metrics are over RAG-routed questions.</p>
+    <h3 style="color:#cbd5e1;margin-top:1.5rem">By Difficulty</h3>
+    
+    <table>
+      <thead><tr><th>Difficulty</th><th>N</th><th>Tool</th><th>Answer</th><th>Router</th><th>Refusal</th><th>Retrieval</th><th>Faithfulness</th><th>Answer Relevancy</th><th>Llm Context Precision With Reference</th><th>Context Recall</th><th>Latency</th></tr></thead>
+      <tbody><tr><td>easy</td><td>26</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#22c55e;font-weight:600">95%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">95%</td><td style="color:#22c55e;font-weight:600">94%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#22c55e;font-weight:600">94%</td><td>4.06s</td></tr><tr><td>medium</td><td>8</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#eab308;font-weight:600">76%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">93%</td><td style="color:#eab308;font-weight:600">71%</td><td style="color:#22c55e;font-weight:600">81%</td><td>7.68s</td></tr><tr><td>hard</td><td>8</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">82%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#eab308;font-weight:600">74%</td><td style="color:#22c55e;font-weight:600">93%</td><td style="color:#22c55e;font-weight:600">88%</td><td>9.37s</td></tr><tr style="font-weight:700;background:#0f172a"><td>All</td><td>42</td><td style="color:#22c55e;font-weight:600">95%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">88%</td><td>5.76s</td></tr></tbody>
+    </table>
+    <h3 style="color:#cbd5e1;margin-top:1.5rem">By Question Type</h3>
+    
+    <table>
+      <thead><tr><th>Question Type</th><th>N</th><th>Tool</th><th>Answer</th><th>Router</th><th>Refusal</th><th>Retrieval</th><th>Faithfulness</th><th>Answer Relevancy</th><th>Llm Context Precision With Reference</th><th>Context Recall</th><th>Latency</th></tr></thead>
+      <tbody><tr><td>certifications</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">85%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">93%</td><td style="color:#eab308;font-weight:600">67%</td><td style="color:#eab308;font-weight:600">78%</td><td>7.47s</td></tr><tr><td>education</td><td>6</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#eab308;font-weight:600">78%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td>1.99s</td></tr><tr><td>experience</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#eab308;font-weight:600">77%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#eab308;font-weight:600">72%</td><td style="color:#22c55e;font-weight:600">91%</td><td style="color:#22c55e;font-weight:600">83%</td><td>7.67s</td></tr><tr><td>personal</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td>2.37s</td></tr><tr><td>preferences</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td style="color:#475569">—</td><td>1.99s</td></tr><tr><td>project</td><td>6</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#22c55e;font-weight:600">100%</td><td>10.87s</td></tr><tr><td>skills</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">94%</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#22c55e;font-weight:600">92%</td><td>7.96s</td></tr><tr style="font-weight:700;background:#0f172a"><td>All</td><td>42</td><td style="color:#22c55e;font-weight:600">95%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">88%</td><td>5.76s</td></tr></tbody>
+    </table>
+    <h3 style="color:#cbd5e1;margin-top:1.5rem">By Candidate</h3>
+    
+    <table>
+      <thead><tr><th>Candidate</th><th>N</th><th>Tool</th><th>Answer</th><th>Router</th><th>Refusal</th><th>Retrieval</th><th>Faithfulness</th><th>Answer Relevancy</th><th>Llm Context Precision With Reference</th><th>Context Recall</th><th>Latency</th></tr></thead>
+      <tbody><tr><td>Dana Levy</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">94%</td><td style="color:#22c55e;font-weight:600">88%</td><td style="color:#eab308;font-weight:600">67%</td><td style="color:#eab308;font-weight:600">61%</td><td>4.12s</td></tr><tr><td>Maya Chen</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#22c55e;font-weight:600">83%</td><td>4.74s</td></tr><tr><td>Noa Friedman</td><td>6</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">97%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">95%</td><td style="color:#22c55e;font-weight:600">97%</td><td style="color:#22c55e;font-weight:600">100%</td><td>5.09s</td></tr><tr><td>Ofir Ohan</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">95%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td>4.07s</td></tr><tr><td>Project Knowledge Base</td><td>6</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#22c55e;font-weight:600">100%</td><td>10.87s</td></tr><tr><td>Tal Ben-David</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#eab308;font-weight:600">80%</td><td style="color:#eab308;font-weight:600">67%</td><td style="color:#22c55e;font-weight:600">83%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">93%</td><td style="color:#22c55e;font-weight:600">80%</td><td style="color:#ef4444;font-weight:600">47%</td><td style="color:#eab308;font-weight:600">61%</td><td>6.71s</td></tr><tr><td>Yoni Abergel</td><td>6</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">90%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">100%</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#22c55e;font-weight:600">100%</td><td>4.72s</td></tr><tr style="font-weight:700;background:#0f172a"><td>All</td><td>42</td><td style="color:#22c55e;font-weight:600">95%</td><td style="color:#22c55e;font-weight:600">89%</td><td style="color:#22c55e;font-weight:600">96%</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#475569">—</td><td style="color:#22c55e;font-weight:600">98%</td><td style="color:#22c55e;font-weight:600">87%</td><td style="color:#22c55e;font-weight:600">86%</td><td style="color:#22c55e;font-weight:600">88%</td><td>5.76s</td></tr></tbody>
+    </table>
+</div>
+
+<div class="component-section">
+<h2>Tool Selection Diagnostics</h2>
+
+    <div class="summary-stat"><strong style="color:#22c55e">95.2%</strong> Accuracy (recall-style — any accepted tool ran)</div>
+    <div class="summary-stat"><strong style="color:#888">nan</strong> Avg score of the correct tool</div>
+    <div class="summary-stat"><strong style="color:#22c55e">2.4%</strong> Correct tool scored below threshold (0.30)</div>
+    <div class="summary-stat"><strong style="color:#38bdf8">0.98</strong> Avg tools called per prompt</div>
+    
+    <table style="width:auto;margin:1rem 0">
+      <thead><tr><th>Caught at</th><th>N</th><th>% of all questions</th></tr></thead>
+      <tbody>
+        <tr><td>Initial selection (score ≥ 0.30)</td><td>40</td><td>95.2%</td></tr>
+        <tr><td>Escalation (result-based retry)</td><td>0</td><td>0.0%</td></tr>
+        <tr><td style="color:#ef4444">Missed entirely</td><td style="color:#ef4444">2</td><td style="color:#ef4444">4.8%</td></tr>
+      </tbody>
+    </table>
+    <p style="color:#94a3b8;margin:0.5rem 0">Escalation fires when every initially-selected tool comes back empty,
+    and runs the remaining tools as a safety net. "Needed" = the initial selection would have missed the
+    right tool anyway; "not needed" = the right tool was already selected but returned nothing (e.g. a genuine
+    no-data case), so escalation ran without changing the outcome.</p>
+    <div class="summary-stat"><strong style="color:#38bdf8">0</strong> Escalations fired (0.0% of questions)</div>
+    <div class="summary-stat"><strong style="color:#22c55e">0</strong> …needed (N/A of escalations)</div>
+    <div class="summary-stat"><strong style="color:#eab308">0</strong> …not needed (N/A of escalations)</div>
+    
+</div>
+
+<div class="component-section">
+<h2>Refusal Accuracy</h2>
+
+    <div class="summary-stat"><strong style="color:#22c55e">97.6%</strong> Accuracy</div>
+    <div class="summary-stat"><strong style="color:#ef4444">0.0%</strong> Precision</div>
+    <div class="summary-stat"><strong style="color:#22c55e">100.0%</strong> Recall</div>
+    <div class="summary-stat"><strong style="color:#22c55e">0</strong> Hallucinations</div>
+    
+    <table style="width:auto;margin:1rem 0">
+      <thead><tr><th></th><th>Refused</th><th>Answered</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Should refuse</strong></td>
+          <td style="color:#22c55e">TP = 0</td>
+          <td style="color:#ef4444">FN = 0</td></tr>
+        <tr><td><strong>Should answer</strong></td>
+          <td style="color:#ef4444">FP = 1</td>
+          <td style="color:#22c55e">TN = 41</td></tr>
+      </tbody>
+    </table>
+</div>
+
+<div class="component-section">
+<h2>Retrieval Gate Localization (Ingestion / Recall / Rerank)</h2>
+<p>No retrieval-gate data. Requires a fresh pipeline run (not REUSE) so the pre-rerank fused pool is captured.</p>
+</div>
+
+<div class="component-section">
+<h2>Ingestion Quality</h2>
+<p>No ingestion data.</p>
+</div>
+
+</body>
+</html>

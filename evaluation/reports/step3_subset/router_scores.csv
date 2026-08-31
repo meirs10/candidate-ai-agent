@@ -1,0 +1,24 @@
+question_id,candidate_name,category,difficulty,question,expected_route,actual_route,route_correct
+q025,Dana Levy,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q037,Dana Levy,skills,easy,Does the candidate have experience with Kubernetes?,specific,specific,True
+q049,Dana Levy,certifications,medium,What certifications does the candidate have?,specific,specific,True
+q025,Yoni Abergel,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q037,Yoni Abergel,skills,easy,Does the candidate have experience with service mesh?,specific,specific,True
+q049,Yoni Abergel,certifications,medium,What certifications does the candidate have?,specific,specific,True
+q025,Maya Chen,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q037,Maya Chen,skills,easy,Does the candidate have experience with build tools?,specific,specific,True
+q049,Maya Chen,certifications,medium,What certifications does the candidate have?,specific,specific,True
+q025,Ofir Ohan,experience,hard,How did the candidate reduce model inference latency?,specific,specific,True
+q037,Ofir Ohan,skills,easy,Does the candidate have experience with Kubernetes?,specific,specific,True
+q049,Ofir Ohan,certifications,medium,What certifications does the candidate have?,specific,specific,True
+q025,Noa Friedman,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q037,Noa Friedman,skills,easy,Does the candidate have experience with ML products?,specific,specific,True
+q049,Noa Friedman,certifications,medium,What certifications does the candidate have?,specific,specific,True
+q025,Tal Ben-David,experience,hard,What is a key technical achievement the candidate accomplished?,specific,specific,True
+q037,Tal Ben-David,skills,easy,Does the candidate have experience with Kubernetes?,specific,specific,True
+q049,Tal Ben-David,certifications,medium,What certifications does the candidate have?,specific,specific,True
+p001,Project Knowledge Base,project,easy,What is this project?,broad,specific,False
+p007,Project Knowledge Base,project,easy,Which vector database does the project use?,specific,specific,True
+p013,Project Knowledge Base,project,hard,What is the build-vs-serve split?,specific,specific,True
+p019,Project Knowledge Base,project,medium,What hybrid search methods are combined in retrieval?,specific,specific,True
+p031,Project Knowledge Base,project,hard,How were you evaluated?,specific,specific,True
