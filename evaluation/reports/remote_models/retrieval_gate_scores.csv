@@ -1,0 +1,1086 @@
+question_id,candidate_name,category,difficulty,question,target_sim,in_index,in_fused_pool,in_final,loss_stage,fused_pool_size,target_chunk
+q006,Dana Levy,personal,medium,How can I contact the candidate?,0.722,True,True,True,ok,16,"Section: general
+Dana Levy ? Curriculum Vitae"
+q010,Dana Levy,education,easy,What did the candidate study?,0.546,True,True,True,ok,20,"Section: #Education
+##Master of Science in Computer Science ? Technion - Israel Institute of Technology
+
+2018 ? 2020 | GPA: 92/100
+
+Specialization: Cybersecurit"
+q014,Dana Levy,education,medium,Tell me about the candidate's educational background.,0.684,True,True,True,ok,17,"Section: #Education
+##Master of Science in Computer Science ? Technion - Israel Institute of Technology
+
+2018 ? 2020 | GPA: 92/100
+
+Specialization: Cybersecurit"
+q015,Dana Levy,education,medium,What was the candidate's thesis about?,0.837,True,True,True,ok,17,"Section: ##Academic Thesis: Adversarial ML on IDS
+Developed novel evasion techniques against ML-based network intrusion detection systems using GANs. Demonstrat"
+q016,Dana Levy,education,medium,Did the candidate receive any academic honors?,0.531,True,True,True,ok,20,"Section: general
+Dana Levy ? Curriculum Vitae"
+q019,Dana Levy,experience,medium,Describe the candidate's current job responsibilities.,0.719,True,True,True,ok,18,"Section: #Summary
+Senior Security Engineer with 5 years of experience in offensive security, threat hunting, and zero-trust architecture design. Specialized in "
+q020,Dana Levy,experience,medium,Where has the candidate worked previously?,0.679,True,True,True,ok,11,"Section: ##Security Analyst ? Check Point Software Technologies
+July 2020 ? February 2022 | Tel Aviv, Israel
+
+Performed vulnerability assessments and penetratio"
+q021,Dana Levy,experience,medium,What was the candidate's first job?,0.685,True,True,True,ok,17,"Section: ##Security Analyst ? Check Point Software Technologies
+July 2020 ? February 2022 | Tel Aviv, Israel
+
+Performed vulnerability assessments and penetratio"
+q022,Dana Levy,experience,medium,Describe the candidate's work at Check Point.,0.692,True,True,True,ok,18,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+To Whom It May Concern,
+
+I am writing to recommend Dana Levy, who has been a key member of "
+q023,Dana Levy,experience,medium,Has the candidate held a leadership role?,0.732,True,True,True,ok,18,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+Beyond her technical skills, Dana is an outstanding mentor and team leader. She has grown o"
+q024,Dana Levy,experience,medium,What industries has the candidate worked in?,0.523,True,True,False,rerank,20,"Section: #Overview
+This framework enforces least-privilege access across microservice architectures using mutual TLS, SPIFFE/SPIRE workload identity, and dynami"
+q026,Dana Levy,experience,medium,Has the candidate had any teaching experience?,0.674,True,True,True,ok,18,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+Beyond her technical skills, Dana is an outstanding mentor and team leader. She has grown o"
+q027,Dana Levy,skills,easy,What programming languages does the candidate know?,0.659,True,True,True,ok,21,"Section: #Tech Stack
+Language: Go, Python"
+q028,Dana Levy,skills,medium,What are the candidate's primary security tools and frameworks?,0.6,True,True,True,ok,17,"Section: SIEM & Detection: Splunk, Elastic SIEM, Suricata, Snort, CrowdStrike Falcon
+Cloud Security: AWS Security Hub, Azure Sentinel, GCP Security Command Cent"
+q029,Dana Levy,skills,medium,What cloud platforms does the candidate have experience with?,0.692,True,True,True,ok,15,"Section: SIEM & Detection: Splunk, Elastic SIEM, Suricata, Snort, CrowdStrike Falcon
+Cloud Security: AWS Security Hub, Azure Sentinel, GCP Security Command Cent"
+q030,Dana Levy,skills,medium,What databases has the candidate worked with?,0.596,True,True,True,ok,19,"Section: SIEM & Detection: Splunk, Elastic SIEM, Suricata, Snort, CrowdStrike Falcon
+Cloud Security: AWS Security Hub, Azure Sentinel, GCP Security Command Cent"
+q031,Dana Levy,skills,medium,Does the candidate have DevSecOps experience?,0.599,True,True,True,ok,16,"Section: #Summary
+Senior Security Engineer with 5 years of experience in offensive security, threat hunting, and zero-trust architecture design. Specialized in "
+q032,Dana Levy,skills,easy,Does the candidate know Python?,0.649,True,True,True,ok,19,"Section: #Tech Stack
+Language: Go, Python"
+q033,Dana Levy,skills,easy,Does the candidate have experience with penetration testing?,0.706,True,True,True,ok,13,"Section: ##Security Analyst ? Check Point Software Technologies
+July 2020 ? February 2022 | Tel Aviv, Israel
+
+Performed vulnerability assessments and penetratio"
+q034,Dana Levy,skills,medium,Does the candidate have SIEM experience?,0.675,True,True,True,ok,14,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+To Whom It May Concern,
+
+I am writing to recommend Dana Levy, who has been a key member of "
+q035,Dana Levy,skills,medium,What threat analysis experience does the candidate have?,0.627,True,True,True,ok,15,"Section: ##Automated Threat Intelligence Platform (CyberArk)
+Built an end-to-end threat intelligence aggregation platform ingesting 500K+ indicators of compromi"
+q036,Dana Levy,skills,medium,Does the candidate have identity and access management experience?,0.616,True,True,True,ok,19,"Section: SIEM & Detection: Splunk, Elastic SIEM, Suricata, Snort, CrowdStrike Falcon
+Cloud Security: AWS Security Hub, Azure Sentinel, GCP Security Command Cent"
+q037,Dana Levy,skills,easy,Does the candidate have experience with Kubernetes?,0.665,True,True,False,rerank,18,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+To Whom It May Concern,
+
+I am writing to recommend Dana Levy, who has been a key member of "
+q038,Dana Levy,skills,medium,What networking skills does the candidate have?,0.525,True,True,True,ok,21,"Section: #Projects
+##Zero-Trust Network Architecture (CyberArk)
+
+Designed and implemented a zero-trust segmentation framework for enterprise identity platforms."
+q039,Dana Levy,projects,medium,What projects has the candidate worked on?,0.605,True,False,False,recall,20,"Section: ##Academic Thesis: Adversarial ML on IDS
+Developed novel evasion techniques against ML-based network intrusion detection systems using GANs. Demonstrat"
+q040,Dana Levy,projects,medium,Tell me about the zero-trust architecture project.,0.714,True,True,True,ok,16,"Section: #Projects
+##Zero-Trust Network Architecture (CyberArk)
+
+Designed and implemented a zero-trust segmentation framework for enterprise identity platforms."
+q041,Dana Levy,projects,medium,What was the outcome of the threat intelligence project?,0.766,True,True,True,ok,16,"Section: ##Automated Threat Intelligence Platform (CyberArk)
+Built an end-to-end threat intelligence aggregation platform ingesting 500K+ indicators of compromi"
+q042,Dana Levy,projects,medium,What technologies were used in the red team automation project?,0.559,True,True,True,ok,19,"Section: #Tech Stack
+Language: Go, Python"
+q043,Dana Levy,projects,hard,What is the candidate's most significant project?,0.807,True,True,True,ok,18,"Section: #Projects
+##Zero-Trust Network Architecture (CyberArk)
+
+Designed and implemented a zero-trust segmentation framework for enterprise identity platforms."
+q044,Dana Levy,projects,medium,Has the candidate contributed to open-source projects?,0.786,True,True,True,ok,16,"Section: ##Open-Source: CloudSec Scanner
+Created an open-source cloud security misconfiguration scanner for AWS and Azure. Checks IAM policies, S3 bucket permis"
+q045,Dana Levy,projects,hard,What systems has the candidate built?,0.663,True,True,True,ok,18,"Section: #Projects
+##Zero-Trust Network Architecture (CyberArk)
+
+Designed and implemented a zero-trust segmentation framework for enterprise identity platforms."
+q046,Dana Levy,projects,medium,Does the candidate have red team experience?,0.774,True,True,True,ok,15,"Section: ##Red Team Automation Framework (CyberArk)
+Developed an internal red team automation toolkit for simulating APT campaigns. Includes custom C2 infrastru"
+q047,Dana Levy,projects,medium,Has the candidate worked on any research projects?,0.83,True,True,True,ok,19,"Section: ##Academic Thesis: Adversarial ML on IDS
+Developed novel evasion techniques against ML-based network intrusion detection systems using GANs. Demonstrat"
+q048,Dana Levy,projects,medium,What is the scale of systems the candidate has worked with?,0.632,True,True,True,ok,19,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+To Whom It May Concern,
+
+I am writing to recommend Dana Levy, who has been a key member of "
+q049,Dana Levy,certifications,medium,What certifications does the candidate have?,0.753,True,True,True,ok,20,"Section: #Certifications
+1. OSCP ? Offensive Security Certified Professional (June 2021, Offensive Security)"
+q050,Dana Levy,certifications,easy,Does the candidate have an OSCP certification?,0.676,True,True,True,ok,20,"Section: #Certifications
+1. OSCP ? Offensive Security Certified Professional (June 2021, Offensive Security)"
+q051,Dana Levy,certifications,easy,Does the candidate have a CISSP certification?,0.604,True,True,True,ok,17,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+To Whom It May Concern,
+
+I am writing to recommend Dana Levy, who has been a key member of "
+q052,Dana Levy,certifications,easy,When did the candidate get their AWS security certification?,0.369,False,True,True,ingestion,14,"Section: ##Security Analyst ? Check Point Software Technologies
+July 2020 ? February 2022 | Tel Aviv, Israel
+
+Performed vulnerability assessments and penetratio"
+q053,Dana Levy,certifications,medium,Does the candidate have any management certifications?,0.543,True,True,True,ok,18,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+Beyond her technical skills, Dana is an outstanding mentor and team leader. She has grown o"
+q062,Dana Levy,proficiency,easy,How proficient is the candidate in Python?,0.614,True,True,True,ok,18,"Section: ##Red Team Automation Framework (CyberArk)
+Developed an internal red team automation toolkit for simulating APT campaigns. Includes custom C2 infrastru"
+q063,Dana Levy,proficiency,medium,Rate the candidate's Splunk skills.,0.622,True,True,True,ok,17,"Section: ##Automated Threat Intelligence Platform (CyberArk)
+Built an end-to-end threat intelligence aggregation platform ingesting 500K+ indicators of compromi"
+q064,Dana Levy,proficiency,medium,What are the candidate's strongest skills?,0.618,True,True,True,ok,18,"Section: ##Open-Source: CloudSec Scanner
+Created an open-source cloud security misconfiguration scanner for AWS and Azure. Checks IAM policies, S3 bucket permis"
+q065,Dana Levy,proficiency,medium,How strong is the candidate at Go?,0.568,True,True,True,ok,16,"Section: #Tech Stack
+Language: Go, Python"
+q071,Dana Levy,complex,hard,Is this candidate overqualified for a junior security analyst role?,0.714,True,True,True,ok,16,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+Beyond her technical skills, Dana is an outstanding mentor and team leader. She has grown o"
+q072,Dana Levy,complex,hard,Would this candidate be a good fit for a remote security role in Europe?,0.562,True,True,True,ok,17,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+Beyond her technical skills, Dana is an outstanding mentor and team leader. She has grown o"
+q073,Dana Levy,complex,hard,Compare the candidate's academic and professional experience.,0.791,True,True,True,ok,18,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+To Whom It May Concern,
+
+I am writing to recommend Dana Levy, who has been a key member of "
+q074,Dana Levy,complex,hard,What unique combination of skills does this candidate offer?,0.755,True,True,True,ok,15,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+Beyond her technical skills, Dana is an outstanding mentor and team leader. She has grown o"
+q075,Dana Levy,complex,hard,Summarize why I should consider this candidate for a principal security engineer position.,0.808,True,True,True,ok,15,"Section: From: Dr. Alon Kaufman, VP of Security Research at CyberArk
+To Whom It May Concern,
+
+I am writing to recommend Dana Levy, who has been a key member of "
+q006,Yoni Abergel,personal,medium,How can I contact the candidate?,0.825,True,True,True,ok,19,"Section: Personal Information
+Full Name: Yoni Abergel
+
+Email: yoni.abergel@gmail.com
+
+Phone: +972 50-111-2233
+
+Location: Tel Aviv, Israel
+
+LinkedIn: https://lin"
+q010,Yoni Abergel,education,easy,What did the candidate study?,0.552,True,True,True,ok,18,"Section: Bachelor of Science in Software Engineering — Ben-Gurion University of the Negev
+2015 – 2019 | GPA: 85/100
+
+Relevant coursework: Operating Systems, Com"
+q014,Yoni Abergel,education,medium,Tell me about the candidate's educational background.,0.745,True,True,True,ok,20,"Section: Bachelor of Science in Software Engineering — Ben-Gurion University of the Negev
+2015 – 2019 | GPA: 85/100
+
+Relevant coursework: Operating Systems, Com"
+q015,Yoni Abergel,education,medium,What was the candidate's capstone project about?,0.893,True,True,True,ok,18,"Section: Academic: Auto-Scaling Prediction System
+Capstone project building an ML-based Kubernetes autoscaler that predicts traffic patterns using LSTM networks"
+q016,Yoni Abergel,education,medium,Did the candidate receive any academic honors?,0.529,True,True,True,ok,19,"Section: Bachelor of Science in Software Engineering — Ben-Gurion University of the Negev
+2015 – 2019 | GPA: 85/100
+
+Relevant coursework: Operating Systems, Com"
+q019,Yoni Abergel,experience,medium,Describe the candidate's current job responsibilities.,0.747,True,True,True,ok,18,"Section: Senior DevOps Engineer — Monday.com
+April 2021 – Present | Tel Aviv, Israel
+
+Architecting multi-cloud infrastructure (AWS + GCP) serving 200K+ daily ac"
+q020,Yoni Abergel,experience,medium,Where has the candidate worked previously?,0.712,True,True,True,ok,17,"Section: DevOps Engineer — Wix.com
+August 2019 – March 2021 | Tel Aviv, Israel
+
+Managed AWS infrastructure for Wix's editor platform serving millions of users.
+"
+q021,Yoni Abergel,experience,medium,What was the candidate's first job?,0.711,True,True,True,ok,14,"Section: DevOps Engineer — Wix.com
+August 2019 – March 2021 | Tel Aviv, Israel
+
+Managed AWS infrastructure for Wix's editor platform serving millions of users.
+"
+q022,Yoni Abergel,experience,medium,Describe the candidate's work at Wix.,0.807,True,True,True,ok,11,"Section: DevOps Engineer — Wix.com
+August 2019 – March 2021 | Tel Aviv, Israel
+
+Managed AWS infrastructure for Wix's editor platform serving millions of users.
+"
+q023,Yoni Abergel,experience,medium,Has the candidate held a leadership role?,0.702,True,True,True,ok,19,"Section: Letter of Recommendation — Yoni Abergel
+His self-service deployment platform has been equally impactful, enabling 150+ developers to deploy independent"
+q024,Yoni Abergel,experience,medium,What industries has the candidate worked in?,0.553,True,True,True,ok,14,"Section: DevOps Engineer — Wix.com
+August 2019 – March 2021 | Tel Aviv, Israel
+
+Managed AWS infrastructure for Wix's editor platform serving millions of users.
+"
+q025,Yoni Abergel,experience,hard,What is a key technical achievement the candidate accomplished?,0.693,True,True,True,ok,19,"Section: Letter of Recommendation — Yoni Abergel
+From: Nir Zohar, VP of Engineering at Monday.com
+
+Date: May 20, 2026
+
+To Whom It May Concern,
+
+I am pleased to "
+q026,Yoni Abergel,experience,medium,Has the candidate had any teaching or mentoring experience?,0.626,True,True,True,ok,17,"Section: Bachelor of Science in Software Engineering — Ben-Gurion University of the Negev
+2015 – 2019 | GPA: 85/100
+
+Relevant coursework: Operating Systems, Com"
+q027,Yoni Abergel,skills,easy,What programming languages does the candidate know?,0.605,True,True,True,ok,18,"Section: Technical Skills
+Programming Languages: Go, Python, Bash, TypeScript, HCL
+
+Cloud Platforms: AWS (EKS, EC2, S3, Lambda, RDS, CloudFront, Route53), GCP ("
+q028,Yoni Abergel,skills,medium,What are the candidate's primary technical frameworks and tools?,0.749,True,True,True,ok,18,"Section: Tech Stack
+Language: Go, Python
+
+Infrastructure: Terraform, Kubernetes
+
+Service Mesh: Istio for traffic management
+
+Monitoring: Prometheus, Grafana, Da"
+q029,Yoni Abergel,skills,medium,What cloud platforms does the candidate have experience with?,0.694,True,True,True,ok,14,"Section: Technical Skills
+Programming Languages: Go, Python, Bash, TypeScript, HCL
+
+Cloud Platforms: AWS (EKS, EC2, S3, Lambda, RDS, CloudFront, Route53), GCP ("
+q030,Yoni Abergel,skills,medium,What databases has the candidate worked with?,0.656,True,True,True,ok,21,"Section: Technical Skills
+Programming Languages: Go, Python, Bash, TypeScript, HCL
+
+Cloud Platforms: AWS (EKS, EC2, S3, Lambda, RDS, CloudFront, Route53), GCP ("
+q031,Yoni Abergel,skills,medium,Does the candidate have DevOps or infrastructure experience?,0.776,True,True,True,ok,16,"Section: Summary
+Senior DevOps Engineer with 6 years of experience building and managing cloud infrastructure at scale. Specialized in Kubernetes orchestration,"
+q032,Yoni Abergel,skills,easy,Does the candidate know Python?,0.63,True,True,True,ok,19,"Section: Academic: Auto-Scaling Prediction System
+Capstone project building an ML-based Kubernetes autoscaler that predicts traffic patterns using LSTM networks"
+q033,Yoni Abergel,skills,easy,Does the candidate have experience with Kubernetes?,0.64,True,True,True,ok,19,"Section: Technical Skills
+Programming Languages: Go, Python, Bash, TypeScript, HCL
+
+Cloud Platforms: AWS (EKS, EC2, S3, Lambda, RDS, CloudFront, Route53), GCP ("
+q034,Yoni Abergel,skills,medium,Does the candidate have CI/CD experience?,0.665,True,True,True,ok,15,"Section: Senior DevOps Engineer — Monday.com
+April 2021 – Present | Tel Aviv, Israel
+
+Architecting multi-cloud infrastructure (AWS + GCP) serving 200K+ daily ac"
+q035,Yoni Abergel,skills,medium,What observability experience does the candidate have?,0.684,True,True,True,ok,19,"Section: DevOps Engineer — Wix.com
+August 2019 – March 2021 | Tel Aviv, Israel
+
+Managed AWS infrastructure for Wix's editor platform serving millions of users.
+"
+q036,Yoni Abergel,skills,medium,Does the candidate have Infrastructure-as-Code experience?,0.73,True,True,True,ok,19,"Section: Open-Source: TerraLint
+Created an open-source Terraform linting and policy enforcement tool that validates IaC against organizational best practices. S"
+q037,Yoni Abergel,skills,easy,Does the candidate have experience with service mesh?,0.669,True,True,True,ok,18,"Section: Multi-Cloud Migration Framework (Monday.com)
+Designed a framework for migrating 30+ services from single-cloud AWS to hybrid AWS/GCP architecture. Incl"
+q038,Yoni Abergel,skills,medium,What networking and security tools does the candidate know?,0.557,True,True,True,ok,20,"Section: Technical Skills
+Programming Languages: Go, Python, Bash, TypeScript, HCL
+
+Cloud Platforms: AWS (EKS, EC2, S3, Lambda, RDS, CloudFront, Route53), GCP ("
+q039,Yoni Abergel,projects,medium,What projects has the candidate worked on?,0.612,True,True,True,ok,19,"Section: Academic: Auto-Scaling Prediction System
+Capstone project building an ML-based Kubernetes autoscaler that predicts traffic patterns using LSTM networks"
+q040,Yoni Abergel,projects,medium,Tell me about the multi-cloud migration project.,0.774,True,True,True,ok,16,"Section: Multi-Cloud Migration Framework (Monday.com)
+Designed a framework for migrating 30+ services from single-cloud AWS to hybrid AWS/GCP architecture. Incl"
+q041,Yoni Abergel,projects,medium,What was the outcome of the deployment platform project?,0.743,True,True,True,ok,17,"Section: Self-Service Deployment Platform (Monday.com)
+Built a developer portal enabling 150+ engineers to deploy, rollback, and monitor services independently."
+q042,Yoni Abergel,projects,medium,What technologies were used in the autoscaler project?,0.573,True,True,True,ok,18,"Section: Tech Stack
+Language: Go, Python
+
+Infrastructure: Terraform, Kubernetes
+
+Service Mesh: Istio for traffic management
+
+Monitoring: Prometheus, Grafana, Da"
+q043,Yoni Abergel,projects,hard,What is the candidate's most significant project?,0.816,True,False,False,recall,13,"Section: Multi-Cloud Migration Framework (Monday.com)
+Designed a framework for migrating 30+ services from single-cloud AWS to hybrid AWS/GCP architecture. Incl"
+q044,Yoni Abergel,projects,medium,Has the candidate contributed to open-source projects?,0.781,True,True,True,ok,19,"Section: Open-Source: TerraLint
+Created an open-source Terraform linting and policy enforcement tool that validates IaC against organizational best practices. S"
+q045,Yoni Abergel,projects,hard,What systems has the candidate built?,0.678,True,True,True,ok,17,"Section: Senior DevOps Engineer — Monday.com
+April 2021 – Present | Tel Aviv, Israel
+
+Architecting multi-cloud infrastructure (AWS + GCP) serving 200K+ daily ac"
+q046,Yoni Abergel,projects,medium,Does the candidate have experience with cost optimization?,0.711,True,True,True,ok,20,"Section: Letter of Recommendation — Yoni Abergel
+From: Nir Zohar, VP of Engineering at Monday.com
+
+Date: May 20, 2026
+
+To Whom It May Concern,
+
+I am pleased to "
+q047,Yoni Abergel,projects,medium,Has the candidate worked on any developer productivity projects?,0.73,True,True,True,ok,18,"Section: Self-Service Deployment Platform (Monday.com)
+Built a developer portal enabling 150+ engineers to deploy, rollback, and monitor services independently."
+q048,Yoni Abergel,projects,medium,What is the scale of systems the candidate has worked with?,0.633,True,True,True,ok,16,"Section: DevOps Engineer — Wix.com
+August 2019 – March 2021 | Tel Aviv, Israel
+
+Managed AWS infrastructure for Wix's editor platform serving millions of users.
+"
+q049,Yoni Abergel,certifications,medium,What certifications does the candidate have?,0.822,True,True,True,ok,19,"Section: Certifications
+1. AWS Certified Solutions Architect — Professional (February 2022, Amazon Web Services)
+
+2. Certified Kubernetes Administrator (CKA) (A"
+q050,Yoni Abergel,certifications,easy,Does the candidate have an AWS certification?,0.695,True,True,True,ok,17,"Section: Certifications
+1. AWS Certified Solutions Architect — Professional (February 2022, Amazon Web Services)
+
+2. Certified Kubernetes Administrator (CKA) (A"
+q051,Yoni Abergel,certifications,easy,Does the candidate have a Kubernetes certification?,0.656,True,True,True,ok,18,"Section: Certifications
+1. AWS Certified Solutions Architect — Professional (February 2022, Amazon Web Services)
+
+2. Certified Kubernetes Administrator (CKA) (A"
+q052,Yoni Abergel,certifications,easy,When did the candidate get their Terraform certification?,0.319,False,True,True,ingestion,19,"Section: DevOps Engineer — Wix.com
+August 2019 – March 2021 | Tel Aviv, Israel
+
+Managed AWS infrastructure for Wix's editor platform serving millions of users.
+"
+q053,Yoni Abergel,certifications,medium,Does the candidate have any management certifications?,0.625,True,True,True,ok,19,"Section: Certifications
+1. AWS Certified Solutions Architect — Professional (February 2022, Amazon Web Services)
+
+2. Certified Kubernetes Administrator (CKA) (A"
+q062,Yoni Abergel,proficiency,easy,How proficient is the candidate in Kubernetes?,0.634,True,True,True,ok,19,"Section: Certifications
+1. AWS Certified Solutions Architect — Professional (February 2022, Amazon Web Services)
+
+2. Certified Kubernetes Administrator (CKA) (A"
+q063,Yoni Abergel,proficiency,medium,Rate the candidate's Terraform skills.,0.695,True,True,True,ok,18,"Section: Open-Source: TerraLint
+Created an open-source Terraform linting and policy enforcement tool that validates IaC against organizational best practices. S"
+q064,Yoni Abergel,proficiency,medium,What are the candidate's strongest skills?,0.701,True,True,True,ok,17,"Section: Technical Skills
+Programming Languages: Go, Python, Bash, TypeScript, HCL
+
+Cloud Platforms: AWS (EKS, EC2, S3, Lambda, RDS, CloudFront, Route53), GCP ("
+q065,Yoni Abergel,proficiency,medium,How strong is the candidate at Istio?,0.658,True,True,True,ok,18,"Section: Multi-Cloud Migration Framework (Monday.com)
+Designed a framework for migrating 30+ services from single-cloud AWS to hybrid AWS/GCP architecture. Incl"
+q071,Yoni Abergel,complex,hard,Is this candidate overqualified for a junior DevOps role?,0.693,True,True,True,ok,18,"Section: Letter of Recommendation — Yoni Abergel
+His self-service deployment platform has been equally impactful, enabling 150+ developers to deploy independent"
+q072,Yoni Abergel,complex,hard,Would this candidate be a good fit for a remote DevOps role in Europe?,0.683,True,True,True,ok,21,"Section: Letter of Recommendation — Yoni Abergel
+From: Nir Zohar, VP of Engineering at Monday.com
+
+Date: May 20, 2026
+
+To Whom It May Concern,
+
+I am pleased to "
+q073,Yoni Abergel,complex,hard,Compare the candidate's academic and professional experience.,0.77,True,True,True,ok,21,"Section: Bachelor of Science in Software Engineering — Ben-Gurion University of the Negev
+2015 – 2019 | GPA: 85/100
+
+Relevant coursework: Operating Systems, Com"
+q074,Yoni Abergel,complex,hard,What unique combination of skills does this candidate offer?,0.726,True,True,True,ok,15,"Section: Senior DevOps Engineer — Monday.com
+April 2021 – Present | Tel Aviv, Israel
+
+Architecting multi-cloud infrastructure (AWS + GCP) serving 200K+ daily ac"
+q075,Yoni Abergel,complex,hard,Summarize why I should consider this candidate for a staff DevOps engineer position.,0.781,True,True,True,ok,16,"Section: Letter of Recommendation — Yoni Abergel
+From: Nir Zohar, VP of Engineering at Monday.com
+
+Date: May 20, 2026
+
+To Whom It May Concern,
+
+I am pleased to "
+q006,Maya Chen,personal,medium,How can I contact the candidate?,0.817,True,True,True,ok,15,"Section: #Personal Information
+Full Name: Maya Chen
+
+Email: maya.chen@gmail.com
+
+Phone: +972 53
+
+444
+
+5566
+
+Location: Tel Aviv, Israel
+
+LinkedIn: https://linked"
+q010,Maya Chen,education,easy,What did the candidate study?,0.548,True,True,False,rerank,20,"Section: system
+```"
+q014,Maya Chen,education,medium,Tell me about the candidate's educational background.,0.739,True,True,True,ok,18,"Section: #Education
+##Bachelor of Science in Computer Science — Reichman University (IDC Herzliya) 2018 – 2022 | GPA: 91/100
+
+Relevant coursework: Web Technolog"
+q015,Maya Chen,education,medium,What was the candidate's capstone project about?,0.803,True,True,True,ok,16,"Section: #Projects
+##Open-Source: ReactA11y Hooks Created an open-source library of React hooks for common accessibility patterns (focus management, keyboard na"
+q016,Maya Chen,education,medium,Did the candidate receive any academic honors?,0.569,True,True,True,ok,21,"Section: #Education
+##Bachelor of Science in Computer Science — Reichman University (IDC Herzliya) 2018 – 2022 | GPA: 91/100
+
+Relevant coursework: Web Technolog"
+q019,Maya Chen,experience,medium,Describe the candidate's current job responsibilities.,0.651,True,True,True,ok,15,"Section: #Overview
+The Fiverr Design System is a shared component library used by 80+ frontend engineers across 20+ product surfaces. Built with React, TypeScri"
+q020,Maya Chen,experience,medium,Where has the candidate worked previously?,0.731,True,True,True,ok,14,"Section: #Work Experience
+##Junior Frontend Developer — Wix.com January 2022 – May 2022 | Tel Aviv, Israel
+
+Developed responsive UI components for Wix's templat"
+q021,Maya Chen,experience,medium,What was the candidate's first job?,0.701,True,True,True,ok,12,"Section: #Work Experience
+##Junior Frontend Developer — Wix.com January 2022 – May 2022 | Tel Aviv, Israel
+
+Developed responsive UI components for Wix's templat"
+q022,Maya Chen,experience,medium,Describe the candidate's work at Wix.,0.787,True,True,True,ok,13,"Section: #Work Experience
+##Junior Frontend Developer — Wix.com January 2022 – May 2022 | Tel Aviv, Israel
+
+Developed responsive UI components for Wix's templat"
+q023,Maya Chen,experience,medium,Has the candidate held a leadership role?,0.739,True,True,True,ok,17,"Section: Letter of Recommendation — Maya Chen
+From: Lior Barak, Frontend Team Lead at Fiverr Date: May 25, 2026
+
+To Whom It May Concern,
+
+I am delighted to reco"
+q024,Maya Chen,experience,medium,What industries has the candidate worked in?,0.592,True,True,True,ok,16,"Section: Fiverr Design System
+A comprehensive, accessible component library powering Fiverr's marketplace UI."
+q025,Maya Chen,experience,hard,What is a key technical achievement the candidate accomplished?,0.611,True,True,True,ok,18,"Section: Letter of Recommendation — Maya Chen
+From: Lior Barak, Frontend Team Lead at Fiverr Date: May 25, 2026
+
+To Whom It May Concern,
+
+I am delighted to reco"
+q026,Maya Chen,experience,medium,Has the candidate had any teaching or mentoring experience?,0.711,True,True,True,ok,15,"Section: Letter of Recommendation — Maya Chen
+Maya is a natural mentor and community builder. She regularly mentors junior developers, speaks at frontend meetup"
+q027,Maya Chen,skills,easy,What programming languages does the candidate know?,0.702,True,True,True,ok,22,"Section: #Technical Skills
+Programming Languages: TypeScript, JavaScript, HTML5, CSS3, Python"
+q028,Maya Chen,skills,medium,What are the candidate's primary technical frameworks and tools?,0.655,True,True,True,ok,20,"Section: #Tech Stack
+Framework: React 18 with TypeScript
+
+Styling: CSS Modules + design tokens
+
+Documentation: Storybook 7
+
+Testing: Jest, React Testing Library"
+q029,Maya Chen,skills,medium,What cloud platforms does the candidate have experience with?,0.654,True,True,True,ok,17,"Section: Databases: PostgreSQL, MongoDB, Redis
+DevOps: Docker, GitHub Actions, Vercel, Netlify, AWS (S3, CloudFront, Lambda)"
+q030,Maya Chen,skills,medium,What databases has the candidate worked with?,0.759,True,True,True,ok,23,"Section: Databases: PostgreSQL, MongoDB, Redis
+DevOps: Docker, GitHub Actions, Vercel, Netlify, AWS (S3, CloudFront, Lambda)"
+q031,Maya Chen,skills,medium,Does the candidate have DevOps experience?,0.628,True,True,True,ok,19,"Section: Databases: PostgreSQL, MongoDB, Redis
+DevOps: Docker, GitHub Actions, Vercel, Netlify, AWS (S3, CloudFront, Lambda)"
+q032,Maya Chen,skills,easy,Does the candidate know Python?,0.596,True,True,True,ok,18,"Section: #Projects
+##Open-Source: ReactA11y Hooks Created an open-source library of React hooks for common accessibility patterns (focus management, keyboard na"
+q033,Maya Chen,skills,easy,Does the candidate have experience with React?,0.71,True,True,True,ok,16,"Section: Letter of Recommendation — Maya Chen
+Maya is a natural mentor and community builder. She regularly mentors junior developers, speaks at frontend meetup"
+q034,Maya Chen,skills,medium,Does the candidate have testing experience?,0.673,True,True,True,ok,16,"Section: #Key Features
+60+ fully accessible React components
+
+Automated visual regression testing with Chromatic
+
+Design token system with light and dark themes"
+q035,Maya Chen,skills,medium,What accessibility experience does the candidate have?,0.746,True,True,True,ok,17,"Section: #Projects
+##Open-Source: ReactA11y Hooks Created an open-source library of React hooks for common accessibility patterns (focus management, keyboard na"
+q036,Maya Chen,skills,medium,Does the candidate have design system experience?,0.723,True,True,True,ok,17,"Section: Letter of Recommendation — Maya Chen
+From: Lior Barak, Frontend Team Lead at Fiverr Date: May 25, 2026
+
+To Whom It May Concern,
+
+I am delighted to reco"
+q037,Maya Chen,skills,easy,Does the candidate have experience with build tools?,0.608,True,True,False,rerank,17,"Section: #Performance
+All components are tree-shakeable with individual exports. Average component bundle size under 5KB gzipped. Storybook loads in under 3 sec"
+q038,Maya Chen,skills,medium,What backend and API skills does the candidate have?,0.517,True,True,True,ok,21,"Section: Databases: PostgreSQL, MongoDB, Redis
+DevOps: Docker, GitHub Actions, Vercel, Netlify, AWS (S3, CloudFront, Lambda)"
+q039,Maya Chen,projects,medium,What projects has the candidate worked on?,0.644,True,True,True,ok,20,"Section: #Projects
+##Fiverr Design System (Fiverr) Led development of a shared component library used by 80+ frontend engineers. Built with React, TypeScript, a"
+q040,Maya Chen,projects,medium,Tell me about the design system project.,0.654,True,True,False,rerank,18,"Section: #Tech Stack
+Framework: React 18 with TypeScript
+
+Styling: CSS Modules + design tokens
+
+Documentation: Storybook 7
+
+Testing: Jest, React Testing Library"
+q041,Maya Chen,projects,medium,What was the outcome of the collaborative editor project?,0.514,True,True,True,ok,17,"Section: #Projects
+##Fiverr Design System (Fiverr) Led development of a shared component library used by 80+ frontend engineers. Built with React, TypeScript, a"
+q042,Maya Chen,projects,medium,What technologies were used in the performance optimization project?,0.603,True,True,True,ok,18,"Section: #Performance
+All components are tree-shakeable with individual exports. Average component bundle size under 5KB gzipped. Storybook loads in under 3 sec"
+q043,Maya Chen,projects,hard,What is the candidate's most significant project?,0.743,True,True,True,ok,15,"Section: #Projects
+##Fiverr Design System (Fiverr) Led development of a shared component library used by 80+ frontend engineers. Built with React, TypeScript, a"
+q044,Maya Chen,projects,medium,Has the candidate contributed to open-source projects?,0.7,True,True,True,ok,18,"Section: #Projects
+##Open-Source: ReactA11y Hooks Created an open-source library of React hooks for common accessibility patterns (focus management, keyboard na"
+q045,Maya Chen,projects,hard,What systems has the candidate built?,0.697,True,True,True,ok,17,"Section: #Projects
+##Fiverr Design System (Fiverr) Led development of a shared component library used by 80+ frontend engineers. Built with React, TypeScript, a"
+q046,Maya Chen,projects,medium,Does the candidate have web performance experience?,0.616,True,True,True,ok,14,"Section: #Projects
+##Fiverr Design System (Fiverr) Led development of a shared component library used by 80+ frontend engineers. Built with React, TypeScript, a"
+q047,Maya Chen,projects,medium,Has the candidate worked on real-time applications?,0.581,True,True,True,ok,19,"Section: #Projects
+##Fiverr Design System (Fiverr) Led development of a shared component library used by 80+ frontend engineers. Built with React, TypeScript, a"
+q048,Maya Chen,projects,medium,What is the scale of systems the candidate has worked with?,0.688,True,True,True,ok,18,"Section: #Work Experience
+##Frontend Engineer — Fiverr June 2022 – Present | Tel Aviv, Israel
+
+Building high
+
+performance React applications for Fiverr's market"
+q049,Maya Chen,certifications,medium,What certifications does the candidate have?,0.814,True,True,True,ok,19,"Section: #Certifications
+1. Google Professional Cloud Developer (March 2024, Google Cloud) 2. Web Accessibility Specialist (WAS) (November 2023, IAAP) 3. Meta F"
+q050,Maya Chen,certifications,easy,Does the candidate have a Google Cloud certification?,0.716,True,True,True,ok,18,"Section: #Certifications
+1. Google Professional Cloud Developer (March 2024, Google Cloud) 2. Web Accessibility Specialist (WAS) (November 2023, IAAP) 3. Meta F"
+q051,Maya Chen,certifications,easy,Does the candidate have an accessibility certification?,0.647,True,True,True,ok,14,"Section: #Certifications
+1. Google Professional Cloud Developer (March 2024, Google Cloud) 2. Web Accessibility Specialist (WAS) (November 2023, IAAP) 3. Meta F"
+q052,Maya Chen,certifications,easy,When did the candidate get their Meta certification?,0.397,False,True,True,ingestion,18,"Section: #Work Experience
+##Frontend Engineer — Fiverr June 2022 – Present | Tel Aviv, Israel
+
+Building high
+
+performance React applications for Fiverr's market"
+q053,Maya Chen,certifications,medium,Does the candidate have any management certifications?,0.55,True,True,True,ok,21,"Section: #Certifications
+1. Google Professional Cloud Developer (March 2024, Google Cloud) 2. Web Accessibility Specialist (WAS) (November 2023, IAAP) 3. Meta F"
+q062,Maya Chen,proficiency,easy,How proficient is the candidate in React?,0.673,True,True,True,ok,16,"Section: #Projects
+##Open-Source: ReactA11y Hooks Created an open-source library of React hooks for common accessibility patterns (focus management, keyboard na"
+q063,Maya Chen,proficiency,medium,Rate the candidate's TypeScript skills.,0.619,True,True,True,ok,17,"Section: #Overview
+The Fiverr Design System is a shared component library used by 80+ frontend engineers across 20+ product surfaces. Built with React, TypeScri"
+q064,Maya Chen,proficiency,medium,What are the candidate's strongest skills?,0.63,True,True,True,ok,18,"Section: #Summary
+Frontend Engineer with 3 years of experience building performant, accessible web applications at scale. Specialized in React, TypeScript, and "
+q065,Maya Chen,proficiency,medium,How strong is the candidate at PostgreSQL?,0.592,True,True,True,ok,20,"Section: Databases: PostgreSQL, MongoDB, Redis
+DevOps: Docker, GitHub Actions, Vercel, Netlify, AWS (S3, CloudFront, Lambda)"
+q071,Maya Chen,complex,hard,Is this candidate overqualified for a junior frontend role?,0.709,True,True,True,ok,18,"Section: Letter of Recommendation — Maya Chen
+Maya is a natural mentor and community builder. She regularly mentors junior developers, speaks at frontend meetup"
+q072,Maya Chen,complex,hard,Would this candidate be a good fit for a remote frontend role in Europe?,0.57,True,True,True,ok,18,"Section: Letter of Recommendation — Maya Chen
+Maya is a natural mentor and community builder. She regularly mentors junior developers, speaks at frontend meetup"
+q073,Maya Chen,complex,hard,Compare the candidate's academic and professional experience.,0.767,True,True,True,ok,18,"Section: Letter of Recommendation — Maya Chen
+From: Lior Barak, Frontend Team Lead at Fiverr Date: May 25, 2026
+
+To Whom It May Concern,
+
+I am delighted to reco"
+q074,Maya Chen,complex,hard,What unique combination of skills does this candidate offer?,0.734,True,True,True,ok,17,"Section: Letter of Recommendation — Maya Chen
+From: Lior Barak, Frontend Team Lead at Fiverr Date: May 25, 2026
+
+To Whom It May Concern,
+
+I am delighted to reco"
+q075,Maya Chen,complex,hard,Summarize why I should consider this candidate for a senior frontend engineer position.,0.809,True,True,True,ok,14,"Section: Letter of Recommendation — Maya Chen
+From: Lior Barak, Frontend Team Lead at Fiverr Date: May 25, 2026
+
+To Whom It May Concern,
+
+I am delighted to reco"
+q014,Ofir Ohan,education,medium,Tell me about the candidate's educational background.,0.727,True,True,True,ok,21,"Section: Bachelor of Science in Computer Science — Tel Aviv University
+2017 – 2021 | GPA: 89/100
+
+Relevant coursework: Machine Learning, Deep Learning, Natural "
+q015,Ofir Ohan,education,medium,What was the candidate's capstone project about?,0.831,True,True,True,ok,18,"Section: Academic Capstone: Autonomous Drone Navigation
+Developed a computer vision system for indoor drone navigation as a final-year capstone project at Tel A"
+q016,Ofir Ohan,education,medium,Was the candidate on the Dean's List?,0.524,True,True,True,ok,21,"Section: Bachelor of Science in Computer Science — Tel Aviv University
+2017 – 2021 | GPA: 89/100
+
+Relevant coursework: Machine Learning, Deep Learning, Natural "
+q019,Ofir Ohan,experience,medium,Describe the candidate's current job responsibilities.,0.724,True,True,True,ok,19,"Section: Machine Learning Engineer — DataSphere Technologies
+January 2022 – Present | Tel Aviv, Israel
+
+Designed and deployed production ML pipelines for NLP an"
+q020,Ofir Ohan,experience,medium,Where has the candidate worked previously?,0.635,True,True,True,ok,17,"Section: Junior Data Scientist — TechStart Solutions
+June 2021 – December 2021 | Herzliya, Israel
+
+Developed customer churn prediction models achieving 92% accu"
+q021,Ofir Ohan,experience,medium,What was the candidate's first job?,0.663,True,True,True,ok,19,"Section: Junior Data Scientist — TechStart Solutions
+June 2021 – December 2021 | Herzliya, Israel
+
+Developed customer churn prediction models achieving 92% accu"
+q022,Ofir Ohan,experience,medium,Describe the candidate's work at TechStart Solutions.,0.772,True,True,True,ok,17,"Section: Junior Data Scientist — TechStart Solutions
+June 2021 – December 2021 | Herzliya, Israel
+
+Developed customer churn prediction models achieving 92% accu"
+q023,Ofir Ohan,experience,medium,Has the candidate led a team?,0.665,True,True,True,ok,20,"Section: Letter of Recommendation — Ofir Ohan
+Equally impressive is his work on the real-time fraud detection pipeline, which processes 10,000 transactions per "
+q024,Ofir Ohan,experience,medium,What industries has the candidate worked in?,0.623,True,True,True,ok,19,"Section: Machine Learning Engineer — DataSphere Technologies
+Worked extensively with large-scale datasets exceeding 50 million rows on AWS infrastructure (SageM"
+q025,Ofir Ohan,experience,hard,How did the candidate reduce model inference latency?,0.578,True,True,True,ok,13,"Section: Performance
+Serving 2M+ users with sub-50ms p99 latency. Model training completes in 4 hours on 4x V100 GPUs. Daily retraining pipeline runs automatica"
+q026,Ofir Ohan,experience,medium,Has the candidate worked as a teaching assistant?,0.645,True,True,True,ok,22,"Section: Bachelor of Science in Computer Science — Tel Aviv University
+2017 – 2021 | GPA: 89/100
+
+Relevant coursework: Machine Learning, Deep Learning, Natural "
+q027,Ofir Ohan,skills,easy,What programming languages does the candidate know?,0.613,True,True,True,ok,21,"Section: Technical Skills
+Programming Languages: Python, SQL, JavaScript, Bash
+
+Machine Learning & Deep Learning: PyTorch, TensorFlow, scikit-learn, Hugging Fac"
+q028,Ofir Ohan,skills,medium,What ML and deep learning frameworks does the candidate use?,0.594,True,True,True,ok,19,"Section: Technical Skills
+Programming Languages: Python, SQL, JavaScript, Bash
+
+Machine Learning & Deep Learning: PyTorch, TensorFlow, scikit-learn, Hugging Fac"
+q029,Ofir Ohan,skills,medium,What cloud platforms does the candidate have experience with?,0.646,True,True,True,ok,20,"Section: Technical Skills
+Programming Languages: Python, SQL, JavaScript, Bash
+
+Machine Learning & Deep Learning: PyTorch, TensorFlow, scikit-learn, Hugging Fac"
+q030,Ofir Ohan,skills,medium,What databases has the candidate worked with?,0.666,True,True,True,ok,20,"Section: Technical Skills
+Programming Languages: Python, SQL, JavaScript, Bash
+
+Machine Learning & Deep Learning: PyTorch, TensorFlow, scikit-learn, Hugging Fac"
+q031,Ofir Ohan,skills,medium,Does the candidate have DevOps experience?,0.624,True,True,True,ok,15,"Section: Technical Skills
+Programming Languages: Python, SQL, JavaScript, Bash
+
+Machine Learning & Deep Learning: PyTorch, TensorFlow, scikit-learn, Hugging Fac"
+q032,Ofir Ohan,skills,easy,Does the candidate know Python?,0.574,True,True,True,ok,22,"Section: Technical Skills
+Programming Languages: Python, SQL, JavaScript, Bash
+
+Machine Learning & Deep Learning: PyTorch, TensorFlow, scikit-learn, Hugging Fac"
+q033,Ofir Ohan,skills,easy,Does the candidate have experience with PyTorch?,0.651,True,True,True,ok,19,"Section: Machine Learning Engineer — DataSphere Technologies
+January 2022 – Present | Tel Aviv, Israel
+
+Designed and deployed production ML pipelines for NLP an"
+q034,Ofir Ohan,skills,medium,Does the candidate have frontend development skills?,0.595,True,True,True,ok,17,"Section: Junior Data Scientist — TechStart Solutions
+June 2021 – December 2021 | Herzliya, Israel
+
+Developed customer churn prediction models achieving 92% accu"
+q035,Ofir Ohan,skills,medium,What NLP experience does the candidate have?,0.728,True,True,True,ok,17,"Section: Conversational AI Customer Support Bot (DataSphere Technologies)
+Developed an NLP chatbot using Retrieval-Augmented Generation (RAG) architecture. The "
+q036,Ofir Ohan,skills,medium,Does the candidate have computer vision experience?,0.739,True,True,True,ok,16,"Section: Academic Capstone: Autonomous Drone Navigation
+Developed a computer vision system for indoor drone navigation as a final-year capstone project at Tel A"
+q037,Ofir Ohan,skills,easy,Does the candidate have experience with Kubernetes?,0.706,True,True,True,ok,22,"Section: Real-time Fraud Detection Pipeline (DataSphere Technologies)
+Built an end-to-end streaming ML pipeline for transaction fraud detection in a fintech env"
+q038,Ofir Ohan,skills,medium,What data engineering tools does the candidate know?,0.543,True,True,True,ok,21,"Section: Real-time Fraud Detection Pipeline (DataSphere Technologies)
+Built an end-to-end streaming ML pipeline for transaction fraud detection in a fintech env"
+q039,Ofir Ohan,projects,medium,What projects has the candidate worked on?,0.688,True,True,True,ok,17,"Section: Machine Learning Engineer — DataSphere Technologies
+January 2022 – Present | Tel Aviv, Israel
+
+Designed and deployed production ML pipelines for NLP an"
+q040,Ofir Ohan,projects,medium,Tell me about the recommendation engine project.,0.807,True,True,True,ok,17,"Section: Smart Recommendation Engine (DataSphere Technologies)
+Built a hybrid collaborative and content-based recommendation system serving 2M+ users. The syste"
+q041,Ofir Ohan,projects,medium,What was the outcome of the fraud detection project?,0.725,True,True,True,ok,20,"Section: Real-time Fraud Detection Pipeline (DataSphere Technologies)
+Built an end-to-end streaming ML pipeline for transaction fraud detection in a fintech env"
+q042,Ofir Ohan,projects,medium,What technologies were used in the chatbot project?,0.506,True,True,True,ok,23,"Section: Conversational AI Customer Support Bot (DataSphere Technologies)
+Developed an NLP chatbot using Retrieval-Augmented Generation (RAG) architecture. The "
+q043,Ofir Ohan,projects,hard,What is the candidate's most significant project?,0.747,True,True,True,ok,17,"Section: Machine Learning Engineer — DataSphere Technologies
+January 2022 – Present | Tel Aviv, Israel
+
+Designed and deployed production ML pipelines for NLP an"
+q044,Ofir Ohan,projects,medium,Has the candidate contributed to open-source projects?,0.778,True,True,True,ok,20,"Section: Open-Source Contribution: LangChain
+Contributed a document loader module for Hebrew text processing to the LangChain open-source project. The contribut"
+q045,Ofir Ohan,projects,hard,What ML models has the candidate built?,0.66,True,True,True,ok,17,"Section: Machine Learning Engineer — DataSphere Technologies
+January 2022 – Present | Tel Aviv, Israel
+
+Designed and deployed production ML pipelines for NLP an"
+q046,Ofir Ohan,projects,medium,Does the candidate have real-time systems experience?,0.763,True,True,True,ok,17,"Section: Real-time Fraud Detection Pipeline (DataSphere Technologies)
+Built an end-to-end streaming ML pipeline for transaction fraud detection in a fintech env"
+q047,Ofir Ohan,projects,medium,Has the candidate worked on any NLP projects?,0.72,True,True,True,ok,16,"Section: Conversational AI Customer Support Bot (DataSphere Technologies)
+Developed an NLP chatbot using Retrieval-Augmented Generation (RAG) architecture. The "
+q048,Ofir Ohan,projects,medium,What is the largest dataset the candidate has worked with?,0.615,True,True,True,ok,20,"Section: Machine Learning Engineer — DataSphere Technologies
+Worked extensively with large-scale datasets exceeding 50 million rows on AWS infrastructure (SageM"
+q049,Ofir Ohan,certifications,medium,What certifications does the candidate have?,0.843,True,True,True,ok,18,"Section: Certifications
+AWS Certified Machine Learning — Specialty (March 2023, Amazon Web Services)
+
+Deep Learning Specialization (September 2022, DeepLearning"
+q050,Ofir Ohan,certifications,easy,Does the candidate have any AWS certifications?,0.734,True,True,True,ok,19,"Section: Certifications
+AWS Certified Machine Learning — Specialty (March 2023, Amazon Web Services)
+
+Deep Learning Specialization (September 2022, DeepLearning"
+q051,Ofir Ohan,certifications,easy,Does the candidate have a deep learning certification?,0.639,True,True,True,ok,16,"Section: Certifications
+AWS Certified Machine Learning — Specialty (March 2023, Amazon Web Services)
+
+Deep Learning Specialization (September 2022, DeepLearning"
+q052,Ofir Ohan,certifications,easy,When did the candidate get their AWS certification?,0.427,False,True,True,ingestion,17,"Section: Certifications
+AWS Certified Machine Learning — Specialty (March 2023, Amazon Web Services)
+
+Deep Learning Specialization (September 2022, DeepLearning"
+q053,Ofir Ohan,certifications,medium,Does the candidate have any project management certifications?,0.688,True,True,True,ok,22,"Section: Certifications
+AWS Certified Machine Learning — Specialty (March 2023, Amazon Web Services)
+
+Deep Learning Specialization (September 2022, DeepLearning"
+q062,Ofir Ohan,proficiency,easy,How proficient is the candidate in PyTorch?,0.6,True,True,True,ok,22,"Section: Machine Learning Engineer — DataSphere Technologies
+January 2022 – Present | Tel Aviv, Israel
+
+Designed and deployed production ML pipelines for NLP an"
+q063,Ofir Ohan,proficiency,medium,Rate the candidate's Python skills.,0.555,True,True,True,ok,21,"Section: Technical Skills
+Programming Languages: Python, SQL, JavaScript, Bash
+
+Machine Learning & Deep Learning: PyTorch, TensorFlow, scikit-learn, Hugging Fac"
+q064,Ofir Ohan,proficiency,medium,What are the candidate's strongest skills?,0.675,True,True,True,ok,16,"Section: Technical Skills
+Programming Languages: Python, SQL, JavaScript, Bash
+
+Machine Learning & Deep Learning: PyTorch, TensorFlow, scikit-learn, Hugging Fac"
+q065,Ofir Ohan,proficiency,medium,How strong is the candidate at Kafka?,0.694,True,True,True,ok,22,"Section: Real-time Fraud Detection Pipeline (DataSphere Technologies)
+Built an end-to-end streaming ML pipeline for transaction fraud detection in a fintech env"
+q071,Ofir Ohan,complex,hard,Is this candidate overqualified for a junior data scientist role?,0.698,True,True,True,ok,14,"Section: Letter of Recommendation — Ofir Ohan
+Equally impressive is his work on the real-time fraud detection pipeline, which processes 10,000 transactions per "
+q072,Ofir Ohan,complex,hard,Would this candidate be a good fit for a remote ML role in Europe?,0.617,True,True,True,ok,17,"Section: Summary
+Machine Learning Engineer with 4 years of experience designing and deploying production ML systems. Specialized in NLP, recommendation systems,"
+q073,Ofir Ohan,complex,hard,Compare the candidate's academic and professional experience.,0.74,True,True,True,ok,19,"Section: Bachelor of Science in Computer Science — Tel Aviv University
+2017 – 2021 | GPA: 89/100
+
+Relevant coursework: Machine Learning, Deep Learning, Natural "
+q074,Ofir Ohan,complex,hard,What unique combination of skills does this candidate offer?,0.741,True,True,True,ok,21,"Section: Letter of Recommendation — Ofir Ohan
+Equally impressive is his work on the real-time fraud detection pipeline, which processes 10,000 transactions per "
+q075,Ofir Ohan,complex,hard,Summarize why I should consider this candidate for a senior ML engineer position.,0.814,True,True,True,ok,16,"Section: Letter of Recommendation — Ofir Ohan
+Equally impressive is his work on the real-time fraud detection pipeline, which processes 10,000 transactions per "
+q010,Noa Friedman,education,easy,What did the candidate study?,0.564,True,True,True,ok,21,"Section: #Education
+##MBA — Hebrew University of Jerusalem 2019 — 2021 | GPA: 3.8/4.0
+
+- Specialization: Technology Management and Innovation
+
+- MBA Project: Pr"
+q014,Noa Friedman,education,medium,Tell me about the candidate's educational background.,0.745,True,True,True,ok,19,"Section: #Education
+##MBA — Hebrew University of Jerusalem 2019 — 2021 | GPA: 3.8/4.0
+
+- Specialization: Technology Management and Innovation
+
+- MBA Project: Pr"
+q015,Noa Friedman,education,medium,What was the candidate's MBA project about?,0.687,True,True,True,ok,13,"Section: ##Academic: SaaS Chum Prediction
+MBA project building a chum prediction system for B2B SaaS products using product usage telemetry. Achieved 88% accura"
+q016,Noa Friedman,education,medium,Did the candidate receive any academic honors?,0.638,True,True,True,ok,18,"Section: #Education
+##MBA — Hebrew University of Jerusalem 2019 — 2021 | GPA: 3.8/4.0
+
+- Specialization: Technology Management and Innovation
+
+- MBA Project: Pr"
+q019,Noa Friedman,experience,medium,Describe the candidate's current job responsibilities.,0.82,True,True,True,ok,19,"Section: #Work Experience
+##Senior Product Manager — Unity Technologies February 2023 — Present | Tel Aviv, Israel
+
+Leading product strategy for Unity's in-app "
+q020,Noa Friedman,experience,medium,Where has the candidate worked previously?,0.693,True,True,True,ok,16,"Section: To Whom It May Concem,
+AtironSource, Noa redesigned the SDK integration experience, reducing setup time from 5 days to 2 hours — a change that drove 40"
+q021,Noa Friedman,experience,medium,What was the candidate's first job?,0.607,True,True,True,ok,16,"Section: #Work Experience
+-
+
+-
+
+-
+
+-
+
+-
+
+-
+
+-
+
+##Product Manager — ironSource (acquired by Unity) September 2021 — January 2023 | Tel Aviv, Israel
+
+Owned the SD"
+q022,Noa Friedman,experience,medium,Describe the candidate's work at ironSource.,0.8,True,True,True,ok,15,"Section: #Work Experience
+-
+
+-
+
+-
+
+-
+
+-
+
+-
+
+-
+
+##Product Manager — ironSource (acquired by Unity) September 2021 — January 2023 | Tel Aviv, Israel
+
+Owned the SD"
+q023,Noa Friedman,experience,medium,Has the candidate held a leadership role?,0.725,True,True,True,ok,16,"Section: To Whom It May Concem,
+lam delighted to recommend Noa Friedman, who has been an exceptional product leader in our monetization organization at Unity fo"
+q024,Noa Friedman,experience,medium,What industries has the candidate worked in?,0.606,True,True,True,ok,16,"Section: #Work Experience
+##Senior Product Manager — Unity Technologies February 2023 — Present | Tel Aviv, Israel
+
+Leading product strategy for Unity's in-app "
+q025,Noa Friedman,experience,hard,What is a key technical achievement the candidate accomplished?,0.764,True,True,True,ok,15,"Section: ##ML-Powered Ad Mediation (Unity)
+Led product development of a machine leaming ad mediation algorithm that optimizes waterfall configurations in real-t"
+q026,Noa Friedman,experience,medium,Has the candidate had any mentoring experience?,0.67,True,True,True,ok,15,"Section: #Education
+##MBA — Hebrew University of Jerusalem 2019 — 2021 | GPA: 3.8/4.0
+
+- Specialization: Technology Management and Innovation
+
+- MBA Project: Pr"
+q027,Noa Friedman,skills,easy,What programming languages does the candidate know?,0.499,False,True,True,ingestion,22,"Section: #Languages
+- Hebrew: Native - English: Fluent (professional proficiency) - Spanish: Intermediate"
+q028,Noa Friedman,skills,medium,What are the candidate's primary product tools?,0.683,True,True,True,ok,16,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q029,Noa Friedman,skills,medium,What cloud platforms does the candidate have experience with?,0.493,False,True,True,ingestion,17,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q030,Noa Friedman,skills,medium,What data and analytics tools does the candidate use?,0.653,True,True,True,ok,16,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q031,Noa Friedman,skills,medium,Does the candidate have technical knowledge?,0.64,True,True,True,ok,15,"Section: To Whom It May Concem,
+AtironSource, Noa redesigned the SDK integration experience, reducing setup time from 5 days to 2 hours — a change that drove 40"
+q032,Noa Friedman,skills,easy,Does the candidate know Python?,0.602,True,True,False,rerank,18,"Section: ##Academic: SaaS Chum Prediction
+MBA project building a chum prediction system for B2B SaaS products using product usage telemetry. Achieved 88% accura"
+q033,Noa Friedman,skills,easy,Does the candidate have A/B testing experience?,0.69,True,True,True,ok,16,"Section: #Work Experience
+##Senior Product Manager — Unity Technologies February 2023 — Present | Tel Aviv, Israel
+
+Leading product strategy for Unity's in-app "
+q034,Noa Friedman,skills,medium,Does the candidate have data analytics experience?,0.66,True,True,True,ok,16,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q035,Noa Friedman,skills,medium,What product management methodologies does the candidate use?,0.493,False,True,True,ingestion,15,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q036,Noa Friedman,skills,medium,Does the candidate have user research experience?,0.692,True,True,True,ok,16,"Section: To Whom It May Concem,
+AtironSource, Noa redesigned the SDK integration experience, reducing setup time from 5 days to 2 hours — a change that drove 40"
+q037,Noa Friedman,skills,easy,Does the candidate have experience with ML products?,0.723,True,True,True,ok,14,"Section: To Whom It May Concem,
+lam delighted to recommend Noa Friedman, who has been an exceptional product leader in our monetization organization at Unity fo"
+q038,Noa Friedman,skills,medium,What visualization and reporting tools does the candidate know?,0.598,True,True,True,ok,17,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q039,Noa Friedman,projects,medium,What projects has the candidate worked on?,0.611,True,True,True,ok,19,"Section: ##ML-Powered Ad Mediation (Unity)
+Led product development of a machine leaming ad mediation algorithm that optimizes waterfall configurations in real-t"
+q040,Noa Friedman,projects,medium,Tell me about the ad mediation project.,0.858,True,True,True,ok,14,"Section: ##ML-Powered Ad Mediation (Unity)
+Led product development of a machine leaming ad mediation algorithm that optimizes waterfall configurations in real-t"
+q041,Noa Friedman,projects,medium,What was the outcome of the analytics dashboard project?,0.836,True,True,True,ok,16,"Section: ##Real-Time Publisher Analytics Dashboard (Unity)
+Designed and shipped a real-time analytics platform for 50K+ game developers to monitor ad revenue, u"
+q042,Noa Friedman,projects,medium,What technologies were used in the LTV modeling project?,0.528,True,True,False,rerank,17,"Section: ##Academic: SaaS Chum Prediction
+MBA project building a chum prediction system for B2B SaaS products using product usage telemetry. Achieved 88% accura"
+q043,Noa Friedman,projects,hard,What is the candidate's most significant project?,0.811,True,True,True,ok,17,"Section: ##ML-Powered Ad Mediation (Unity)
+Led product development of a machine leaming ad mediation algorithm that optimizes waterfall configurations in real-t"
+q044,Noa Friedman,projects,medium,Has the candidate contributed to open-source projects?,0.644,True,True,True,ok,17,"Section: To Whom It May Concem,
+lam delighted to recommend Noa Friedman, who has been an exceptional product leader in our monetization organization at Unity fo"
+q045,Noa Friedman,projects,hard,What products has the candidate built or launched?,0.767,True,True,True,ok,17,"Section: ##ML-Powered Ad Mediation (Unity)
+Led product development of a machine leaming ad mediation algorithm that optimizes waterfall configurations in real-t"
+q046,Noa Friedman,projects,medium,Does the candidate have monetization experience?,0.787,True,True,False,rerank,13,"Section: ##ML-Powered Ad Mediation (Unity)
+Led product development of a machine leaming ad mediation algorithm that optimizes waterfall configurations in real-t"
+q047,Noa Friedman,projects,medium,Has the candidate worked on developer-facing products?,0.697,True,True,True,ok,17,"Section: #Work Experience
+-
+
+-
+
+-
+
+-
+
+-
+
+-
+
+-
+
+##Product Manager — ironSource (acquired by Unity) September 2021 — January 2023 | Tel Aviv, Israel
+
+Owned the SD"
+q048,Noa Friedman,projects,medium,What is the scale of products the candidate has managed?,0.69,True,True,True,ok,17,"Section: #Work Experience
+##Senior Product Manager — Unity Technologies February 2023 — Present | Tel Aviv, Israel
+
+Leading product strategy for Unity's in-app "
+q049,Noa Friedman,certifications,medium,What certifications does the candidate have?,0.792,True,True,True,ok,13,"Section: #Certifications
+1. Pragmatic Institute Certified Product Manager (PMC) (March 2022, Pragmatic Institute) 2. Google Data Analytics Professional Certific"
+q050,Noa Friedman,certifications,easy,Does the candidate have a product management certification?,0.658,True,True,True,ok,16,"Section: #Certifications
+1. Pragmatic Institute Certified Product Manager (PMC) (March 2022, Pragmatic Institute) 2. Google Data Analytics Professional Certific"
+q051,Noa Friedman,certifications,easy,Does the candidate have a data analytics certification?,0.606,True,True,True,ok,16,"Section: #Certifications
+1. Pragmatic Institute Certified Product Manager (PMC) (March 2022, Pragmatic Institute) 2. Google Data Analytics Professional Certific"
+q052,Noa Friedman,certifications,easy,When did the candidate get their Scrum certification?,0.38,False,True,True,ingestion,11,"Section: general
+Letter of Recommendation — Noa Friedman
+
+From: Oren Kaniel, VP of Product at Unity Technologies Date: May 18, 2026"
+q053,Noa Friedman,certifications,medium,Does the candidate have any management or methodology certifications?,0.695,True,True,True,ok,16,"Section: #Certifications
+1. Pragmatic Institute Certified Product Manager (PMC) (March 2022, Pragmatic Institute) 2. Google Data Analytics Professional Certific"
+q062,Noa Friedman,proficiency,easy,How proficient is the candidate in SQL?,0.566,True,True,True,ok,17,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q063,Noa Friedman,proficiency,medium,Rate the candidate's Tableau skills.,0.561,True,True,True,ok,18,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q064,Noa Friedman,proficiency,medium,What are the candidate's strongest skills?,0.639,True,True,True,ok,18,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q065,Noa Friedman,proficiency,medium,How strong is the candidate at Looker?,0.536,True,True,True,ok,18,"Section: Product Tools: Jira, Confluence, Productboard, Figma, Miro, Amplitude, Mixpanel
+Data & Analytics: SQL, Python, Tableau, Looker, Google Analytics, BigQu"
+q071,Noa Friedman,complex,hard,Is this candidate overqualified for a junior product manager role?,0.689,True,True,True,ok,17,"Section: To Whom It May Concem,
+AtironSource, Noa redesigned the SDK integration experience, reducing setup time from 5 days to 2 hours — a change that drove 40"
+q072,Noa Friedman,complex,hard,Would this candidate be a good fit for a remote product role in Europe?,0.657,True,True,True,ok,16,"Section: To Whom It May Concem,
+AtironSource, Noa redesigned the SDK integration experience, reducing setup time from 5 days to 2 hours — a change that drove 40"
+q073,Noa Friedman,complex,hard,Compare the candidate's academic and professional experience.,0.752,True,True,True,ok,19,"Section: To Whom It May Concem,
+AtironSource, Noa redesigned the SDK integration experience, reducing setup time from 5 days to 2 hours — a change that drove 40"
+q074,Noa Friedman,complex,hard,What unique combination of skills does this candidate offer?,0.78,True,True,True,ok,17,"Section: To Whom It May Concem,
+lam delighted to recommend Noa Friedman, who has been an exceptional product leader in our monetization organization at Unity fo"
+q075,Noa Friedman,complex,hard,Summarize why I should consider this candidate for a director of product position.,0.793,True,True,True,ok,17,"Section: To Whom It May Concem,
+lam delighted to recommend Noa Friedman, who has been an exceptional product leader in our monetization organization at Unity fo"
+q010,Tal Ben-David,education,easy,What did the candidate study?,0.562,True,True,True,ok,16,"Section: #Education
+##Master of Science in Computer Science ? Tel Aviv University
+
+2016 ? 2018 | GPA: 90/100"
+q014,Tal Ben-David,education,medium,Tell me about the candidate's educational background.,0.653,True,True,True,ok,15,"Section: Letter of Recommendation — Tal Ben-David
+Tal combines rare depth in distributed systems theory (MSc thesis on consensus protocols, published at SOSP Wo"
+q015,Tal Ben-David,education,medium,What was the candidate's thesis about?,0.681,True,True,True,ok,14,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Designed a Raft variant optimized for cross-datacenter replication reducing commit latency by 40%. Im"
+q016,Tal Ben-David,education,medium,Did the candidate receive any academic honors?,0.529,True,True,True,ok,15,"Section: general
+Tal Ben-David ? Curriculum Vitae"
+q019,Tal Ben-David,experience,medium,Describe the candidate's current job responsibilities.,0.71,True,True,True,ok,11,"Section: #Summary
+Staff Backend Engineer with 7 years of experience designing distributed systems and event-driven architectures at scale. Specialized in high-t"
+q020,Tal Ben-David,experience,medium,Where has the candidate worked previously?,0.662,True,True,True,ok,15,"Section: ##Staff Backend Engineer ? AppsFlyer
+March 2020 ? Present | Herzliya, Israel
+
+September 2018 ? February 2020 | Ra'anana, Israel"
+q021,Tal Ben-David,experience,medium,What was the candidate's first job?,0.563,True,True,True,ok,14,"Section: ##Staff Backend Engineer ? AppsFlyer
+March 2020 ? Present | Herzliya, Israel
+
+September 2018 ? February 2020 | Ra'anana, Israel"
+q022,Tal Ben-David,experience,medium,Describe the candidate's work at Amdocs.,0.657,True,True,True,ok,13,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q023,Tal Ben-David,experience,medium,Has the candidate held a leadership role?,0.671,True,True,True,ok,15,"Section: Letter of Recommendation — Tal Ben-David
+From: Reshef Mann, CTO at AppsFlyer
+
+Date: May 22, 2026
+
+To Whom It May Concern,
+
+I recommend Tal Ben-David, w"
+q024,Tal Ben-David,experience,medium,What industries has the candidate worked in?,0.555,True,True,True,ok,15,"Section: Overview
+Processes 1.2M events/second for real-time mobile attribution enrichment at AppsFlyer. Ingests raw attribution events, enriches with device/ge"
+q025,Tal Ben-David,experience,hard,What is a key technical achievement the candidate accomplished?,0.545,True,True,True,ok,13,"Section: Performance
+Sustained throughput of 1.2M events/second. P99 end-to-end latency under 100ms. Handles 100B+ daily events across all pipelines. Zero data "
+q026,Tal Ben-David,experience,medium,Has the candidate had any teaching experience?,0.656,True,True,True,ok,15,"Section: Letter of Recommendation — Tal Ben-David
+From: Reshef Mann, CTO at AppsFlyer
+
+Date: May 22, 2026
+
+To Whom It May Concern,
+
+I recommend Tal Ben-David, w"
+q027,Tal Ben-David,skills,easy,What programming languages does the candidate know?,0.648,True,True,True,ok,18,"Section: Tech Stack
+Language: Java 17, Kotlin
+
+Streaming: Apache Kafka, Apache Flink
+
+Storage: ClickHouse, Redis, S3
+
+Infrastructure: Kubernetes (EKS), Terrafor"
+q028,Tal Ben-David,skills,medium,What are the candidate's primary technical frameworks and tools?,0.677,True,True,True,ok,13,"Section: Tech Stack
+Language: Java 17, Kotlin
+
+Streaming: Apache Kafka, Apache Flink
+
+Storage: ClickHouse, Redis, S3
+
+Infrastructure: Kubernetes (EKS), Terrafor"
+q029,Tal Ben-David,skills,medium,What cloud platforms does the candidate have experience with?,0.626,True,True,True,ok,15,"Section: Tech Stack
+Language: Java 17, Kotlin
+
+Streaming: Apache Kafka, Apache Flink
+
+Storage: ClickHouse, Redis, S3
+
+Infrastructure: Kubernetes (EKS), Terrafor"
+q030,Tal Ben-David,skills,medium,What databases has the candidate worked with?,0.717,True,True,True,ok,15,"Section: Tech Stack
+Language: Java 17, Kotlin
+
+Streaming: Apache Kafka, Apache Flink
+
+Storage: ClickHouse, Redis, S3
+
+Infrastructure: Kubernetes (EKS), Terrafor"
+q031,Tal Ben-David,skills,medium,Does the candidate have DevOps or infrastructure experience?,0.564,True,True,True,ok,12,"Section: Tech Stack
+Language: Java 17, Kotlin
+
+Streaming: Apache Kafka, Apache Flink
+
+Storage: ClickHouse, Redis, S3
+
+Infrastructure: Kubernetes (EKS), Terrafor"
+q032,Tal Ben-David,skills,easy,Does the candidate know Python?,0.475,False,True,True,ingestion,15,"Section: #Languages
+Hebrew: Native"
+q033,Tal Ben-David,skills,easy,Does the candidate have experience with Kafka?,0.69,True,True,True,ok,14,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q034,Tal Ben-David,skills,medium,Does the candidate have distributed systems experience?,0.701,True,True,True,ok,12,"Section: #Summary
+Staff Backend Engineer with 7 years of experience designing distributed systems and event-driven architectures at scale. Specialized in high-t"
+q035,Tal Ben-David,skills,medium,What architecture patterns does the candidate know?,0.512,True,True,True,ok,13,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q036,Tal Ben-David,skills,medium,Does the candidate have observability experience?,0.569,True,True,True,ok,13,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q037,Tal Ben-David,skills,easy,Does the candidate have experience with Kubernetes?,0.623,True,True,True,ok,13,"Section: Tech Stack
+Language: Java 17, Kotlin
+
+Streaming: Apache Kafka, Apache Flink
+
+Storage: ClickHouse, Redis, S3
+
+Infrastructure: Kubernetes (EKS), Terrafor"
+q038,Tal Ben-David,skills,medium,What streaming and data processing tools does the candidate know?,0.639,True,True,True,ok,13,"Section: Architecture
+Three-stage pipeline: Kafka ingestion layer with 500+ partitions, Flink stateful processing with RocksDB state backend for sessionization "
+q039,Tal Ben-David,projects,medium,What projects has the candidate worked on?,0.598,True,True,True,ok,13,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q040,Tal Ben-David,projects,medium,Tell me about the event enrichment pipeline.,0.7,True,True,True,ok,11,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q041,Tal Ben-David,projects,medium,What was the outcome of the multi-region architecture project?,0.549,True,True,True,ok,15,"Section: Key Features
+1.2M events/second throughput with sub-100ms end-to-end latency
+
+Exactly-once processing semantics with Kafka transactions
+
+Stateful sessi"
+q042,Tal Ben-David,projects,medium,What technologies were used in the microservices migration?,0.579,True,True,True,ok,14,"Section: Tech Stack
+Language: Java 17, Kotlin
+
+Streaming: Apache Kafka, Apache Flink
+
+Storage: ClickHouse, Redis, S3
+
+Infrastructure: Kubernetes (EKS), Terrafor"
+q043,Tal Ben-David,projects,hard,What is the candidate's most significant project?,0.706,True,True,True,ok,15,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q044,Tal Ben-David,projects,medium,Has the candidate contributed to open-source projects?,0.635,True,True,True,ok,13,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q045,Tal Ben-David,projects,hard,What systems has the candidate built?,0.75,True,True,True,ok,14,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q046,Tal Ben-David,projects,medium,Does the candidate have high-availability experience?,0.611,True,True,True,ok,12,"Section: Key Features
+1.2M events/second throughput with sub-100ms end-to-end latency
+
+Exactly-once processing semantics with Kafka transactions
+
+Stateful sessi"
+q047,Tal Ben-David,projects,medium,Has the candidate worked on migration projects?,0.61,True,True,True,ok,13,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q048,Tal Ben-David,projects,medium,What is the scale of systems the candidate has worked with?,0.616,True,True,True,ok,14,"Section: Performance
+Sustained throughput of 1.2M events/second. P99 end-to-end latency under 100ms. Handles 100B+ daily events across all pipelines. Zero data "
+q049,Tal Ben-David,certifications,medium,What certifications does the candidate have?,0.711,True,True,True,ok,11,"Section: #Certifications
+1. AWS Certified Solutions Architect ? Associate (April 2021, Amazon Web Services)"
+q050,Tal Ben-David,certifications,easy,Does the candidate have an AWS certification?,0.71,True,True,True,ok,17,"Section: #Certifications
+1. AWS Certified Solutions Architect ? Associate (April 2021, Amazon Web Services)"
+q051,Tal Ben-David,certifications,easy,Does the candidate have a Kafka certification?,0.59,True,True,True,ok,15,"Section: Letter of Recommendation — Tal Ben-David
+Tal combines rare depth in distributed systems theory (MSc thesis on consensus protocols, published at SOSP Wo"
+q052,Tal Ben-David,certifications,easy,When did the candidate get their Java certification?,0.37,False,True,True,ingestion,12,"Section: ##Staff Backend Engineer ? AppsFlyer
+March 2020 ? Present | Herzliya, Israel
+
+September 2018 ? February 2020 | Ra'anana, Israel"
+q053,Tal Ben-David,certifications,medium,Does the candidate have any management certifications?,0.579,True,True,True,ok,17,"Section: #Certifications
+1. AWS Certified Solutions Architect ? Associate (April 2021, Amazon Web Services)"
+q062,Tal Ben-David,proficiency,easy,How proficient is the candidate in Java?,0.593,True,True,True,ok,15,"Section: Tech Stack
+Language: Java 17, Kotlin
+
+Streaming: Apache Kafka, Apache Flink
+
+Storage: ClickHouse, Redis, S3
+
+Infrastructure: Kubernetes (EKS), Terrafor"
+q063,Tal Ben-David,proficiency,medium,Rate the candidate's Kafka skills.,0.593,True,True,True,ok,13,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q064,Tal Ben-David,proficiency,medium,What are the candidate's strongest skills?,0.677,True,True,True,ok,15,"Section: Tech Stack
+Language: Java 17, Kotlin
+
+Streaming: Apache Kafka, Apache Flink
+
+Storage: ClickHouse, Redis, S3
+
+Infrastructure: Kubernetes (EKS), Terrafor"
+q065,Tal Ben-David,proficiency,medium,How strong is the candidate at Kotlin?,0.577,True,True,True,ok,16,"Section: ##Real-Time Event Enrichment Pipeline (AppsFlyer)
+Built a streaming pipeline processing 1.2M events/second for mobile attribution enrichment. Uses Kafk"
+q071,Tal Ben-David,complex,hard,Is this candidate overqualified for a junior backend role?,0.702,True,True,True,ok,15,"Section: Letter of Recommendation — Tal Ben-David
+Tal combines rare depth in distributed systems theory (MSc thesis on consensus protocols, published at SOSP Wo"
+q072,Tal Ben-David,complex,hard,Would this candidate be a good fit for a remote backend role in Europe?,0.577,True,True,True,ok,16,"Section: Letter of Recommendation — Tal Ben-David
+Tal combines rare depth in distributed systems theory (MSc thesis on consensus protocols, published at SOSP Wo"
+q073,Tal Ben-David,complex,hard,Compare the candidate's academic and professional experience.,0.723,True,True,True,ok,15,"Section: Letter of Recommendation — Tal Ben-David
+From: Reshef Mann, CTO at AppsFlyer
+
+Date: May 22, 2026
+
+To Whom It May Concern,
+
+I recommend Tal Ben-David, w"
+q074,Tal Ben-David,complex,hard,What unique combination of skills does this candidate offer?,0.727,True,True,True,ok,14,"Section: Letter of Recommendation — Tal Ben-David
+Tal combines rare depth in distributed systems theory (MSc thesis on consensus protocols, published at SOSP Wo"
+q075,Tal Ben-David,complex,hard,Summarize why I should consider this candidate for a principal engineer position.,0.754,True,True,True,ok,17,"Section: Letter of Recommendation — Tal Ben-David
+From: Reshef Mann, CTO at AppsFlyer
+
+Date: May 22, 2026
+
+To Whom It May Concern,
+
+I recommend Tal Ben-David, w"
+p001,Project Knowledge Base,project,easy,What is this project?,0.832,True,True,True,ok,25,"Section: WHAT THE PROJECT IS
+The Candidate AI Agent is an AI-powered digital representative for a single job candidate. A recruiter opens a secured, always-avai"
+p003,Project Knowledge Base,project,medium,What reranker does the project use?,0.747,True,True,True,ok,18,"Section: PLUGGABLE PROVIDERS
+The reranker layer is either the Voyage rerank API (production default), a local Qwen3-Reranker, or ""none"" to skip reranking. The Q"
+p004,Project Knowledge Base,project,medium,How does the skill proficiency estimation work?,0.719,True,True,True,ok,21,"Section: SKILL PROFICIENCY ESTIMATION — THE FLAGSHIP FEATURE
+The scorer itself is a fine-tuned DeBERTa-v3 transformer with a CORAL ordinal regression head. CORA"
+p005,Project Knowledge Base,project,medium,What evaluation frameworks does the project use?,0.734,True,True,True,ok,26,"Section: THE EVALUATION SUITE
+The project ships a rigorous, component-based evaluation harness rather than ad-hoc spot checks. It runs the full agent over golde"
+p006,Project Knowledge Base,project,medium,What is Reciprocal Rank Fusion used for in the retrieval pipeline?,0.663,True,True,True,ok,23,"Section: THE RAG PIPELINE — RETRIEVAL
+Third, hybrid fusion retrieval. For every query variation the system runs both dense vector search (semantic similarity ov"
+p007,Project Knowledge Base,project,easy,Which vector database does the project use?,0.621,True,True,True,ok,21,"Section: STRUCTURED STORE AND VECTOR STORE
+The structured store is a small JSON file holding the verified profile fields plus, per listed skill, the supporting "
+p008,Project Knowledge Base,project,medium,What embedding options does the project support?,0.617,True,True,True,ok,23,"Section: PLUGGABLE PROVIDERS
+Three layers are pluggable purely through configuration, with no code changes, and this is what lets the same codebase run fully lo"
+p009,Project Knowledge Base,project,hard,How are documents ingested?,0.731,True,True,True,ok,22,"Section: THE RAG PIPELINE — INGESTION
+Documents are parsed with the Unstructured library, backed by PyMuPDF for PDFs, python-docx for Word files, and OCR via Te"
+p010,Project Knowledge Base,project,medium,What tools does the agent have?,0.739,True,True,True,ok,18,"Section: THE FOUR TOOLS
+get_skill_proficiency returns the supporting evidence found in the candidate's documents for a named skill — the exact passages a retrie"
+p011,Project Knowledge Base,project,medium,What does the query router do?,0.683,True,True,True,ok,21,"Section: THE RAG PIPELINE — RETRIEVAL
+Retrieval is a multi-stage pipeline designed for both recall and precision.
+
+First, query routing. An LLM router classifie"
+p012,Project Knowledge Base,project,medium,How is the recruiter chat deployed and secured?,0.814,True,True,True,ok,16,"Section: DEPLOYMENT AND SECURITY
+The recruiter chat deploys to a Streamlit-based host such as Streamlit Community Cloud or Hugging Face Spaces, served over HTTP"
+p013,Project Knowledge Base,project,hard,What is the build-vs-serve split?,0.753,True,True,True,ok,18,"Section: THE CORE DESIGN DECISION: BUILD VS SERVE
+The single most important architectural decision is the split between a build phase and a serve phase.
+
+The bu"
+p014,Project Knowledge Base,project,easy,What do the 1 to 5 skill proficiency levels mean?,0.658,True,True,True,ok,20,"Section: SKILL PROFICIENCY ESTIMATION — THE FLAGSHIP FEATURE
+Rather than leaving ""how good is the candidate at X?"" to keyword matching, the project trains a ded"
+p015,Project Knowledge Base,project,hard,How was the training data for the skill scorer created?,0.693,True,True,True,ok,21,"Section: SYNTHETIC TRAINING DATA GENERATION
+Training the skill scorer required labeled (skill, evidence, level) data that does not exist publicly, so the projec"
+p016,Project Knowledge Base,project,medium,Which LLM does the project use?,0.689,True,True,True,ok,26,"Section: PLUGGABLE PROVIDERS
+Three layers are pluggable purely through configuration, with no code changes, and this is what lets the same codebase run fully lo"
+p017,Project Knowledge Base,project,hard,What is the per-gate retrieval analysis?,0.676,True,True,True,ok,16,"Section: THE RAG PIPELINE — RETRIEVAL
+A deliberate design touch: the pipeline exposes the fused candidate pool from before re-ranking. This lets the evaluation "
+p018,Project Knowledge Base,project,medium,How many synthetic candidates are used for evaluation and how many questions does each have?,0.635,True,True,True,ok,21,"Section: THE EVALUATION DATA
+Evaluation uses six synthetic candidates with deliberately varied document formats — PDF, DOCX, TXT, Markdown, and image/PNG specif"
+p019,Project Knowledge Base,project,medium,What hybrid search methods are combined in retrieval?,0.707,True,True,True,ok,19,"Section: THE RAG PIPELINE — RETRIEVAL
+Third, hybrid fusion retrieval. For every query variation the system runs both dense vector search (semantic similarity ov"
+p020,Project Knowledge Base,project,medium,Does the project use prompt caching?,0.53,True,True,True,ok,25,"Section: NEUTRAL LLM CLIENT
+Internally the client has two backends. The Anthropic backend (production default) talks to the Claude API and uses prompt caching o"
+p021,Project Knowledge Base,project,medium,How do you decide which tool to call?,0.756,True,True,True,ok,25,"Section: THE FOUR TOOLS
+get_skill_proficiency returns the supporting evidence found in the candidate's documents for a named skill — the exact passages a retrie"
+p022,Project Knowledge Base,project,medium,What model powers you?,0.705,True,True,True,ok,24,"Section: PLUGGABLE PROVIDERS
+Three layers are pluggable purely through configuration, with no code changes, and this is what lets the same codebase run fully lo"
+p023,Project Knowledge Base,project,medium,What reranker do you use?,0.725,True,True,True,ok,21,"Section: PLUGGABLE PROVIDERS
+The reranker layer is either the Voyage rerank API (production default), a local Qwen3-Reranker, or ""none"" to skip reranking. The Q"
+p025,Project Knowledge Base,project,medium,How were you built?,0.724,True,True,False,rerank,21,"Section: TECHNOLOGY STACK
+Frontend and app framework: Streamlit, multi-page. LLM and orchestration: Anthropic Claude API (or local Ollama), ReAct-style tool cal"
+p026,Project Knowledge Base,project,medium,How do you figure out how good a candidate is at a skill?,0.782,True,True,False,rerank,22,"Section: SKILL PROFICIENCY ESTIMATION — THE FLAGSHIP FEATURE
+The scorer itself is a fine-tuned DeBERTa-v3 transformer with a CORAL ordinal regression head. CORA"
+p027,Project Knowledge Base,project,medium,What embedding model do you use?,0.62,True,True,True,ok,25,"Section: PLUGGABLE PROVIDERS
+Three layers are pluggable purely through configuration, with no code changes, and this is what lets the same codebase run fully lo"
+p028,Project Knowledge Base,project,medium,"Can you run entirely on free, local models without any paid APIs?",0.776,True,True,True,ok,20,"Section: PLUGGABLE PROVIDERS
+Three layers are pluggable purely through configuration, with no code changes, and this is what lets the same codebase run fully lo"
+p032,Project Knowledge Base,project,medium,Where do you store your knowledge?,0.793,True,True,True,ok,21,"Section: STRUCTURED STORE AND VECTOR STORE
+The structured store is a small JSON file holding the verified profile fields plus, per listed skill, the supporting "
+p033,Project Knowledge Base,project,easy,How many tools do you have and what are they?,0.71,True,True,True,ok,22,"Section: THE FOUR TOOLS
+get_skill_proficiency returns the supporting evidence found in the candidate's documents for a named skill — the exact passages a retrie"
+p035,Project Knowledge Base,project,medium,How do you keep the candidate's private data secure?,0.727,True,True,True,ok,19,"Section: DEPLOYMENT AND SECURITY
+The recruiter chat deploys to a Streamlit-based host such as Streamlit Community Cloud or Hugging Face Spaces, served over HTTP"
+p036,Project Knowledge Base,project,medium,How are you deployed and how much does it cost to run?,0.764,True,True,True,ok,21,"Section: DEPLOYMENT AND SECURITY
+The recruiter chat deploys to a Streamlit-based host such as Streamlit Community Cloud or Hugging Face Spaces, served over HTTP"
+p038,Project Knowledge Base,project,hard,What's the difference between how you answer a 'how good is she at Python' question and a 'how does the project work' question?,0.707,True,True,True,ok,23,"Section: THE FOUR TOOLS
+get_skill_proficiency returns the supporting evidence found in the candidate's documents for a named skill — the exact passages a retrie"
+p039,Project Knowledge Base,project,medium,How do you expand a search query before retrieving?,0.672,True,True,True,ok,22,"Section: THE RAG PIPELINE — RETRIEVAL
+Retrieval is a multi-stage pipeline designed for both recall and precision.
+
+First, query routing. An LLM router classifie"
+p040,Project Knowledge Base,project,medium,Why might you say a skill wasn't assessed?,0.716,True,True,True,ok,27,"Section: THE FOUR TOOLS
+get_skill_proficiency returns the supporting evidence found in the candidate's documents for a named skill — the exact passages a retrie"
