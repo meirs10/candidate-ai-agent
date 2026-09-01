@@ -40,6 +40,11 @@ class VoyageEmbedder:
         self.client = voyageai.Client(api_key=config.VOYAGE_API_KEY or None)
 
     def _embed(self, texts: list[str], input_type: str) -> list[list[float]]:
+        # Voyage rejects an empty string anywhere in the batch ("Input cannot
+        # contain empty strings"), failing the whole call — which aborts the
+        # question, not just that one text. Substitute a single space so a blank
+        # input degrades to a meaningless embedding instead of an exception.
+        texts = [t if (t and t.strip()) else " " for t in texts]
         out: list[list[float]] = []
         for start in range(0, len(texts), _VOYAGE_BATCH):
             batch = texts[start:start + _VOYAGE_BATCH]

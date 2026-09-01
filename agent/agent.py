@@ -56,13 +56,22 @@ def get_last_tool_scores() -> dict:
     return dict(_LAST_TOOL_SCORES)
 
 
-def _args_for(name: str, entry: dict) -> dict:
-    """Build the call arguments for a tool from its router entry."""
+def _args_for(name: str, entry: dict, question: str = "") -> dict:
+    """Build the call arguments for a tool from its router entry.
+
+    The router sometimes scores a search tool above the threshold but returns an
+    empty "query" (and escalation builds args for tools the router never wrote a
+    query for at all). An empty query reaches the embedding API as an empty
+    string, which Voyage rejects outright — the exception escapes run() and the
+    whole question is recorded as an error. Fall back to the recruiter's own
+    question, which is a sensible search string anyway.
+    """
     if name == "get_structured_data":
         return {"field": entry.get("field", "")}
     if name == "get_skill_proficiency":
         return {"skill": entry.get("skill", "")}
-    return {"query": entry.get("query", "")}  # search_documents / search_project
+    query = (entry.get("query") or "").strip() or question  # search_documents / search_project
+    return {"query": query}
 
 
 def select_tools(user_message: str, history: list | None = None) -> tuple[dict, list, dict]:
@@ -81,7 +90,7 @@ def select_tools(user_message: str, history: list | None = None) -> tuple[dict, 
     scores = score_tools(llm, user_message, history)
     tool_scores = {TOOL_SOURCE[n]: round(scores[n]["score"], 4) for n in TOOL_NAMES}
 
-    selected = [(n, _args_for(n, scores[n])) for n in TOOL_NAMES
+    selected = [(n, _args_for(n, scores[n], user_message)) for n in TOOL_NAMES
                 if scores[n]["score"] >= config.TOOL_SELECT_THRESHOLD]
     selected.sort(key=lambda na: SOURCE_ORDER.index(TOOL_SOURCE[na[0]]))
     return tool_scores, selected, scores
@@ -216,7 +225,8 @@ def run(conversation_history: list, user_message: str) -> tuple[str, list, list]
     if (config.TOOL_ESCALATE_ON_EMPTY and results
             and all(empty for (_n, _a, _t, _m, empty) in results)):
         chosen = {n for (n, _a, _t, _m, _e) in results}
-        rest = [(n, _args_for(n, scores[n])) for n in TOOL_NAMES if n not in chosen]
+        rest = [(n, _args_for(n, scores[n], user_message))
+                for n in TOOL_NAMES if n not in chosen]
         results.extend(_run_tools_concurrently(rest))
 
     # Deterministic order by source precedence (project last-word etc.).
