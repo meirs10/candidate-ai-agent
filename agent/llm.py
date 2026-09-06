@@ -1,40 +1,37 @@
 """
 llm.py — Provider-pluggable LLM client.
 
-Exposes one provider-neutral interface used by the agent loop and the retrieval
+Exposes one provider-neutral interface used by the agent and the retrieval
 helpers, with three backends selected via config.LLM_PROVIDER:
 
     "openrouter" → any model via OpenRouter's unified API (production default)
     "anthropic"  → Claude API directly (no local model server)
     "ollama"     → local Ollama model (the original local stack; free for eval)
 
-Neutral message format (what callers build):
-    {"role": "user",      "content": str}
-    {"role": "assistant", "content": str, "tool_calls": [ToolCall, ...]}   # tool_calls optional
-    {"role": "tool",      "tool_call_id": str, "content": str}
+The surface is deliberately one method: complete(prompt, system, max_tokens,
+model) → str. The agent is single-pass — the router scores all tools in one call,
+the selected tools run concurrently, and one synthesis call answers from their
+combined output — so no provider ever needs a native tool-calling loop. Tool
+descriptions live in agent/tool_router.ROUTER_SYSTEM, not in a provider schema.
 
-Neutral tool format (see agent/tools.py):
-    {"name": str, "description": str, "parameters": {<JSON schema>}}
-
-ToolCall: {"id": str, "name": str, "arguments": dict}
-
-chat() returns a Reply(text, tool_calls, stop_reason); complete() returns a str.
+`model` selects which of the three configured roles this call bills to
+(AGENT_MODEL / ROUTER_MODEL / TOOL_SELECT_MODEL); see settings.py.
 """
 
 from __future__ import annotations
 
 import re
-import uuid
-from dataclasses import dataclass, field
+import time
 
 # Imported as `config` for readability, but the module is named `settings` so it
 # can't shadow the skill scorer's own flat `import config`.
 import settings as config
+from agent import telemetry
 
 # Max generation tokens — high enough for a full recruiter answer, low enough to
 # stay well under any HTTP timeout without streaming.
-AGENT_MAX_TOKENS = 1024
-COMPLETE_MAX_TOKENS = 512
+AGENT_MAX_TOKENS = 1024   # recruiter-facing synthesis (agent/agent.py:_synthesize)
+COMPLETE_MAX_TOKENS = 512  # routing / expansion / summaries
 
 _THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL)
 
@@ -68,13 +65,6 @@ def _openrouter_session():
     return _SESSION
 
 
-@dataclass
-class Reply:
-    text: str
-    tool_calls: list[dict] = field(default_factory=list)
-    stop_reason: str | None = None
-
-
 class LLMClient:
     """One client, two backends. Instantiated once and shared."""
 
@@ -94,10 +84,15 @@ class LLMClient:
 
     # -- Single-shot completion (router, query expansion, summaries) --------
     def complete(self, prompt: str, system: str | None = None,
-                 max_tokens: int = COMPLETE_MAX_TOKENS, model: str | None = None) -> str:
-        """model defaults to router_model (the caller for most complete() call
-        sites — routing/query-expansion/tool-scoring); pass model=self.agent_model
-        explicitly for the recruiter-facing synthesis call."""
+                 max_tokens: int = COMPLETE_MAX_TOKENS, model: str | None = None,
+                 role: str = "router") -> str:
+        """model defaults to router_model (most complete() call sites are
+        routing/query-expansion); pass model=self.agent_model explicitly for the
+        recruiter-facing synthesis call.
+
+        `role` labels the call in telemetry. It cannot be derived from the model
+        id: AGENT_MODEL and ROUTER_MODEL are the same model by default, so the
+        cost breakdown would collapse two roles into one. Callers state it."""
         model = model or self.router_model
 
         if self.provider == "ollama":
@@ -107,11 +102,22 @@ class LLMClient:
             if system:
                 messages.append({"role": "system", "content": system})
             messages.append({"role": "user", "content": prompt})
+            started = time.perf_counter()
+            # NOTE: `model` is intentionally ignored here. Under Ollama there is
+            # one local model, so the three roles all resolve to OLLAMA_MODEL —
+            # the role split exists to control spend, and local inference is free.
             resp = ollama.chat(model=config.OLLAMA_MODEL, messages=messages, options={"num_predict": 4096})
+            telemetry.record_llm_call(
+                role=role, model=config.OLLAMA_MODEL,
+                prompt_tokens=resp.get("prompt_eval_count", 0) or 0,
+                completion_tokens=resp.get("eval_count", 0) or 0,
+                cost_usd=0.0,  # local inference: free by construction
+                latency_ms=int((time.perf_counter() - started) * 1000),
+            )
             return _THINK_RE.sub("", resp["message"]["content"]).strip()
 
         if self.provider == "openrouter":
-            return self._complete_openrouter(prompt, system, max_tokens, model)
+            return self._complete_openrouter(prompt, system, max_tokens, model, role)
 
         # Anthropic
         kwargs = {
@@ -121,157 +127,61 @@ class LLMClient:
         }
         if system:
             kwargs["system"] = system
+        started = time.perf_counter()
         resp = self._client().messages.create(**kwargs)
+        telemetry.record_llm_call(
+            role=role, model=model,
+            prompt_tokens=getattr(resp.usage, "input_tokens", 0),
+            completion_tokens=getattr(resp.usage, "output_tokens", 0),
+            cost_usd=None,  # the SDK reports tokens, not cost — price locally
+            latency_ms=int((time.perf_counter() - started) * 1000),
+        )
         return "".join(b.text for b in resp.content if b.type == "text").strip()
 
     # -- OpenRouter backend (OpenAI-compatible REST) --------------------------
     def _complete_openrouter(self, prompt: str, system: str | None,
-                              max_tokens: int, model: str) -> str:
+                              max_tokens: int, model: str, role: str) -> str:
         messages = []
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
 
+        started = time.perf_counter()
         resp = _openrouter_session().post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {config.OPENROUTER_API_KEY}",
                 "X-Title": "candidate-ai-agent",
             },
-            json={"model": model, "messages": messages, "max_tokens": max_tokens},
+            json={
+                "model": model,
+                "messages": messages,
+                "max_tokens": max_tokens,
+                # Ask OpenRouter to return what this call actually cost. Without
+                # it we would have to price calls from a hardcoded table that
+                # goes stale silently; with it, telemetry reports the real charge.
+                "usage": {"include": True},
+            },
             timeout=90,
         )
+        latency_ms = int((time.perf_counter() - started) * 1000)
         resp.raise_for_status()
         body = resp.json()
         # OpenRouter can return HTTP 200 with an error payload (upstream refusal,
         # provider outage) — surface it rather than KeyError-ing on "choices".
         if "choices" not in body:
             raise RuntimeError(f"OpenRouter error: {body.get('error') or body}")
+
+        usage = body.get("usage") or {}
+        telemetry.record_llm_call(
+            role=role,
+            model=model,
+            prompt_tokens=usage.get("prompt_tokens", 0),
+            completion_tokens=usage.get("completion_tokens", 0),
+            # None → telemetry falls back to the local price table and flags it.
+            cost_usd=usage.get("cost"),
+            latency_ms=latency_ms,
+        )
+
         content = body["choices"][0]["message"].get("content") or ""
         return _THINK_RE.sub("", content).strip()
-
-    # -- Tool-calling chat (the agent loop) ---------------------------------
-    def chat(self, system: str, messages: list[dict],
-             tools: list[dict] | None = None,
-             max_tokens: int = AGENT_MAX_TOKENS) -> Reply:
-        if self.provider == "ollama":
-            return self._chat_ollama(system, messages, tools)
-        if self.provider == "openrouter":
-            # Unused: the agent is single-pass (score_tools + complete()), so no
-            # caller needs a tool-calling loop. Fail loudly rather than silently
-            # falling through to the Anthropic client, which would send an
-            # OpenRouter-style model id ("anthropic/claude-haiku-4.5") to
-            # api.anthropic.com and demand an ANTHROPIC_API_KEY.
-            raise NotImplementedError(
-                "LLMClient.chat() has no OpenRouter backend. The agent uses "
-                "complete() only; add a tool-calling backend here if that changes."
-            )
-        return self._chat_anthropic(system, messages, tools, max_tokens)
-
-    # -- Anthropic backend ---------------------------------------------------
-    def _chat_anthropic(self, system, messages, tools, max_tokens) -> Reply:
-        kwargs = {
-            "model": self.agent_model,
-            "max_tokens": max_tokens,
-            "messages": _to_anthropic_messages(messages),
-        }
-        if system:
-            # cache_control caches the (frozen) system prompt + tool schemas so
-            # every turn after the first pays ~0.1x on that prefix.
-            kwargs["system"] = [
-                {"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}
-            ]
-        if tools:
-            kwargs["tools"] = [
-                {"name": t["name"], "description": t["description"],
-                 "input_schema": t["parameters"]}
-                for t in tools
-            ]
-        resp = self._client().messages.create(**kwargs)
-        text = "".join(b.text for b in resp.content if b.type == "text").strip()
-        tool_calls = [
-            {"id": b.id, "name": b.name, "arguments": b.input}
-            for b in resp.content if b.type == "tool_use"
-        ]
-        return Reply(text=text, tool_calls=tool_calls, stop_reason=resp.stop_reason)
-
-    # -- Ollama backend ------------------------------------------------------
-    def _chat_ollama(self, system, messages, tools) -> Reply:
-        import ollama
-
-        oll_messages = []
-        if system:
-            oll_messages.append({"role": "system", "content": system})
-        for m in messages:
-            role = m["role"]
-            if role == "tool":
-                oll_messages.append({"role": "tool", "content": m["content"]})
-            elif role == "assistant" and m.get("tool_calls"):
-                oll_messages.append({
-                    "role": "assistant",
-                    "content": m.get("content", ""),
-                    "tool_calls": [
-                        {"function": {"name": tc["name"], "arguments": tc["arguments"]}}
-                        for tc in m["tool_calls"]
-                    ],
-                })
-            else:
-                oll_messages.append({"role": role, "content": m.get("content", "")})
-
-        kwargs = {"model": config.OLLAMA_MODEL, "messages": oll_messages,
-                  "options": {"num_predict": 2048}}
-        if tools:
-            kwargs["tools"] = [
-                {"type": "function", "function": {
-                    "name": t["name"], "description": t["description"],
-                    "parameters": t["parameters"]}}
-                for t in tools
-            ]
-        resp = ollama.chat(**kwargs)
-        message = resp["message"]
-        tool_calls = [
-            {"id": tc.get("id") or uuid.uuid4().hex,
-             "name": tc["function"]["name"],
-             "arguments": tc["function"]["arguments"]}
-            for tc in (message.get("tool_calls") or [])
-        ]
-        text = _THINK_RE.sub("", message.get("content") or "").strip()
-        return Reply(text=text, tool_calls=tool_calls)
-
-
-# -- Neutral → Anthropic message conversion ---------------------------------
-
-def _to_anthropic_messages(messages: list[dict]) -> list[dict]:
-    """Convert neutral messages into Anthropic's content-block format.
-
-    Assistant tool calls become `tool_use` blocks; `tool` results are grouped
-    into the following `user` turn as `tool_result` blocks (Anthropic requires a
-    tool_use turn to be answered by tool_result blocks in the next user turn).
-    """
-    out: list[dict] = []
-    for m in messages:
-        role = m["role"]
-        if role == "user":
-            out.append({"role": "user", "content": m["content"]})
-        elif role == "assistant":
-            blocks = []
-            if m.get("content"):
-                blocks.append({"type": "text", "text": m["content"]})
-            for tc in m.get("tool_calls", []):
-                blocks.append({
-                    "type": "tool_use", "id": tc["id"],
-                    "name": tc["name"], "input": tc["arguments"],
-                })
-            out.append({"role": "assistant", "content": blocks or ""})
-        elif role == "tool":
-            block = {
-                "type": "tool_result",
-                "tool_use_id": m["tool_call_id"],
-                "content": m["content"],
-            }
-            # Attach to the open tool-result user turn, or start a new one.
-            if out and out[-1]["role"] == "user" and isinstance(out[-1]["content"], list):
-                out[-1]["content"].append(block)
-            else:
-                out.append({"role": "user", "content": [block]})
-    return out

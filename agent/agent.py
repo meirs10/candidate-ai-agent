@@ -15,12 +15,14 @@ pipeline can record them.
 """
 
 from concurrent.futures import ThreadPoolExecutor
+from contextvars import copy_context
 
 import settings as config
 import agent.tools as tools_module
+from agent import telemetry
 from agent.tools import execute_tool
 from agent.tool_router import score_tools, TOOL_SOURCE, SOURCE_ORDER, TOOL_NAMES
-from agent.llm import LLMClient
+from agent.llm import LLMClient, AGENT_MAX_TOKENS
 from rag.retriever import retrieve
 
 llm = LLMClient()
@@ -140,11 +142,19 @@ def _run_one_tool(name: str, args: dict):
 
 
 def _run_tools_concurrently(pairs: list) -> list:
-    """Run a list of (name, args) tools concurrently; return their result tuples."""
+    """Run a list of (name, args) tools concurrently; return their result tuples.
+
+    Each task is submitted through a COPY of the calling context so the telemetry
+    ContextVar reaches the worker threads. Retrieval makes its own LLM calls
+    (query expansion, BROAD/SPECIFIC routing) from inside these workers; without
+    this, those calls would find no turn in scope and their cost would vanish
+    from the log — silently under-reporting every retrieval question.
+    """
     if not pairs:
         return []
     with ThreadPoolExecutor(max_workers=len(pairs)) as pool:
-        futures = [pool.submit(_run_one_tool, n, a) for (n, a) in pairs]
+        futures = [pool.submit(copy_context().run, _run_one_tool, n, a)
+                   for (n, a) in pairs]
         return [f.result() for f in futures]
 
 
@@ -192,10 +202,12 @@ def _synthesize(question: str, history: list, results: list) -> str:
     prompt = (f"{convo}Recruiter question: {question}\n\n"
               f"Retrieved information:\n{context}\n\n"
               "Answer the question using only the retrieved information above.")
-    return llm.complete(prompt, system=SYNTHESIS_SYSTEM, max_tokens=1024, model=llm.agent_model)
+    return llm.complete(prompt, system=SYNTHESIS_SYSTEM, max_tokens=AGENT_MAX_TOKENS,
+                        model=llm.agent_model, role="synthesis")
 
 
-def run(conversation_history: list, user_message: str) -> tuple[str, list, list]:
+def run(conversation_history: list, user_message: str,
+        session_id: str = "local") -> tuple[str, list, list]:
     """
     Main agent turn.
 
@@ -207,35 +219,51 @@ def run(conversation_history: list, user_message: str) -> tuple[str, list, list]
         {"tool", "args", "result_preview", "score"}
     for each tool that actually ran. The full per-tool probability vector (all
     four tools, whether or not they ran) is available via get_last_tool_scores().
+
+    session_id labels this turn in the telemetry log so one recruiter's
+    conversation can be read back as a thread.
     """
     global _LAST_TOOL_SCORES
 
     conversation_history.append({"role": "user", "content": user_message})
 
-    # 1. Score every tool (one call). 2. Select tools above the threshold.
-    _LAST_TOOL_SCORES, selected, scores = select_tools(user_message, conversation_history)
+    with telemetry.turn(user_message, session_id=session_id) as rec:
+        # 1. Score every tool (one call). 2. Select tools above the threshold.
+        _LAST_TOOL_SCORES, selected, scores = select_tools(user_message, conversation_history)
 
-    # 3. Run the selected tools concurrently.
-    results = _run_tools_concurrently(selected)
+        # 3. Run the selected tools concurrently.
+        results = _run_tools_concurrently(selected)
 
-    # 3b. Result-based escalation: if we ran tools but they ALL came back empty,
-    # the router likely missed — run the REMAINING tools concurrently and add
-    # whatever they retrieve. (Skipped when nothing was selected: that is an
-    # out-of-scope question we intend to refuse, not a miss.)
-    if (config.TOOL_ESCALATE_ON_EMPTY and results
-            and all(empty for (_n, _a, _t, _m, empty) in results)):
-        chosen = {n for (n, _a, _t, _m, _e) in results}
-        rest = [(n, _args_for(n, scores[n], user_message))
-                for n in TOOL_NAMES if n not in chosen]
-        results.extend(_run_tools_concurrently(rest))
+        # 3b. Result-based escalation: if we ran tools but they ALL came back
+        # empty, the router likely missed — run the REMAINING tools concurrently
+        # and add whatever they retrieve. (Skipped when nothing was selected:
+        # that is an out-of-scope question we intend to refuse, not a miss.)
+        escalated = False
+        if (config.TOOL_ESCALATE_ON_EMPTY and results
+                and all(empty for (_n, _a, _t, _m, empty) in results)):
+            escalated = True
+            chosen = {n for (n, _a, _t, _m, _e) in results}
+            rest = [(n, _args_for(n, scores[n], user_message))
+                    for n in TOOL_NAMES if n not in chosen]
+            results.extend(_run_tools_concurrently(rest))
 
-    # Deterministic order by source precedence (project last-word etc.).
-    results.sort(key=lambda r: SOURCE_ORDER.index(TOOL_SOURCE[r[0]]))
+        # Deterministic order by source precedence (project last-word etc.).
+        results.sort(key=lambda r: SOURCE_ORDER.index(TOOL_SOURCE[r[0]]))
 
-    _set_retrieval_meta(results)
+        _set_retrieval_meta(results)
 
-    # 4. Synthesize one answer from all gathered context.
-    answer = _synthesize(user_message, conversation_history, results)
+        # 4. Synthesize one answer from all gathered context.
+        answer = _synthesize(user_message, conversation_history, results)
+
+        if rec is not None:
+            meta = tools_module.get_last_retrieval_meta()
+            rec.answer = answer
+            rec.tools_selected = [n for (n, _a, _t, _m, _e) in results]
+            rec.tool_scores = dict(_LAST_TOOL_SCORES)
+            rec.route = meta.get("route")
+            rec.n_chunks = len(meta.get("chunks") or [])
+            rec.escalated = escalated
+
     conversation_history.append({"role": "assistant", "content": answer})
 
     trajectory = [{

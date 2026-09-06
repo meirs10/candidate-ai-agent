@@ -144,8 +144,13 @@ def score_tools(llm, question: str, history: list | None = None) -> dict:
     # complete() callers (query expansion, BROAD/SPECIFIC routing, summaries)
     # default to ROUTER_MODEL.
     raw = _THINK_RE.sub("", llm.complete(prompt, system=ROUTER_SYSTEM, max_tokens=400,
-                                         model=config.TOOL_SELECT_MODEL)).strip()
+                                         model=config.TOOL_SELECT_MODEL,
+                                         role="tool_select")).strip()
 
+    # A parse failure here is silent but total: every tool falls back to score
+    # 0.0, nothing clears the threshold, and the agent refuses the question with
+    # no indication why. TOOL_SELECT_MODEL is the cheapest, least-validated model
+    # in the stack, so this is exactly the failure worth leaving a trace of.
     data = {}
     try:
         data = json.loads(raw)
@@ -154,8 +159,13 @@ def score_tools(llm, question: str, history: list | None = None) -> dict:
         if m:
             try:
                 data = json.loads(m.group())
-            except Exception:
-                data = {}
+            except Exception as e:
+                print(f"[Router] WARNING: {config.TOOL_SELECT_MODEL} returned "
+                      f"unparseable JSON ({e}); all tools score 0.0. "
+                      f"Response: {raw[:200]!r}")
+        else:
+            print(f"[Router] WARNING: {config.TOOL_SELECT_MODEL} returned no JSON "
+                  f"object; all tools score 0.0. Response: {raw[:200]!r}")
 
     out = {}
     for name in TOOL_NAMES:

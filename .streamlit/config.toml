@@ -1,0 +1,25 @@
+# Streamlit theme + server config.
+#
+# This file IS committed (see .gitignore) — it has to be, or the hosted app falls
+# back to Streamlit's stock theme and every recruiter sees a different product
+# than the one that was designed. Only .streamlit/secrets.toml stays ignored.
+
+[theme]
+base = "light"
+# Deep indigo: confident and neutral. Reads as a professional tool rather than a
+# consumer app, and stays legible against the near-white ground below.
+primaryColor = "#4F46E5"
+backgroundColor = "#FBFBFD"
+secondaryBackgroundColor = "#F1F2F7"
+textColor = "#1B1D28"
+font = "sans serif"
+
+[server]
+# NOTE: enableXsrfProtection / enableCORS are deliberately NOT disabled here.
+# They were previously set to false, which is a real security downgrade on a
+# public deployment — this app is served over the internet behind a shared access
+# code, so cross-site request forgery protection must stay on.
+headless = true
+
+[browser]
+gatherUsageStats = false
