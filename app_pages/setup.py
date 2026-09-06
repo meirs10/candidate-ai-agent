@@ -1,9 +1,23 @@
 import streamlit as st
+import hashlib
 import os
-from rag.ingest import ingest_document
-from store.structured import save, load, save_skill_results, DEFAULT_EDUCATION
 
-CANDIDATE_ID = "candidate_001"  # later: dynamic per candidate
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+from auth import require_auth
+from rag.ingest import ingest_document, infer_doc_type
+from store.structured import save, load, save_skill_results, DEFAULT_EDUCATION
+from app_pages import ui
+
+# Defense in depth. main.py already gates on the access code and only registers
+# this page outside production — but this page can edit the profile and trigger
+# ingestion, so it re-checks both rather than trusting that it was reached
+# through the intended navigation.
+require_auth()
+if config.APP_MODE == "production":
+    st.error("The Candidate Setup page is disabled in production.")
+    st.stop()
+
+CANDIDATE_ID = config.CANDIDATE_ID  # single source of truth: settings.py
 
 
 def parse_skills(raw: str) -> list[str]:
@@ -68,11 +82,26 @@ def validate_profile(data: dict) -> list[str]:
 
 # -- Page layout --------------------------------------------------------------
 
-st.title("Candidate Setup")
-st.caption("Fill in your profile so the AI agent can represent you to recruiters.")
-st.markdown("Fields marked with :red[*] are required.")
+ui.inject_css()
 
 data = load()
+
+ui.header(
+    "Candidate Setup",
+    "Build the profile your AI agent will represent you with",
+    monogram=ui.initials(data.get("full_name", "")),
+    badge="private",
+)
+
+# Completion meter. The form is long and its required fields are scattered across
+# five sections, so without this the only way to discover what's still missing is
+# to hit Save and read an error.
+_done = len(REQUIRED_FIELDS) - len([
+    k for k in REQUIRED_FIELDS if not str(data.get(k, "") or "").strip()
+])
+st.progress(_done / len(REQUIRED_FIELDS),
+            text=f"{_done} of {len(REQUIRED_FIELDS)} required fields complete "
+                 f"· fields marked :red[*] are required")
 
 # Initialize education in session state
 if "education" not in st.session_state:
@@ -80,29 +109,131 @@ if "education" not in st.session_state:
 
 # ── Section 1: Upload Documents ─────────────────────────────────────────────
 
-st.header("Upload Documents")
-st.markdown("Upload your CV, transcripts, certificates, or any supporting documents.")
+ui.section(1, "Upload documents",
+           "Your CV, transcripts, certificates or project write-ups. These are what "
+           "every answer will be grounded in, so the more evidence the better.")
+
+# Document type selects the SUMMARY RUBRIC. Everything used to be ingested as
+# "cv", so a project write-up was summarised against a rubric demanding a name,
+# degree and years of experience — producing stored refusals ("Unable to provide
+# requested summary") and, worse, summaries that adopted whatever name appeared
+# in the text as the candidate's own.
+#
+# Every type lands in the candidate's own collection. The project knowledge base
+# (search_project, "how does this assistant work?") is deliberately NOT reachable
+# from this page: it describes the system, not any candidate, so it is built once
+# from store/data/project/project_overview.txt by build_project_kb.py.
+DOC_TYPE_LABELS = {
+    "cv": "CV / Résumé",
+    "certificate": "Certificate, transcript or award",
+    "recommendation": "Recommendation letter",
+    "readme": "Project write-up (your own work)",
+}
+_TYPE_ORDER = list(DOC_TYPE_LABELS)
 
 uploaded_files = st.file_uploader(
     "Supported formats: PDF, DOCX, TXT, MD, PNG, JPG",
     type=["pdf", "docx", "txt", "md", "png", "jpg", "jpeg"],
     accept_multiple_files=True,
+    key="uploader",
 )
 
+# Files already ingested in this session, keyed by content hash. This is load
+# bearing, not an optimisation: st.file_uploader returns its files on EVERY
+# rerun, and Streamlit reruns the whole script on any widget interaction. Without
+# this guard, re-running ingestion would re-pay Voyage for embeddings and
+# OpenRouter for a fresh summary of every document.
+if "ingested_hashes" not in st.session_state:
+    st.session_state.ingested_hashes = set()
+
 if uploaded_files:
-    os.makedirs("uploads", exist_ok=True)
-    for uploaded_file in uploaded_files:
-        file_path = f"uploads/{uploaded_file.name}"
-        with open(file_path, "wb") as f:
-            f.write(uploaded_file.read())
-        ingest_document(file_path, CANDIDATE_ID)
-        st.success(f"Ingested: {uploaded_file.name}")
+    # Hash the bytes rather than trusting the filename: re-uploading an edited
+    # file under the same name must re-ingest, and an unchanged one must not.
+    staged, already = [], 0
+    for uf in uploaded_files:
+        payload = uf.getvalue()
+        digest = hashlib.sha256(payload).hexdigest()
+        if digest in st.session_state.ingested_hashes:
+            already += 1
+        else:
+            staged.append((uf.name, payload, digest))
+
+    if already:
+        st.caption(f"✓ {already} document(s) already indexed this session.")
+
+    if staged:
+        st.markdown("###### Set the type for each document")
+        st.caption(
+            "This decides how each one is summarised — a CV by who you are, a "
+            "project write-up by what the work does. Defaults are guessed from "
+            "the filename; correct any that are wrong."
+        )
+
+        # Choice is collected per file BEFORE anything is ingested, so a mixed
+        # batch goes in correctly in one pass instead of forcing one upload round
+        # per type.
+        choices = {}
+        for name, _payload, digest in staged:
+            c_name, c_type = st.columns([3, 2], vertical_alignment="center")
+            c_name.markdown(f"📄 `{name}`")
+            default = infer_doc_type(name)
+            choices[digest] = c_type.selectbox(
+                f"Type for {name}",
+                _TYPE_ORDER,
+                index=_TYPE_ORDER.index(default),
+                format_func=lambda t: DOC_TYPE_LABELS[t],
+                key=f"doctype_{digest}",     # digest-keyed: stable across reruns
+                label_visibility="collapsed",
+            )
+
+        # An explicit button, not automatic ingestion: the candidate needs a
+        # chance to fix the guessed types first, and it makes the expensive step
+        # something they trigger rather than something that fires on upload.
+        if st.button(f"Ingest {len(staged)} document(s)", type="primary",
+                     use_container_width=True):
+            os.makedirs("uploads", exist_ok=True)
+            # Ingestion is slow and synchronous: OCR for images, plus one LLM
+            # call per document for the summary index. Streamlit dims the whole
+            # page while a script runs, so without an explicit progress surface
+            # the form below looks frozen when it is simply busy.
+            total = len(staged)
+            with st.status(f"Ingesting {total} document(s)…", expanded=True) as status:
+                done = 0
+                for name, payload, digest in staged:
+                    doc_type = choices[digest]
+                    st.write(f"Reading **{name}** as *{DOC_TYPE_LABELS[doc_type]}*…")
+                    file_path = f"uploads/{name}"
+                    with open(file_path, "wb") as f:
+                        f.write(payload)
+                    try:
+                        ingest_document(file_path, CANDIDATE_ID, doc_type=doc_type)
+                    except Exception as exc:
+                        # One unreadable file must not abandon the rest of the
+                        # batch, and the candidate needs to know which failed.
+                        st.error(f"Could not ingest **{name}**: "
+                                 f"{type(exc).__name__}: {exc}")
+                        continue
+                    # Recorded only after success, so a failed file is retried
+                    # rather than silently marked as done.
+                    st.session_state.ingested_hashes.add(digest)
+                    done += 1
+                    st.write(f"✓ Indexed **{name}**")
+                status.update(
+                    label=f"Ingested {done} of {total} document(s)",
+                    state="complete" if done == total else "error",
+                    expanded=done != total,
+                )
+            if done:
+                st.success(
+                    f"{done} document(s) indexed. Fill in the details below, then "
+                    "run **Estimate Skill Proficiency** in step 6 before saving."
+                )
 
 st.divider()
 
 # ── Section 2: Personal Details ─────────────────────────────────────────────
 
-st.header("Personal Details")
+ui.section(2, "Personal details")
 
 data["full_name"] = st.text_input(required_label("Full Name"), value=data.get("full_name", ""), key="full_name")
 data["email_address"] = st.text_input(required_label("Email Address"), value=data.get("email_address", ""), key="email_address")
@@ -123,7 +254,7 @@ st.divider()
 
 # ── Section 3: Education ────────────────────────────────────────────────────
 
-st.header("Education")
+ui.section(3, "Education")
 
 for i, edu in enumerate(st.session_state.education):
     if i > 0:
@@ -186,7 +317,7 @@ st.divider()
 
 # ── Section 4: Experience ───────────────────────────────────────────────────
 
-st.header("Experience")
+ui.section(4, "Experience")
 
 col9, col10 = st.columns(2)
 with col9:
@@ -216,7 +347,7 @@ st.divider()
 
 # ── Section 5: Job Preferences ──────────────────────────────────────────────
 
-st.header("Job Preferences")
+ui.section(5, "Job preferences")
 
 col11, col12 = st.columns(2)
 with col11:
@@ -264,7 +395,7 @@ st.divider()
 
 # ── Section 6: Skills ───────────────────────────────────────────────────────
 
-st.header("Skills")
+ui.section(6, "Skills")
 st.markdown(
     "List the skills you want assessed (one per line, or comma-separated). "
     "Once your documents are uploaded above, a trained model estimates how much "
