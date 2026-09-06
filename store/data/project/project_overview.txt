@@ -25,10 +25,11 @@ candidate. A recruiter opens a secured, always-available chat link and asks
 natural-language questions about the candidate; the agent answers accurately and
 professionally, grounded strictly in the candidate's own documents and a trained
 machine-learning scoring model. It is deliberately more than a standard "chat
-with your PDF" demo: it combines an agentic ReAct-style tool-calling
-architecture, an advanced multi-stage Retrieval-Augmented Generation (RAG)
-pipeline, and a purpose-built, fine-tuned NLP model for skill-proficiency
-scoring, all wrapped in a rigorous multi-dimensional evaluation suite.
+with your PDF" demo: it combines probabilistic multi-tool routing, an advanced
+multi-stage Retrieval-Augmented Generation (RAG) pipeline, and a purpose-built,
+fine-tuned NLP model for skill-proficiency scoring, all wrapped in a rigorous
+multi-dimensional evaluation suite and instrumented with per-turn cost and
+latency telemetry.
 
 The problem it solves: recruiters reading a CV cannot tell verified fact from
 self-promotion, cannot quickly gauge how strong a candidate actually is in a
@@ -70,18 +71,33 @@ cheap and simple to host. The lean serve dependencies are listed in
 requirements.txt; the full build/eval/training stack is in requirements-dev.txt.
 
 
-THE TWO USER FLOWS AND PAGES
+THE USER FLOWS AND PAGES
 
-The application is a multi-page Streamlit app with two pages.
+The application is a multi-page Streamlit app with three pages, two of which a
+recruiter can never see.
 
 The Candidate Setup page is for the candidate only. Here the candidate uploads
 supporting documents (CV, transcripts, certificates, recommendation letters) in
 PDF, DOCX, TXT, MD, PNG, or JPG form; fills in structured profile fields
 (contact details, education, experience, job preferences); lists the skills they
-want assessed; and triggers skill-proficiency estimation and ingestion. This
-page can edit the profile and run the heavy pipeline, so in production it is
-hidden entirely — a recruiter can never reach it, edit the profile, or trigger
-ingestion.
+want assessed; and triggers skill-proficiency estimation and ingestion. Uploads
+are staged rather than ingested on sight: the candidate sets the document type
+for each file individually, with a default guessed from the filename, and then
+presses a single button to ingest them all. The type matters because it selects
+the summary rubric, and staging matters because ingestion costs embedding and
+LLM calls — a wrong guess should be corrected before it is paid for, not after.
+Files are de-duplicated by a hash of their contents, because Streamlit re-runs
+the whole script on every widget interaction and the uploader hands back its
+files each time; without the hash, typing in a text field re-ingested everything
+already uploaded. This page can edit the profile and run the heavy pipeline, so
+in production it is not registered at all — a recruiter can never reach it, edit
+the profile, or trigger ingestion.
+
+The Usage and Conversations page is a private dashboard over the telemetry log:
+total spend, cost and latency per turn, which tools the router chose, and the
+full text of every recruiter conversation. It is registered only for a session
+that arrived with the correct admin password, compared with a constant-time
+comparison, and it is never part of the normal navigation.
 
 The Recruiter Chat page is the always-on public surface. It is a clean
 conversational interface: the recruiter types a question; the agent reasons
@@ -92,32 +108,61 @@ naturally.
 
 Which pages are exposed is controlled by configuration. In production mode only
 the recruiter chat is registered with the Streamlit navigation; in setup mode
-both pages are available for local profile updates.
+the setup page is available too, for local profile updates.
+
+The page files live in a directory called app_pages, and the name is a security
+control rather than a style choice. Streamlit auto-discovers any directory named
+"pages" and publishes every file inside it as its own route, bypassing the main
+entry point entirely — which meant the setup page, holding a phone number and a
+salary expectation, was reachable on a hosted deployment without ever passing
+the access gate. Renaming the directory removes the auto-discovery, and each
+page additionally checks authentication itself, so the guarantee does not rest
+on a directory name alone.
 
 
-AGENTIC TOOL CALLING — THE ReAct LOOP
+AGENTIC TOOL CALLING — PROBABILISTIC MULTI-TOOL ROUTING
 
-The system does not blindly query a vector database for every question. Instead
-an LLM agent reasons about each question and chooses among four tools, and it
-can chain multiple tools within a single turn, including intelligent fallbacks.
+The system does not blindly query a vector database for every question, and it
+does not use a conventional ReAct loop either. It uses probabilistic multi-tool
+routing: one scoring call rates every tool independently, and every tool that
+clears a threshold runs at once.
 
-The agent loop works as follows. The recruiter's message is appended to the
-conversation history. A per-turn working copy of the messages is sent to the LLM
-together with the system prompt and the four tool schemas. If the model responds
-with no tool calls, that response is the final answer. If the model requests one
-or more tools, the loop records the assistant's tool-call turn, executes every
-requested tool, feeds each tool result back as a tool message, and loops again —
-so the model can now either call another tool (for example, fall back to
-document search) or produce a final answer. A safety cap (five rounds) prevents
-infinite tool loops; if it is hit, the loop does one final pass with tools
-disabled, forcing the model to produce text.
+A turn works in one pass, with no re-querying loop. First, a single routing call
+scores all four tools from 0.0 to 1.0 — an independent probability per tool that
+it is needed for this question — and supplies the argument to call each one
+with. The scores deliberately do not sum to 1: several tools can be high when a
+question genuinely needs several, and all four can be low for an out-of-scope
+question. Second, every tool scoring at or above the selection threshold (0.30
+by default) is selected, so a close call fires more than one tool rather than
+forcing a winner. Third, the selected tools execute concurrently in a thread
+pool and their outputs are gathered as context. Fourth, one synthesis call
+answers the question from all of that context at once. When no tool clears the
+threshold, the agent answers with no context at all, which is what produces a
+clean refusal for an out-of-scope question.
 
-Only the final assistant text is persisted into the conversation history; the
-intermediate tool-use / tool-result plumbing lives in a per-turn working copy.
-This keeps the stored history simple and serializable for Streamlit session
-state. The loop also records a tool trajectory (which tools were called, with
-what arguments, and a preview of each result) — this trajectory is exactly what
-the evaluation suite inspects to judge tool selection.
+The design reason for scoring over choosing: a recruiter question frequently
+spans sources — "what's their Python experience and are they available?" needs
+the skill evidence and a structured field — and a single-choice router has to
+either pick one and be wrong, or take another round trip to add the second. The
+router is told explicitly to prefer a small score like 0.3 over a hard 0.0 when
+unsure, because missing the right tool costs far more than running a borderline
+one.
+
+Result-based escalation is the safety net. If tools were selected but every one
+of them came back empty, the router probably missed, so the remaining tools run
+and their context is added before synthesis. Emptiness is defined per tool
+rather than by a bare string check: a structured field that resolved to "Not
+provided", a skill that was not among the assessed ones, or a search that
+returned no relevant information. This is a pay-per-need fallback — the common
+case still runs only the tools that scored — and in a full 490-question
+evaluation run it triggered on a small handful of questions.
+
+Only the final assistant text is persisted into the conversation history, which
+keeps the stored history simple and serializable for Streamlit session state.
+Each turn also records the per-tool probabilities, which tools ran, their
+arguments, and a preview of each result. That trajectory is exactly what the
+evaluation suite inspects to judge tool selection, and the same record feeds the
+telemetry log described later.
 
 
 THE FOUR TOOLS
@@ -154,32 +199,42 @@ questions addressed to the agent ("how do you work?", "what model are you?",
 "what reranker do you use?"). This is the tool serving the very answer you are
 reading.
 
-The system prompt instructs the agent to distinguish the two RAG tools by
-subject: a question about the candidate goes to search_documents; a question
-about the software project or how the system/agent works goes to search_project.
-It also tells the agent never to guess, to keep answers concise and
-professional, to refuse out-of-scope questions, and to answer in the recruiter's
-language.
+The router prompt distinguishes the two RAG tools by subject: a question about
+the candidate goes to search_documents; a question about the software project or
+how the system/agent works goes to search_project. The separate synthesis prompt
+governs the answer itself — ground every claim in the retrieved context, never
+invent facts, say plainly when the context does not answer the question, never
+state or invent a numeric skill rating, stay concise and professional, and
+always answer in the same language the recruiter used. Personal and out-of-scope
+questions are declined by saying only professional career information can be
+shared, without mentioning tools, fields, or how the system works internally.
 
 
 THE PROVIDER-NEUTRAL LLM CLIENT
 
-Every LLM interaction in the project — the agent loop, the broad/specific query
-router, query expansion, and the build-time document summaries — goes through a
-single provider-neutral client. The client exposes two methods: complete() for
-simple prompt-to-text calls, and chat() for tool-calling conversations. It
-returns a normalized Reply object carrying the assistant text and any tool calls
-in a provider-independent shape.
+Every LLM interaction in the project — tool scoring, answer synthesis, the
+broad/specific query router, query expansion, and the build-time document
+summaries — goes through a single provider-neutral client.
 
-Internally the client has two backends. The Anthropic backend (production
-default) talks to the Claude API and uses prompt caching on the frozen system
-prompt and tool definitions to cut cost and latency on repeated calls. The
-Ollama backend talks to a local model server. Because providers disagree on
-message shape, the client converts the neutral message list into each provider's
-format — for Anthropic, it groups tool results into a following user turn as the
-API requires. For local reasoning models it also strips any <think> reasoning
-block from the output so only the final answer is surfaced. Switching providers
-is a configuration change; no calling code changes.
+The client has three backends. OpenRouter is the production default: a unified
+API that reaches any model from any provider through one endpoint, which is what
+makes the model choice a pure configuration value rather than a code path. The
+Anthropic backend talks to the Claude API directly. The Ollama backend talks to
+a local model server — the original local stack, and still what the evaluation
+judges run on, so a full evaluation costs nothing. For local reasoning models
+the client strips any <think> reasoning block from the output so only the final
+answer is surfaced. Switching providers is a configuration change; no calling
+code changes.
+
+Three model roles are configured independently rather than one model serving
+everything. AGENT_MODEL writes the final answer, ROUTER_MODEL classifies
+broad versus specific, and TOOL_SELECT_MODEL does the tool scoring. Splitting
+them means the cheap, highly structured job — emitting four numbers and their
+arguments as JSON — can sit on a small fast model while answer synthesis, where
+quality is actually visible to the recruiter, stays on a stronger one. The role
+is passed explicitly on every call rather than inferred from the model id, which
+was ambiguous whenever two roles happened to be configured to the same model;
+the role is also what the telemetry log attributes each call's cost to.
 
 
 THE RAG PIPELINE — INGESTION
@@ -189,10 +244,26 @@ python-docx for Word files, and OCR via Tesseract and Pillow for images. The
 parser performs section-aware extraction rather than dumping flat text. It
 detects section headers — including unusual spaced-letter headers like
 "T E C H N I C A L  S K I L L S" via a dedicated regular expression — and
-merges consecutive elements under the same heading into one section block. It is
-careful not to mistake content for headers: "Title" elements that contain
-numbers, emails, or telephone markers (for example "GPA: 94.3" or a contact
-line) are kept as content, not promoted to section names.
+merges consecutive elements under the same heading into one section block.
+
+Deciding what is a heading and what is content is subtler than it looks, and
+getting it wrong is expensive because every chunk is stored with its section
+name prepended, so a bad name becomes embedded noise on the front of everything
+beneath it. Three rules do the work. A leading section number is stripped before
+anything else, so "6.3 The probabilistic router" is recognised as a heading
+while "GPA: 94.3" is not — an earlier version rejected any heading containing a
+digit, which swallowed every numbered heading and collapsed a 127 KB document
+with 99 headings into a single section. Elements carrying emails or telephone
+markers are content, not headings. And anything too long, or a complete sentence
+of more than a few words, is prose the partitioner mislabelled as a title.
+
+Encoding is pinned rather than detected. Unstructured sniffs the encoding with
+chardet and cannot be told otherwise — passing an explicit encoding is accepted
+and then silently dropped, because the Markdown partitioner re-reads the file
+through its own detector. That detector decided one valid UTF-8 document was
+windows-1251 and corrupted every non-ASCII character in it. Text files are now
+decoded up front and the decoded string is handed to the partitioner, so there
+is no guess left to get wrong; binary formats still go through the normal path.
 
 Each section is then split with a recursive character text splitter (about 1000
 characters per chunk with 150 characters of overlap, preferring to break on
@@ -205,10 +276,33 @@ which is what makes retrieval evaluation against ground-truth evidence possible.
 Alongside the per-chunk index, a separate summary index is built. For each
 document the LLM writes a short factual summary, which is embedded and stored in
 its own ChromaDB collection. This summary index powers the "broad" retrieval
-path described below. There is also a lighter in-memory ingestion path for text
-that is already plain (no file parsing, no summary) — used, for example, when
-the skill-scorer training corpus is ingested verbatim so the model sees exact
-text.
+path described below.
+
+The summary rubric follows the document's type, and this matters more than it
+sounds. A rubric demanding a name, a degree and years of experience is
+unanswerable for a project write-up; applied to one it produced stored refusals
+("unable to provide the requested summary"), and worse, summaries that adopted
+whatever name appeared in the text as the candidate's own identity. Since the
+summary index is the answer path for the single most likely opening question —
+"tell me about this candidate" — a stored refusal is read out to a recruiter
+verbatim. There are now four rubrics. A CV is summarised by who the candidate
+is; a project write-up by what the work does, with an explicit instruction not
+to infer identity or employment from it; a recommendation letter by who wrote it
+and what they attest to; a certificate by what it certifies and what it records.
+Every rubric ends with the same contract: summarise what the document actually
+contains, never refuse, never ask for a different document, and simply omit any
+point the document does not cover.
+
+There is also a lighter in-memory ingestion path for text that is already plain
+(no file parsing, no summary) — used, for example, when the skill-scorer
+training corpus is ingested verbatim so the model sees exact text.
+
+One property of the index is worth stating because it is a trap: chunk and
+summary ids are deterministic (the source filename plus section and chunk
+indices), and ChromaDB silently ignores a write to an id that already exists.
+Re-uploading a document therefore never duplicates it, but also never replaces
+it — a bad summary survives its own re-ingestion. Correcting one requires
+deleting first, which is what the reindex utility does before it re-ingests.
 
 
 THE RAG PIPELINE — RETRIEVAL
@@ -319,10 +413,11 @@ PLUGGABLE PROVIDERS
 Three layers are pluggable purely through configuration, with no code changes,
 and this is what lets the same codebase run fully local or fully cloud.
 
-The LLM layer is either Claude via the Anthropic API (production default) or a
-local Ollama model. All LLM uses — agent, router, query expansion, build
-summaries — go through the one provider-neutral client described above, with
-prompt caching on the Anthropic path.
+The LLM layer is OpenRouter (production default, reaching any provider's model
+through one API), the Anthropic API directly, or a local Ollama model. All LLM
+uses — tool scoring, synthesis, router, query expansion, build summaries — go
+through the one provider-neutral client described above, and each of the three
+model roles can name a different model.
 
 The embeddings layer is either the Voyage AI API (production default, no local
 model) or a local nomic-embed-text model via sentence-transformers. Both are
@@ -341,6 +436,31 @@ transformers. This is the mechanism that keeps the serve image torch-free while
 preserving the original "built entirely from local open-source models" story.
 
 
+OBSERVABILITY — PER-TURN TELEMETRY
+
+Every recruiter turn is recorded: the question asked, the per-tool routing
+scores, which tools ran, whether escalation fired, the answer given, wall-clock
+latency, and for each underlying LLM call its model, role, token counts and
+cost. A conversation id ties a session's turns together, so the record is
+readable as a conversation rather than a pile of isolated calls.
+
+Cost is taken from the provider's own reported usage where it is available —
+OpenRouter returns an authoritative figure per call — and falls back to a local
+price table only when it is not. A hard-coded price table alone goes stale the
+moment a provider changes pricing, and silently reports confident wrong numbers.
+
+Records are written to two sinks at once: standard output and a JSON-lines file.
+Both exist because a hosted container's filesystem does not survive a redeploy
+while its log stream does, so the file is the convenient local view and stdout
+is the durable hosted one. Because the selected tools run concurrently in a
+thread pool, the active turn is carried on a context variable that is copied
+into each worker, rather than threaded through every call signature by hand.
+
+The Usage and Conversations dashboard reads this log. It answers the practical
+questions an owner actually has: what has this cost so far, which questions are
+slow, which tools the router leans on, and what recruiters are really asking.
+
+
 CONFIGURATION SYSTEM
 
 All of the above is driven by a central settings module. Each setting resolves
@@ -351,6 +471,12 @@ Streamlit host, without branching. The defaults target the production all-API
 configuration. (The settings module is named "settings" rather than "config" on
 purpose, to avoid colliding with the skill estimator's own internal flat
 "config" module, which is imported by the scoring code under its own directory.)
+
+Beyond the provider choices, the notable settings are the application mode
+(production serves only the recruiter chat; setup mode also exposes the
+candidate page), the shared access code and the separate admin password, the
+three model roles, the tool-selection threshold and the escalation switch, and
+the telemetry toggle and log path.
 
 
 STRUCTURED STORE AND VECTOR STORE
@@ -404,9 +530,27 @@ The harness seeds each candidate's data into a fresh collection, runs the
 pipeline over that candidate's questions, then scores every component on the
 combined result set and generates an HTML report (with companion JSON and CSV)
 showing both per-candidate and aggregate breakdowns. It supports checkpointing
-and resuming, so a long run can be interrupted and continued. Because the LLM
-judges can themselves run on a free local model, a full evaluation can cost
-nothing to run.
+and resuming, so a long run can be interrupted and continued.
+
+Generation and judging are deliberately split. Answers are produced by the
+hosted API stack — exactly what a recruiter receives — while the judges run on
+local Ollama models. That means evaluating the system costs nothing, and no
+answer is graded by the model family that wrote it.
+
+The most recent full run covers 490 questions across six candidates plus the
+project knowledge base, on the production stack. Answer correctness scores
+90.3%, faithfulness 93.3%, tool-selection accuracy 91.4%, refusal accuracy 94.1%
+with zero hallucinations, and retrieval reaches the answer 96.3% of the time.
+Context precision is 84.9%, answer relevancy 83.0%, context recall 82.4%.
+
+The weak spots are kept visible rather than buried. The broad/specific router is
+the weakest component at 82.9%, and its errors are lopsided — 44 false-specific
+against 6 false-broad. Refusal accuracy also reads healthier than it is: the
+confusion matrix shows 10 of the 30 should-refuse questions were answered
+anyway. Nothing was hallucinated, but the agent engages with out-of-scope
+questions more than intended. Retrieval gate localization is what turned an
+aggregate recall number into a decision: it identified the re-ranker as the
+primary bottleneck, which drove a targeted upgrade rather than a guess.
 
 
 THE EVALUATION DATA
@@ -435,51 +579,78 @@ convenient for local development. Once a recruiter authenticates, the result is
 cached in session state so they are not re-prompted on every interaction.
 
 Several security properties are enforced by design. In production only the
-recruiter chat is served and the setup page is hidden, so recruiters can neither
-edit the profile nor trigger ingestion. The candidate's private data (the vector
-database and the structured profile) is kept out of any public repository. API
-keys live only in environment variables or managed secrets and are never
+recruiter chat is registered, so recruiters can neither edit the profile nor
+trigger ingestion; the page directory is deliberately not named "pages" so
+Streamlit cannot publish those routes behind the gate's back; and each page
+verifies authentication itself as a second layer. The usage dashboard sits
+behind a separate admin password compared in constant time.
+
+The candidate's private data is kept out of any public repository by
+construction. The source repository is public — it is the portfolio artifact —
+but the vector database and the structured profile are ignored by version
+control and can never be committed to it by accident. The running app still
+needs them, so publishing is done by a script that force-adds exactly those two
+artifacts onto a commit built in a throwaway worktree and pushes it to a
+separate private repository, which is the one the host builds from. The script
+refuses to run if the two remotes resolve to the same place, verifies the index
+is actually non-empty before pushing (a present-but-empty index is the failure
+that looks like success — the app deploys fine and then answers every question
+with "I don't have that information"), and strips the evaluation suite and the
+trained scorer weights, tens of megabytes the serve path never executes.
+
+API keys live only in environment variables or managed secrets and are never
 committed. This very project-overview document is intentionally free of private
 information and secrets.
 
-Running costs are minimal. The all-API serve path uses a fast, inexpensive
-Claude model for the agent and router, and a low-cost Voyage tier for embeddings
-and reranking — typically only a few dollars per month of light use — and the
-hosting itself can be free. The expensive work (training the scorer, generating
-synthetic data, parsing documents, running the full evaluation) all happens
-locally at build time and adds nothing to the hosting bill.
+Running costs are minimal and, unusually, measured rather than estimated: the
+telemetry log records the real cost of every turn, so the running bill is a
+number the owner can read rather than a guess. The all-API serve path uses a
+fast, inexpensive model for synthesis and an even cheaper one for tool scoring,
+plus a low-cost Voyage tier for embeddings and reranking — typically only a few
+dollars per month of light use — and the hosting itself can be free. The
+expensive work (training the scorer, generating synthetic data, parsing
+documents, running the full evaluation) all happens locally at build time and
+adds nothing to the hosting bill.
 
 
 TECHNOLOGY STACK
 
-Frontend and app framework: Streamlit, multi-page. LLM and orchestration:
-Anthropic Claude API (or local Ollama), ReAct-style tool calling, prompt
-caching, a provider-neutral client. Embeddings: Voyage AI (or local nomic-embed
-via sentence-transformers). Retrieval: ChromaDB for dense vectors, BM25 Okapi
-for sparse search, Reciprocal Rank Fusion, and a cross-encoder reranker (Voyage
-rerank or Qwen3-Reranker). Skill scoring: DeBERTa-v3 with a CORAL ordinal head,
-in PyTorch and Hugging Face Transformers. Ingestion: Unstructured, PyMuPDF,
-python-docx, Tesseract OCR, and section-aware recursive chunking via LangChain
-text splitters. Evaluation: RAGAS and DeepEval (GEval), plus custom tool,
-router, refusal, and per-gate retrieval evaluators, with HTML, JSON, and CSV
-reports. Configuration: a central settings module resolving environment
-variables, then Streamlit secrets, then defaults.
+Frontend and app framework: Streamlit, multi-page, with a shared design-token
+module and a custom theme. LLM and orchestration: OpenRouter (or the Anthropic
+API directly, or local Ollama), probabilistic multi-tool routing with concurrent
+execution and result-based escalation, a provider-neutral client with three
+independently configurable model roles. Embeddings: Voyage AI (or local
+nomic-embed via sentence-transformers). Retrieval: ChromaDB for dense vectors,
+BM25 Okapi for sparse search, Reciprocal Rank Fusion, and a cross-encoder
+reranker (Voyage rerank or Qwen3-Reranker). Skill scoring: DeBERTa-v3 with a
+CORAL ordinal head, in PyTorch and Hugging Face Transformers. Ingestion:
+Unstructured, PyMuPDF, python-docx, Tesseract OCR, type-specific LLM summary
+rubrics, and section-aware recursive chunking via LangChain text splitters.
+Observability: per-turn cost, latency and conversation logging to JSON lines and
+stdout, with a password-gated dashboard. Evaluation: RAGAS and DeepEval (GEval),
+plus custom tool, router, refusal, and per-gate retrieval evaluators, with HTML,
+JSON, and CSV reports. Configuration: a central settings module resolving
+environment variables, then Streamlit secrets, then defaults.
 
 
 DESIGN PRINCIPLES AND WHAT MAKES IT NOTABLE
 
 The standout engineering choices are: a trained, evidence-grounded skill scorer
-instead of keyword guessing; an agent that routes between verified facts, the
-scorer, candidate document search, and project search with intelligent
-fallbacks; a hybrid, fused, re-ranked retrieval pipeline fronted by a
-broad/specific router and query expansion; a serious multi-dimensional
-evaluation suite, including the per-gate retrieval failure localization that
-pinpoints whether recall or re-ranking lost a chunk; a fully synthetic,
-validated training-data pipeline built because the needed labels did not exist;
-and a clean build-versus-serve split with three pluggable provider layers that
-lets one codebase run entirely on free local open-source models or deploy as a
-cheap, secured, always-on cloud service. The guiding principles throughout are
-grounding (never answer beyond the evidence), verifiability (every skill claim
-and fact traces back to a source), honesty (refuse the unknown and the
-out-of-scope), and portability (local for building and proving, cloud for
-serving).
+instead of keyword guessing; probabilistic multi-tool routing that scores every
+source independently and runs the ones that clear a bar concurrently, with a
+result-based escalation net, rather than forcing a single-tool choice; a hybrid,
+fused, re-ranked retrieval pipeline fronted by a broad/specific router and query
+expansion; a serious multi-dimensional evaluation suite, including the per-gate
+retrieval failure localization that pinpoints whether recall or re-ranking lost
+a chunk; a fully synthetic, validated training-data pipeline built because the
+needed labels did not exist; per-turn cost and latency telemetry that makes the
+running system's behaviour and bill observable rather than assumed; and a clean
+build-versus-serve split with three pluggable provider layers that lets one
+codebase run entirely on free local open-source models or deploy as a cheap,
+secured, always-on cloud service.
+
+The guiding principles throughout are grounding (never answer beyond the
+evidence), verifiability (every skill claim and fact traces back to a source),
+honesty (refuse the unknown and the out-of-scope, and publish the evaluation's
+weak numbers alongside the strong ones), and portability (local for building and
+proving, cloud for serving).
