@@ -1,0 +1,58 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; background: transparent; }
+  #host { display: flex; justify-content: center; padding: 4px 0; }
+  #err  { display: none; font: 14px/1.4 system-ui, sans-serif; color: #b91c1c;
+          text-align: center; padding: 6px 0; }
+</style>
+
+<div id="host"></div>
+<div id="err">Could not load the check. Please reload the page.</div>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+<script>
+// Minimal implementation of Streamlit's component protocol.
+//
+// Why not components.html + a URL round-trip: on Streamlit Cloud the component
+// iframe is served from a DIFFERENT origin than the app, so reading or writing
+// window.parent.location throws a cross-origin SecurityError. postMessage is the
+// only channel that legitimately crosses that boundary, and it is exactly what
+// declared components use — so the token goes back as a component value rather
+// than as a query parameter.
+const SEND = (type, data) =>
+  window.parent.postMessage(Object.assign({ isStreamlitMessage: true, type }, data), "*");
+
+const setHeight = (h) => SEND("streamlit:setFrameHeight", { height: h });
+const setValue  = (v) => SEND("streamlit:setComponentValue", { value: v, dataType: "json" });
+
+let rendered = false;
+
+function renderWidget(sitekey) {
+  if (rendered) return;               // Streamlit re-sends render on every rerun
+  if (!window.turnstile) { return setTimeout(() => renderWidget(sitekey), 120); }
+  rendered = true;
+  window.turnstile.render("#host", {
+    sitekey: sitekey,
+    theme: "light",
+    callback: (token) => setValue(token),
+    "error-callback": () => {
+      // A widget error is not a pass. Surface it and let the visitor retry
+      // rather than silently reporting an empty token as a result.
+      document.getElementById("err").style.display = "block";
+      setHeight(140);
+    },
+    "expired-callback": () => window.turnstile.reset(),
+  });
+  setHeight(90);
+}
+
+window.addEventListener("message", (event) => {
+  if (!event.data || event.data.type !== "streamlit:render") return;
+  const sitekey = (event.data.args || {}).sitekey;
+  if (sitekey) renderWidget(sitekey);
+});
+
+SEND("streamlit:componentReady", { apiVersion: 1 });
+setHeight(90);
+</script>

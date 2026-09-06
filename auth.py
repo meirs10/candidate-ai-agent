@@ -24,6 +24,7 @@ Cloudflare has confirmed it, once, from here.
 from __future__ import annotations
 
 import hmac
+import os
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -33,11 +34,16 @@ from app_pages import ui
 
 _VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 
-# The widget lives in a sandboxed component iframe and cannot touch session
-# state, so the token comes back through the URL: the iframe rewrites the parent
-# location with ?bot=<token>, the page reloads, and the server verifies it. One
-# extra page load, once per visitor.
-_TOKEN_PARAM = "bot"
+# The widget runs in a declared component rather than components.html. On
+# Streamlit Cloud the component iframe is served from a different origin than
+# the app, so the obvious approach — have the callback rewrite the parent URL
+# with ?bot=<token> — throws a cross-origin SecurityError and the visitor sees
+# "Could not complete the check". postMessage crosses that boundary legitimately,
+# and a declared component is Streamlit's own postMessage channel, so the token
+# comes back as a component value.
+_COMPONENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "components", "turnstile")
+_turnstile_component = components.declare_component("turnstile", path=_COMPONENT_DIR)
 
 
 def _verify_token(token: str) -> bool:
@@ -56,43 +62,6 @@ def _verify_token(token: str) -> bool:
         return False
 
 
-def _challenge_html(site_key: str) -> str:
-    """The Turnstile widget, plus the hand-off that returns its token.
-
-    The callback rewrites the PARENT url because the widget renders inside
-    Streamlit's component iframe; setting the iframe's own location would just
-    reload the iframe and lose the token.
-    """
-    return f"""
-<div id="cf-turnstile-host" style="display:flex;justify-content:center;padding:4px 0;"></div>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-<script>
-  function handOffToken(token) {{
-    try {{
-      var url = new URL(window.parent.location.href);
-      url.searchParams.set({_TOKEN_PARAM!r}, token);
-      window.parent.location.replace(url.toString());
-    }} catch (e) {{
-      // Cross-origin parent (shouldn't happen for a first-party component, but
-      // fail visibly rather than hanging on a spinner forever).
-      document.getElementById('cf-turnstile-host').innerHTML =
-        '<p style="font:14px system-ui;color:#b91c1c">Could not complete the check. Please reload the page.</p>';
-    }}
-  }}
-  function renderWidget() {{
-    if (!window.turnstile) {{ return setTimeout(renderWidget, 120); }}
-    window.turnstile.render('#cf-turnstile-host', {{
-      sitekey: {site_key!r},
-      callback: handOffToken,
-      'error-callback': function () {{ handOffToken(''); }},
-      theme: 'light',
-    }});
-  }}
-  renderWidget();
-</script>
-"""
-
-
 def require_bot_check() -> None:
     """Block rendering until the visitor clears the Turnstile challenge.
 
@@ -104,20 +73,6 @@ def require_bot_check() -> None:
         return
     if st.session_state.get("_bot_ok"):
         return
-
-    # Returning from the widget: verify, then strip the token from the URL so it
-    # is not sitting in the address bar or a shared link. Tokens are single-use,
-    # so a copied URL would fail anyway and look like a broken link.
-    token = str(st.query_params.get(_TOKEN_PARAM, "") or "")
-    if token:
-        ok = _verify_token(token)
-        try:
-            del st.query_params[_TOKEN_PARAM]
-        except Exception:
-            pass
-        if ok:
-            st.session_state["_bot_ok"] = True
-            st.rerun()
 
     ui.inject_css()
     st.markdown(
@@ -133,10 +88,21 @@ def require_bot_check() -> None:
 
     _, mid, _ = st.columns([1, 2.2, 1])
     with mid:
-        components.html(_challenge_html(config.TURNSTILE_SITE_KEY), height=90)
-        if token:
-            # We got here with a token that did not verify.
-            st.error("That check didn't go through. Please try again.")
+        token = _turnstile_component(sitekey=config.TURNSTILE_SITE_KEY,
+                                     key="turnstile", default=None)
+
+        # A token is single-use and Cloudflare rejects a replay, so verify each
+        # one exactly once. Without this guard the same token is re-verified on
+        # every rerun and the second attempt fails, locking out a visitor who
+        # had already passed.
+        if token and token != st.session_state.get("_bot_token_seen"):
+            st.session_state["_bot_token_seen"] = token
+            if _verify_token(token):
+                st.session_state["_bot_ok"] = True
+                st.rerun()
+            else:
+                st.error("That check didn't go through. Please reload and try again.")
+
         st.markdown('<div class="gate-note">', unsafe_allow_html=True)
         st.caption("Protects the assistant from automated traffic. No cookies, no tracking.")
         st.markdown("</div>", unsafe_allow_html=True)
