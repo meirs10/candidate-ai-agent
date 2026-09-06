@@ -3,11 +3,18 @@
 .pytest_cache/
 .claude/
 .deepeval/
-.streamlit/
+# Ignore the CONTENTS of .streamlit/, not the directory itself: git does not
+# descend into an ignored directory, so ignoring `.streamlit/` would make the
+# negation below unreachable and secrets.toml would be the only thing it matched.
+# config.toml has to ship — without it the hosted app renders in Streamlit's
+# stock look instead of the designed theme. secrets.toml must never ship.
+.streamlit/*
+!.streamlit/config.toml
 .ipynb_checkpoints/
 __pycache__/
 chroma_db
 uploads
+store/data/candidate_artifacts
 .env
 *.pt
 *.json
@@ -21,3 +28,16 @@ uploads
 !skill_proficiency_estimator/data/*.json
 !skill_proficiency_estimator/data/reports/*.json
 !skill_proficiency_estimator/scoring_model/**/*.json
+
+# Live output of an eval run. The harness writes pipeline_results.json, the
+# per-component CSVs and a timestamped HTML report straight into the reports
+# ROOT — several MB every run, which the negation above would otherwise commit.
+# Single-level globs on purpose: the archived snapshots in reports/*/ are
+# deliberately kept and stay tracked.
+evaluation/reports/*.json
+evaluation/reports/*.csv
+evaluation/reports/*.html
+evaluation/reports/partial/
+
+# Conversation telemetry — contains recruiter questions and the agent's answers.
+logs/
