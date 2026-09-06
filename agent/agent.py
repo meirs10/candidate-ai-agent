@@ -276,12 +276,27 @@ def strip_preamble(text: str) -> str:
     return stripped
 
 
+# A preamble always ends at a comma or colon, so the buffer can be released just
+# after the first one — but only once some ANSWER follows it. Releasing on the
+# bare comma hands strip_preamble a buffer that is nothing but the preamble,
+# which its "never blank an answer" guard then refuses to strip, and the
+# preamble ships.
+_RELEASE_RE = re.compile(r"[,:]\s+\S{2,}")
+
+# Longest opening worth inspecting. Past this, no preamble pattern can still
+# match, so the buffer is released regardless.
+_PREAMBLE_SCAN_LIMIT = 100
+
+
 def _stream_without_preamble(pieces):
     """Pass a token stream through strip_preamble without stalling it.
 
-    Only the opening is buffered — enough characters to contain any preamble the
-    regex could match — and everything after it flows straight through. The delay
-    is one short buffer, not the whole answer, so this stays real streaming.
+    Releases the buffer at the FIRST comma or colon, because every preamble
+    pattern ends at one — so the hold is typically ~30 characters, not a
+    sentence. An earlier version buffered a flat 180 characters, which held a
+    short answer in full and made long ones arrive as a block followed by a
+    stream: the whole point of streaming, undone by the cleanup meant to run
+    alongside it.
     """
     head = ""
     for piece in pieces:
@@ -289,11 +304,15 @@ def _stream_without_preamble(pieces):
             yield piece
             continue
         head += piece
-        if len(head) >= 180:
-            yield strip_preamble(head)
+        if len(head) >= _PREAMBLE_SCAN_LIMIT or _RELEASE_RE.search(head):
+            cleaned = strip_preamble(head)
             head = None
+            if cleaned:
+                yield cleaned
     if head is not None:
-        yield strip_preamble(head)
+        cleaned = strip_preamble(head)
+        if cleaned:
+            yield cleaned
 
 
 def _synthesis_prompt(question: str, history: list, results: list) -> str:

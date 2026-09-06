@@ -246,8 +246,18 @@ class LLMClient:
             stream=True,
         ) as resp:
             resp.raise_for_status()
-            for raw in resp.iter_lines(decode_unicode=True):
-                if not raw or not raw.startswith("data: "):
+            # Decode explicitly rather than with iter_lines(decode_unicode=True).
+            # That flag decodes using resp.encoding, and requests defaults a
+            # text/event-stream with no declared charset to ISO-8859-1 — so an
+            # em-dash arrived as "â" plus two invisible bytes and answers came
+            # out visibly corrupted. SSE frames are newline-delimited and the
+            # payload is JSON on a single line, so no multi-byte character can
+            # straddle a line boundary; decoding each line as UTF-8 is safe.
+            for line in resp.iter_lines(decode_unicode=False):
+                if not line:
+                    continue
+                raw = line.decode("utf-8", errors="replace")
+                if not raw.startswith("data: "):
                     continue          # keep-alive comments and blank separators
                 payload = raw[6:]
                 if payload == "[DONE]":
