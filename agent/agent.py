@@ -14,6 +14,7 @@ The per-tool probabilities are exposed via get_last_tool_scores() so the eval
 pipeline can record them.
 """
 
+import re
 from concurrent.futures import ThreadPoolExecutor
 from contextvars import copy_context
 
@@ -37,6 +38,16 @@ information.
 
 Rules:
 - Ground every claim in the retrieved information. Never invent facts.
+- Answer directly. Start with the answer itself — never with a preamble about
+  where the answer came from. Do not open with "Based on the retrieved
+  information", "Based on the candidate's profile", "According to the
+  documents", "The retrieved context shows" or any variation. The recruiter
+  knows you looked things up; saying so wastes their first line. Write as if you
+  simply know the answer.
+- Never mention the retrieval, the context, the documents-as-a-mechanism, the
+  tools, or your own internal workings — unless the recruiter explicitly asks
+  how you work. Citing a source by name when it is genuinely informative ("in
+  their write-up of the deraining project") is fine; narrating the lookup is not.
 - If the retrieved information does not answer the question — or nothing was
   retrieved — say briefly that you don't have that information. For personal or
   out-of-scope questions (politics, religion, marital status, health, finances,
@@ -202,8 +213,106 @@ def _synthesize(question: str, history: list, results: list) -> str:
     prompt = (f"{convo}Recruiter question: {question}\n\n"
               f"Retrieved information:\n{context}\n\n"
               "Answer the question using only the retrieved information above.")
-    return llm.complete(prompt, system=SYNTHESIS_SYSTEM, max_tokens=AGENT_MAX_TOKENS,
-                        model=llm.agent_model, role="synthesis")
+    return strip_preamble(
+        llm.complete(prompt, system=SYNTHESIS_SYSTEM, max_tokens=AGENT_MAX_TOKENS,
+                     model=llm.agent_model, role="synthesis"))
+
+
+# Belt and braces on the "answer directly" rule above. The instruction alone is
+# not reliable: a model asked to ground every claim in retrieved context has a
+# strong pull toward announcing that it did, and it opens with "Based on the
+# retrieved information..." often enough that a recruiter sees it constantly.
+# Prompt-only enforcement failed in testing, so the opener is also stripped
+# mechanically. Deliberately narrow: it matches a lead-in phrase followed by a
+# comma or colon, never mid-sentence text, so an answer that legitimately says
+# "based on" later is untouched.
+_PREAMBLE_RE = re.compile(
+    r"^\s*(?:"
+    r"(?:based (?:up)?on|according to|per|drawing on|from|going by)\s+"
+    r"(?:the\s+|their\s+|his\s+|her\s+|this\s+)?"
+    r"(?:retrieved\s+|available\s+|provided\s+|supplied\s+)?"
+    r"(?:information|context|evidence|材料|documents?|documentation|profile|"
+    r"records?|materials?|data|write-?ups?|cv|r[ée]sum[ée]|"
+    r"candidate'?s?[^,:.]{0,40})"
+    r"[^,:.]{0,60}"
+    r")\s*[,:]\s+",
+    re.IGNORECASE,
+)
+
+# The declarative variant, which carries no comma to anchor on: "The retrieved
+# information shows that ...". Separate pattern because allowing the rule above
+# to end on plain whitespace would also eat "Based on their PPO work the reward
+# function ..." — a genuine, substantive opening.
+_PREAMBLE_SHOWS_RE = re.compile(
+    r"^\s*(?:the|this)\s+"
+    r"(?:retrieved\s+|available\s+|provided\s+)?"
+    r"(?:information|context|evidence|documents?|documentation|records?|materials?|data)\s+"
+    r"(?:shows?|indicates?|states?|suggests?|confirms?|notes?)"
+    r"(?:\s+that)?\s+",
+    re.IGNORECASE,
+)
+
+
+def strip_preamble(text: str) -> str:
+    """Remove a leading "Based on the retrieved information," style opener.
+
+    Re-capitalises what is left, skipping any Markdown emphasis markers so
+    "**diarization**" becomes "**Diarization**" rather than being missed.
+    Returns the text unchanged when nothing matches, or when stripping would
+    leave nothing at all — an answer that is ONLY a preamble is a stub, but a
+    stub still beats a blank reply. Short answers that survive stripping ("Yes,
+    immediately.") are kept: brevity is not emptiness.
+    """
+    stripped = _PREAMBLE_RE.sub("", text, count=1)
+    if stripped == text:
+        stripped = _PREAMBLE_SHOWS_RE.sub("", text, count=1)
+    if stripped == text or not stripped.strip():
+        return text
+    for i, ch in enumerate(stripped):
+        if ch.isalpha():
+            return stripped[:i] + ch.upper() + stripped[i + 1:]
+        if ch not in "*_`\"'‘“([ ":
+            break
+    return stripped
+
+
+def _stream_without_preamble(pieces):
+    """Pass a token stream through strip_preamble without stalling it.
+
+    Only the opening is buffered — enough characters to contain any preamble the
+    regex could match — and everything after it flows straight through. The delay
+    is one short buffer, not the whole answer, so this stays real streaming.
+    """
+    head = ""
+    for piece in pieces:
+        if head is None:
+            yield piece
+            continue
+        head += piece
+        if len(head) >= 180:
+            yield strip_preamble(head)
+            head = None
+    if head is not None:
+        yield strip_preamble(head)
+
+
+def _synthesis_prompt(question: str, history: list, results: list) -> str:
+    """The synthesis prompt, shared by the buffered and streaming paths."""
+    if results:
+        context = "\n\n".join(f"[{TOOL_SOURCE[n]}]\n{t}" for (n, a, t, m, e) in results)
+    else:
+        context = "(no information sources were selected for this question)"
+
+    convo = ""
+    prior = [m for m in history if m.get("role") in ("user", "assistant")][:-1][-4:]
+    if prior:
+        convo = ("Recent conversation:\n"
+                 + "\n".join(f"{m['role']}: {m.get('content', '')}" for m in prior)
+                 + "\n\n")
+
+    return (f"{convo}Recruiter question: {question}\n\n"
+            f"Retrieved information:\n{context}\n\n"
+            "Answer the question using only the retrieved information above.")
 
 
 def run(conversation_history: list, user_message: str,
@@ -274,3 +383,96 @@ def run(conversation_history: list, user_message: str,
     } for (n, a, t, m, e) in results]
 
     return answer, conversation_history, trajectory
+
+
+class StreamingTurn:
+    """One recruiter turn whose answer is streamed as the model writes it.
+
+    Iterate it to get answer fragments; after it is exhausted, `answer`,
+    `history` and `trajectory` hold exactly what run() would have returned.
+
+    It is a class rather than a plain generator because a turn produces four
+    things and a generator can only yield one of them. Streamlit's
+    st.write_stream() consumes any iterable and returns the joined text, so the
+    page renders the fragments and reads the rest off the object afterwards.
+
+    Everything before synthesis — routing, tool execution, escalation — is
+    identical to run() and is NOT streamed: it produces no text, only latency.
+    The stream begins at the first synthesized token, which is the first moment
+    there is anything to show.
+    """
+
+    def __init__(self, conversation_history: list, user_message: str,
+                 session_id: str = "local"):
+        self._history = conversation_history
+        self._question = user_message
+        self._session_id = session_id
+        self.answer = ""
+        self.history = conversation_history
+        self.trajectory: list = []
+
+    def __iter__(self):
+        global _LAST_TOOL_SCORES
+
+        history = self._history
+        question = self._question
+        history.append({"role": "user", "content": question})
+
+        # The telemetry context stays open across the whole stream so the
+        # synthesis call's tokens and cost land in this turn's record. That
+        # requires the iterator to be consumed to completion, which
+        # st.write_stream does.
+        with telemetry.turn(question, session_id=self._session_id) as rec:
+            _LAST_TOOL_SCORES, selected, scores = select_tools(question, history)
+            results = _run_tools_concurrently(selected)
+
+            escalated = False
+            if (config.TOOL_ESCALATE_ON_EMPTY and results
+                    and all(empty for (_n, _a, _t, _m, empty) in results)):
+                escalated = True
+                chosen = {n for (n, _a, _t, _m, _e) in results}
+                rest = [(n, _args_for(n, scores[n], question))
+                        for n in TOOL_NAMES if n not in chosen]
+                results.extend(_run_tools_concurrently(rest))
+
+            results.sort(key=lambda r: SOURCE_ORDER.index(TOOL_SOURCE[r[0]]))
+            _set_retrieval_meta(results)
+
+            prompt = _synthesis_prompt(question, history, results)
+            pieces = []
+            for piece in _stream_without_preamble(llm.complete_stream(
+                    prompt, system=SYNTHESIS_SYSTEM, max_tokens=AGENT_MAX_TOKENS,
+                    model=llm.agent_model, role="synthesis")):
+                pieces.append(piece)
+                yield piece
+
+            self.answer = "".join(pieces).strip()
+
+            if rec is not None:
+                meta = tools_module.get_last_retrieval_meta()
+                rec.answer = self.answer
+                rec.tools_selected = [n for (n, _a, _t, _m, _e) in results]
+                rec.tool_scores = dict(_LAST_TOOL_SCORES)
+                rec.route = meta.get("route")
+                rec.n_chunks = len(meta.get("chunks") or [])
+                rec.escalated = escalated
+
+        history.append({"role": "assistant", "content": self.answer})
+        self.history = history
+        self.trajectory = [{
+            "tool": n,
+            "args": a,
+            "result_preview": (t or "")[:300],
+            "score": _LAST_TOOL_SCORES[TOOL_SOURCE[n]],
+        } for (n, a, t, m, e) in results]
+
+
+def run_streaming(conversation_history: list, user_message: str,
+                  session_id: str = "local") -> StreamingTurn:
+    """Streaming counterpart to run(), for the recruiter chat.
+
+    run() stays the buffered one-shot call: the evaluation harness wants the
+    finished answer and nothing else, and streaming into it would only add a
+    join.
+    """
+    return StreamingTurn(conversation_history, user_message, session_id)

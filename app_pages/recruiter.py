@@ -2,11 +2,15 @@ import uuid
 
 import streamlit as st
 
-from agent.agent import run
-from auth import require_auth
+import ratelimit
+from agent.agent import run_streaming
+from auth import require_auth, require_bot_check
 from store.structured import load as load_profile
 from app_pages import ui
 
+# Two gates, in cost order. The bot check is what protects the public link; the
+# access code is a no-op unless APP_PASSWORD is still configured.
+require_bot_check()
 require_auth()  # defense in depth; main.py gates too (no-op once authenticated)
 ui.inject_css()
 
@@ -52,21 +56,45 @@ def _ask(question: str) -> None:
     """Run one turn and append it to the visible history."""
     with st.chat_message("user", avatar=AVATARS["user"]):
         st.write(question)
+
+    # Checked here rather than at the top of the page: a rerun costs nothing,
+    # but a question costs a routing call, up to four tools, embeddings, a
+    # rerank and a synthesis call. The limit belongs on the expensive action.
+    allowed, retry_after = ratelimit.check()
+    if not allowed:
+        with st.chat_message("assistant", avatar=AVATARS["assistant"]):
+            st.warning(
+                f"That's a lot of questions at once — give me about "
+                f"{retry_after} seconds and ask again."
+            )
+        return
+
     try:
         with st.chat_message("assistant", avatar=AVATARS["assistant"]):
+            turn = run_streaming(
+                st.session_state.history.copy(), question,
+                session_id=st.session_state.session_id,
+            )
+            # The spinner covers routing and tool execution — the silent part.
+            # It is closed by the first streamed fragment, so the recruiter sees
+            # "searching", then words appearing, with no dead gap between them.
             with st.spinner("Searching the candidate's documents…"):
-                answer, updated_history, _ = run(
-                    st.session_state.history.copy(), question,
-                    session_id=st.session_state.session_id,
-                )
-            st.write(answer)
+                stream = iter(turn)
+                first = next(stream, "")
+
+            def _rest():
+                if first:
+                    yield first
+                yield from stream
+
+            st.write_stream(_rest())
     except Exception as exc:  # a friendly message beats a stack trace
         st.chat_message("assistant", avatar=AVATARS["assistant"]).error(
             "Sorry — I couldn't answer that just now. Please try again in a moment."
         )
         st.caption(f"(details: {type(exc).__name__})")
     else:
-        st.session_state.history = updated_history
+        st.session_state.history = turn.history
 
 
 # ── Conversation ─────────────────────────────────────────────────────────────

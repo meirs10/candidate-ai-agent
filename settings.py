@@ -211,6 +211,30 @@ TELEMETRY_LOG_PATH = _get("TELEMETRY_LOG_PATH", "./logs/turns.jsonl") or "./logs
 # Unset → the dashboard does not exist.
 ADMIN_PASSWORD = _get("ADMIN_PASSWORD", "") or ""
 
+# ── Bot check (Cloudflare Turnstile) ─────────────────────────────────────────
+# Replaces the shared access code on a public link: a recruiter should not have
+# to be handed a secret, but an unauthenticated chat box that costs money per
+# question cannot be left open to scripts. Turnstile is Cloudflare's CAPTCHA
+# alternative — most visitors solve it invisibly, with no puzzle to click.
+#
+# Both keys come from the Cloudflare dashboard (Turnstile → Add site). The site
+# key is public and rendered into the page; the secret key must stay a secret and
+# is used only server-side to verify the token the widget produced.
+#
+# Unset → the bot check is skipped entirely, which is what local development
+# wants. Note the failure mode: a typo in either secret name disables the gate
+# silently, so verify the challenge actually appears after changing them.
+TURNSTILE_SITE_KEY = _get("TURNSTILE_SITE_KEY", "") or ""
+TURNSTILE_SECRET_KEY = _get("TURNSTILE_SECRET_KEY", "") or ""
+
+# ── Rate limiting ────────────────────────────────────────────────────────────
+# Sized to stop a bot flood, not to pace a recruiter: a person reads each answer
+# before asking the next thing, so these ceilings are far above human use. See
+# ratelimit.py. Set RATE_LIMIT_ENABLED=0 to disable (e.g. while load testing).
+RATE_LIMIT_ENABLED = (_get("RATE_LIMIT_ENABLED", "1") or "1") not in ("0", "false", "False")
+RATE_LIMIT_PER_MINUTE = int(_get("RATE_LIMIT_PER_MINUTE", "12") or "12")
+RATE_LIMIT_PER_HOUR = int(_get("RATE_LIMIT_PER_HOUR", "120") or "120")
+
 # Fallback pricing, USD per million tokens: {model: (input, output)}.
 # Only consulted when the provider does not report a cost — OpenRouter does when
 # asked, and its number is authoritative. Prices drift, so anything priced from

@@ -50,13 +50,36 @@ h1, h2, h3 { letter-spacing: -0.02em; color: var(--ink); }
 h1 { font-weight: 700; }
 hr, [data-testid="stDivider"] { border-color: var(--line) !important; }
 
-/* Hide the Deploy button and the hamburger menu — they point at tooling that
-   isn't the recruiter's. But NOT the whole toolbar: it also contains the
-   "Running…" status widget, and hiding that made long jobs (document ingestion
-   runs OCR plus an LLM summary per file) look like the page had frozen, since
-   Streamlit dims the view while a script runs and nothing explained why. */
+/* Strip every host control a visitor should never see: the Deploy button, the
+   hamburger menu, and the Streamlit Cloud viewer chrome — "Manage app", Share,
+   the star, and the edit pencil. These belong to the app's owner, not to a
+   recruiter who was sent a link, and the edit and manage controls in particular
+   point straight at the source and the running container.
+
+   Kept deliberately: stStatusWidget, the "Running…" indicator that lives in the
+   same toolbar. Hiding the whole toolbar also hid that, and long jobs (document
+   ingestion runs OCR plus an LLM summary per file) then looked like a frozen
+   page, since Streamlit dims the view while a script runs and nothing explained
+   why. So each control is named individually rather than hiding the container.
+
+   Belt and braces: the viewer badge is rendered by the host page rather than by
+   the app, and its markup has changed name more than once across Streamlit
+   versions, so both the current test ids and the older class names are listed.
+   An id that no longer exists simply matches nothing. */
 [data-testid="stAppDeployButton"],
-[data-testid="stMainMenu"] { display: none !important; }
+[data-testid="stMainMenu"],
+[data-testid="manage-app-button"],
+[data-testid="stAppViewerBadge"],
+[data-testid="stActionButtonIcon"],
+[data-testid="stToolbarActions"],
+.viewerBadge_container__1QSob,
+.viewerBadge_link__qRIco,
+.styles_viewerBadge__CvC9N,
+#MainMenu {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
 [data-testid="stDecoration"] { display: none !important; }
 [data-testid="stStatusWidget"] { visibility: visible !important; }
 footer { visibility: hidden; }

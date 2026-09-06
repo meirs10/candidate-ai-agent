@@ -20,6 +20,7 @@ descriptions live in agent/tool_router.ROUTER_SYSTEM, not in a provider schema.
 
 from __future__ import annotations
 
+import json
 import re
 import time
 
@@ -185,3 +186,119 @@ class LLMClient:
 
         content = body["choices"][0]["message"].get("content") or ""
         return _THINK_RE.sub("", content).strip()
+
+    # ── Streaming ────────────────────────────────────────────────────────────
+
+    def complete_stream(self, prompt: str, system: str | None = None,
+                        max_tokens: int = COMPLETE_MAX_TOKENS,
+                        model: str | None = None, role: str = "agent"):
+        """Yield the completion in fragments as the model produces them.
+
+        Used for the recruiter-facing answer only. Everything else — routing,
+        expansion, summaries — is machine-read, so streaming it would buy
+        nothing.
+
+        This is real streaming rather than typing out an already-finished string.
+        The distinction matters: simulated typing can only start once the whole
+        answer exists, so it ADDS its own duration to a wait the recruiter has
+        already served. Streaming spends that same time showing words.
+
+        Providers that cannot stream fall back to yielding the finished text in
+        one piece, so callers never need to branch.
+        """
+        if self.provider == "openrouter":
+            yield from self._stream_openrouter(prompt, system, max_tokens,
+                                               model or config.AGENT_MODEL, role)
+            return
+        if self.provider == "ollama":
+            yield from self._stream_ollama(prompt, system, role)
+            return
+        yield self.complete(prompt, system=system, max_tokens=max_tokens,
+                            model=model, role=role)
+
+    def _stream_openrouter(self, prompt: str, system: str | None,
+                           max_tokens: int, model: str, role: str):
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+
+        started = time.perf_counter()
+        usage: dict = {}
+        buffered = ""
+
+        with _openrouter_session().post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {config.OPENROUTER_API_KEY}",
+                "X-Title": "candidate-ai-agent",
+            },
+            json={
+                "model": model,
+                "messages": messages,
+                "max_tokens": max_tokens,
+                "stream": True,
+                # The usage block arrives in a final chunk after the content,
+                # so cost accounting survives streaming unchanged.
+                "usage": {"include": True},
+            },
+            timeout=90,
+            stream=True,
+        ) as resp:
+            resp.raise_for_status()
+            for raw in resp.iter_lines(decode_unicode=True):
+                if not raw or not raw.startswith("data: "):
+                    continue          # keep-alive comments and blank separators
+                payload = raw[6:]
+                if payload == "[DONE]":
+                    break
+                try:
+                    event = json.loads(payload)
+                except json.JSONDecodeError:
+                    continue
+                if event.get("usage"):
+                    usage = event["usage"]
+                choices = event.get("choices") or []
+                if not choices:
+                    continue
+                piece = (choices[0].get("delta") or {}).get("content") or ""
+                if piece:
+                    buffered += piece
+                    yield piece
+
+        telemetry.record_llm_call(
+            role=role,
+            model=model,
+            prompt_tokens=usage.get("prompt_tokens", 0),
+            completion_tokens=usage.get("completion_tokens", 0),
+            cost_usd=usage.get("cost"),
+            latency_ms=int((time.perf_counter() - started) * 1000),
+        )
+
+    def _stream_ollama(self, prompt: str, system: str | None, role: str):
+        import ollama
+
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+
+        started = time.perf_counter()
+        prompt_tokens = completion_tokens = 0
+        for chunk in ollama.chat(model=config.OLLAMA_MODEL, messages=messages,
+                                 stream=True, options={"num_predict": 4096}):
+            piece = (chunk.get("message") or {}).get("content") or ""
+            if piece:
+                yield piece
+            if chunk.get("done"):
+                prompt_tokens = chunk.get("prompt_eval_count", 0) or 0
+                completion_tokens = chunk.get("eval_count", 0) or 0
+
+        telemetry.record_llm_call(
+            role=role,
+            model=config.OLLAMA_MODEL,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            cost_usd=0.0,          # local model, no charge
+            latency_ms=int((time.perf_counter() - started) * 1000),
+        )
