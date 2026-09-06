@@ -753,8 +753,15 @@ def _build_ingestion_section(ingestion_report) -> str:
         """
 
         # Embedding probes
-        hit_rate = ep.get("hit_rate", 0)
-        probe_html = f'<div class="summary-stat"><strong style="color:{_score_color(hit_rate)}">{hit_rate*100:.0f}%</strong> Embedding Hit Rate</div>'
+        # hit_rate is None when the document produced no probe terms — render
+        # that as "n/a" rather than a misleading 0%.
+        hit_rate = ep.get("hit_rate")
+        if hit_rate is None:
+            probe_html = ('<div class="summary-stat"><strong>n/a</strong> '
+                          'Embedding Hit Rate</div>')
+        else:
+            probe_html = (f'<div class="summary-stat"><strong style="color:{_score_color(hit_rate)}">'
+                          f'{hit_rate*100:.0f}%</strong> Embedding Hit Rate</div>')
 
         # Duplicates
         dup_html = f"""

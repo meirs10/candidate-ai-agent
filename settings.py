@@ -21,6 +21,7 @@ open-source stack on your own machine. No code changes — just configuration.
 from __future__ import annotations
 
 import os
+import sys
 
 from dotenv import load_dotenv
 
@@ -68,7 +69,34 @@ def _ensure_tesseract_on_path() -> None:
             return
 
 
+def _ensure_modern_sqlite() -> None:
+    """Swap in pysqlite3 when the stdlib sqlite3 is too old for ChromaDB.
+
+    ChromaDB requires sqlite >= 3.35, but some hosted Linux images (notably
+    older Streamlit Community Cloud builds) ship an older system sqlite that
+    Python's stdlib module links against — ChromaDB then aborts at import with
+    "unsupported version of sqlite3". The standard fix is to import the bundled
+    pysqlite3 wheel and alias it over the stdlib name BEFORE chromadb loads.
+
+    Deliberately a no-op when the runtime sqlite is already new enough (every
+    current dev machine), so it costs nothing and cannot mask a real problem.
+    Must run before `import chromadb`; settings is imported first on every code
+    path that reaches the retriever.
+    """
+    import sqlite3
+
+    if tuple(int(p) for p in sqlite3.sqlite_version.split(".")[:2]) >= (3, 35):
+        return
+    try:
+        __import__("pysqlite3")
+        sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+    except ImportError:
+        # Nothing more we can do here; chromadb will raise a clear error itself.
+        pass
+
+
 _ensure_tesseract_on_path()
+_ensure_modern_sqlite()
 
 
 # ── Deployment mode ──────────────────────────────────────────────────────────
@@ -80,6 +108,28 @@ APP_MODE = (_get("APP_MODE", "production") or "production").lower()
 # Single shared access code that gates the recruiter chat. Leave empty to disable
 # the gate (e.g. while developing locally). Set it via secrets in production.
 APP_PASSWORD = _get("APP_PASSWORD", "") or ""
+
+
+# ── Storage & identity ───────────────────────────────────────────────────────
+# Single source of truth for the vector store location and the two collection
+# ids. These were previously re-declared as literals in rag/ingest.py,
+# rag/retriever.py, agent/tools.py, app_pages/setup.py, evaluation/harness.py and
+# the ingestion evaluator — six copies that had to agree or ingestion and
+# retrieval would silently address different databases.
+CHROMA_PATH = _get("CHROMA_PATH", "./chroma_db") or "./chroma_db"
+
+# The candidate whose profile this deployment serves. Single-candidate app for
+# now; the eval harness rebinds agent.tools.CANDIDATE_ID per candidate at runtime
+# (see evaluation/pipeline.set_candidate_id), which is why the agent reads it as a
+# module attribute rather than importing the value directly.
+CANDIDATE_ID = _get("CANDIDATE_ID", "candidate_001") or "candidate_001"
+# Separate collection holding the project overview, so recruiters can ask how the
+# system itself was built (the search_project tool).
+PROJECT_ID = _get("PROJECT_ID", "project_kb") or "project_kb"
+
+# Chunks handed to the answer after reranking. The eval scripts label their runs
+# with this too, so it lives here rather than as a literal in each of them.
+RETRIEVE_TOP_K = int(_get("RETRIEVE_TOP_K", "8") or "8")
 
 
 # ── LLM (agent loop, query router, query expansion, build-time summaries) ─────
@@ -135,7 +185,7 @@ OLLAMA_MODEL = _get("OLLAMA_MODEL", "qwen3") or "qwen3"
 # The agent scores every tool 0..1 for a question — an INDEPENDENT per-tool
 # relevance probability (see agent/tool_router.py) — then:
 #   1. Runs every tool whose score >= TOOL_SELECT_THRESHOLD, concurrently. A low
-#      bar (0.20) maximizes recall of the correct tool while still averaging ~1.3
+#      bar (0.30) maximizes recall of the correct tool while still averaging ~1.3
 #      tools/question (the scores are confident), and never fires on out-of-scope
 #      questions (they score all-low → no tool → refuse).
 #   2. RESULT-BASED ESCALATION: if every selected tool comes back empty (no chunks
@@ -147,6 +197,29 @@ OLLAMA_MODEL = _get("OLLAMA_MODEL", "qwen3") or "qwen3"
 # escalation backstops the residual misses. Tune from the probe or the CSV.
 TOOL_SELECT_THRESHOLD = float(_get("TOOL_SELECT_THRESHOLD", "0.30") or "0.30")
 TOOL_ESCALATE_ON_EMPTY = (_get("TOOL_ESCALATE_ON_EMPTY", "1") or "1") not in ("0", "false", "False")
+
+
+# ── Telemetry (per-turn cost / latency / conversation log) ───────────────────
+# One record per recruiter question — see agent/telemetry.py. Two sinks: a JSON
+# line on stdout (the only one that survives a restart on hosted platforms) and
+# an append-only JSONL file that backs the admin view.
+TELEMETRY_ENABLED = (_get("TELEMETRY_ENABLED", "1") or "1") not in ("0", "false", "False")
+TELEMETRY_LOG_PATH = _get("TELEMETRY_LOG_PATH", "./logs/turns.jsonl") or "./logs/turns.jsonl"
+
+# Gates the hidden admin dashboard at ?admin=<value>. Separate from APP_PASSWORD
+# so handing a recruiter the chat code never exposes conversation logs or spend.
+# Unset → the dashboard does not exist.
+ADMIN_PASSWORD = _get("ADMIN_PASSWORD", "") or ""
+
+# Fallback pricing, USD per million tokens: {model: (input, output)}.
+# Only consulted when the provider does not report a cost — OpenRouter does when
+# asked, and its number is authoritative. Prices drift, so anything priced from
+# this table is flagged `cost_estimated` in the log rather than trusted silently.
+MODEL_PRICES_PER_MTOK = {
+    "anthropic/claude-haiku-4.5": (1.00, 5.00),
+    "google/gemini-2.5-flash-lite": (0.10, 0.40),
+    "claude-haiku-4-5": (1.00, 5.00),
+}
 
 
 # ── Embeddings ───────────────────────────────────────────────────────────────
@@ -165,12 +238,3 @@ NOMIC_EMBED_MODEL = _get("NOMIC_EMBED_MODEL", "nomic-ai/nomic-embed-text-v1.5") 
 # "none"   → skip reranking, return the fused top-k as-is.
 RERANK_PROVIDER = (_get("RERANK_PROVIDER", "voyage") or "voyage").lower()
 VOYAGE_RERANK_MODEL = _get("VOYAGE_RERANK_MODEL", "rerank-2.5") or "rerank-2.5"
-
-
-def using_local_models() -> bool:
-    """True when any heavyweight local (torch) model is selected."""
-    return (
-        EMBED_PROVIDER == "nomic"
-        or RERANK_PROVIDER == "qwen3"
-        or LLM_PROVIDER == "ollama"
-    )

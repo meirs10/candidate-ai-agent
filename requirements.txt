@@ -11,6 +11,12 @@
 streamlit
 python-dotenv  # loads .env (single local secrets file — see .env.example)
 chromadb
+# ChromaDB needs sqlite >= 3.35. Some hosted Linux images link Python's stdlib
+# sqlite3 against an older system library, which makes `import chromadb` abort.
+# settings._ensure_modern_sqlite() aliases this wheel over the stdlib name when
+# (and only when) that happens. Linux-only: there is no Windows/macOS wheel, and
+# those platforms never hit the problem.
+pysqlite3-binary; sys_platform == "linux"
 rank_bm25
 
 # LLM + embeddings + reranker, all via API

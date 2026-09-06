@@ -7,7 +7,9 @@
 #
 #   bash scripts/package_for_pod.sh
 #   scp -P <port> -i ~/.ssh/id_ed25519 step4_for_pod.tar.gz .env root@<host>:/workspace/
-set -uo pipefail
+# -e matters here: the verification block below is the only thing standing
+# between a broken package and a confident "wrote ..." success message.
+set -euo pipefail
 cd "$(dirname "$0")/.."
 
 OUT=step4_for_pod.tar.gz

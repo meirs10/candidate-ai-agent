@@ -7,6 +7,7 @@ without requiring Streamlit or a running server.
 
 import agent.tools as tools_module
 from agent.agent import run as agent_run, get_last_tool_scores
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 
 # Precedence for reducing a multi-tool trajectory to a single "final_tool": the
 # tool that most grounds the answer wins, so retrieval questions still register
@@ -78,9 +79,9 @@ def set_candidate_id(candidate_id: str):
     tools_module.CANDIDATE_ID = candidate_id
 
 
-def restore_candidate_id(original_id: str = "candidate_001"):
-    """Restore the original CANDIDATE_ID after evaluation."""
-    tools_module.CANDIDATE_ID = original_id
+def restore_candidate_id(original_id: str | None = None):
+    """Restore the production CANDIDATE_ID after evaluation."""
+    tools_module.CANDIDATE_ID = original_id or config.CANDIDATE_ID
 
 
 def set_project_id(project_id: str):
@@ -89,6 +90,6 @@ def set_project_id(project_id: str):
     tools_module.PROJECT_ID = project_id
 
 
-def restore_project_id(original_id: str = "project_kb"):
+def restore_project_id(original_id: str | None = None):
     """Restore the production PROJECT_ID after evaluation."""
-    tools_module.PROJECT_ID = original_id
+    tools_module.PROJECT_ID = original_id or config.PROJECT_ID

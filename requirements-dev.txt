@@ -56,3 +56,5 @@ aiohttp
 scikit-learn
 scipy
 numpy
+tqdm         # run_generation.py progress bars
+matplotlib   # scoring_model/report.py learning curves + confusion matrices

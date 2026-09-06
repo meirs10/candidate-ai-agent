@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 
@@ -63,7 +64,12 @@ PROFICIENCY_SCALE = {
 
 def load() -> dict:
     if not os.path.exists(DATA_PATH):
-        return DEFAULT_FIELDS.copy()
+        # deepcopy, not .copy(): a shallow copy hands every caller the SAME
+        # "education" list object that lives in DEFAULT_FIELDS. The setup page
+        # mutates that list in place (add/remove a degree), so a shallow copy
+        # lets an unsaved edit leak into DEFAULT_FIELDS for the rest of the
+        # process — and from there into the next session's "blank" profile.
+        return copy.deepcopy(DEFAULT_FIELDS)
     with open(DATA_PATH, "r") as f:
         data = json.load(f)
     # Migration: convert old flat education fields to list format
@@ -145,7 +151,16 @@ def get_field(field: str) -> str:
             lines.append(f"{e['skill']}: {n} evidence passage(s) from the documents")
         return "\n".join(lines)
 
-    return data.get(field, "Not provided")
+    # dict.get's default only fires when the KEY IS ABSENT — but DEFAULT_FIELDS
+    # initialises every optional field to "", so once a profile has been saved
+    # the key exists and an unset field would return "" instead of
+    # "Not provided". agent.agent._looks_empty() detects an empty structured
+    # result with `.endswith("Not provided")`, so a blank value silently counted
+    # as a hit and suppressed result-based escalation to document search.
+    value = data.get(field)
+    if value is None or not str(value).strip():
+        return "Not provided"
+    return value
 
 
 # -- Skill evidence accessors -----------------------------------------------

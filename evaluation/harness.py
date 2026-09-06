@@ -16,6 +16,7 @@ import json
 import os
 import shutil
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 import chromadb
@@ -30,12 +31,13 @@ from evaluation.pipeline import (
 )
 from rag.ingest import ingest_document
 from store.structured import DATA_PATH as STRUCTURED_DATA_PATH
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 
 # Paths
 EVAL_DIR = Path(__file__).parent
 DATA_DIR = EVAL_DIR / "data"
 REPORTS_DIR = EVAL_DIR / "reports"
-CHROMA_PATH = "./chroma_db"
+CHROMA_PATH = config.CHROMA_PATH  # single source of truth: settings.py
 
 # Project knowledge-base evaluation. Questions about the system itself live in
 # data/project/golden_dataset.json and are evaluated through the same pipeline as
@@ -165,6 +167,31 @@ def _restore_structured_data(backup_path: str | None):
     elif not backup_path:
         if os.path.exists(STRUCTURED_DATA_PATH):
             os.remove(STRUCTURED_DATA_PATH)
+
+
+@contextmanager
+def _candidate_context(candidate_dir: Path, eval_candidate_id: str):
+    """Point the app at one eval candidate, and ALWAYS put it back.
+
+    Both operations mutate process- and disk-level state that the real app reads:
+    _seed_structured_data overwrites store/data/candidate.json (the candidate's
+    actual profile), and set_candidate_id repoints agent.tools.CANDIDATE_ID at an
+    eval collection.
+
+    Restoring these on the happy path only is not enough. A crash mid-run — one
+    dropped OpenRouter call is sufficient — used to leave the real profile
+    overwritten with an eval fixture. That is now a deploy hazard as well as an
+    eval one: scripts/publish_deploy.sh reads candidate.json and force-pushes it
+    to the live app, so a failed eval followed by a publish would ship a
+    synthetic candidate as the real profile.
+    """
+    backup_path = _seed_structured_data(candidate_dir)
+    set_candidate_id(eval_candidate_id)
+    try:
+        yield
+    finally:
+        _restore_structured_data(backup_path)
+        restore_candidate_id()
 
 
 def _seed_documents(candidate_dir: Path, eval_candidate_id: str):
@@ -647,35 +674,30 @@ def run_evaluation(
                 print(f"[Harness] -> Resumed {cand['name']} from checkpoint "
                       f"({len(results)} cached results)")
             else:
-                # Seed structured data
-                backup_path = _seed_structured_data(cand["dir"])
+                # Seed the candidate's profile + repoint CANDIDATE_ID, guaranteed
+                # to be undone even if anything below raises.
+                with _candidate_context(cand["dir"], eval_id):
+                    # Ingest documents — or keep the collection a previous run built.
+                    if reuse_ingestion and _collection_has_data(eval_id):
+                        print(f"[Harness] Reusing existing collection '{eval_id}' "
+                              f"(skipping ingestion)")
+                    else:
+                        _cleanup_eval_collections(eval_id)
+                        _seed_documents(cand["dir"], eval_id)
 
-                # Ingest documents — or keep the collection a previous run built.
-                if reuse_ingestion and _collection_has_data(eval_id):
-                    print(f"[Harness] Reusing existing collection '{eval_id}' "
-                          f"(skipping ingestion)")
-                else:
-                    _cleanup_eval_collections(eval_id)
-                    _seed_documents(cand["dir"], eval_id)
+                    # Estimate + persist skill proficiencies so the agent's
+                    # get_skill_proficiency tool has real data (mirrors setup.py).
+                    _seed_skill_scores(cand["dir"], eval_id)
 
-                # Set candidate ID for the agent
-                set_candidate_id(eval_id)
+                    print(f"[Harness] {len(dataset)} questions for {cand['name']}")
 
-                # Estimate + persist skill proficiencies so the agent's
-                # get_skill_proficiency tool has real data (mirrors setup.py).
-                _seed_skill_scores(cand["dir"], eval_id)
+                    # Run pipeline
+                    results = _run_pipeline_on_dataset(
+                        dataset, eval_id, cand["name"], top_k
+                    )
 
-                print(f"[Harness] {len(dataset)} questions for {cand['name']}")
-
-                # Run pipeline
-                results = _run_pipeline_on_dataset(
-                    dataset, eval_id, cand["name"], top_k
-                )
-
-                # Restore structured data, then checkpoint immediately so a later
-                # crash never loses this candidate's answers.
-                _restore_structured_data(backup_path)
-                backup_path = None
+                # Profile restored by the context manager above; checkpoint now so
+                # a later crash never loses this candidate's answers.
                 try:
                     with open(partial_path, "w", encoding="utf-8") as f:
                         json.dump({

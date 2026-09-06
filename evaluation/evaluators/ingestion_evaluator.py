@@ -9,8 +9,9 @@ import chromadb
 import numpy as np
 import ollama
 from rag.embedder import embedder
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 
-CHROMA_PATH = "./chroma_db"
+CHROMA_PATH = config.CHROMA_PATH  # single source of truth: settings.py
 
 
 def run_ingestion_evaluation(
@@ -288,11 +289,20 @@ def run_ingestion_evaluation(
             "top1_preview": top_doc[:100],
         })
 
-    hit_rate = sum(1 for p in probe_results if p["found_in_top1"]) / len(probe_results)
+    # _extract_probe_terms can legitimately return nothing for a short or
+    # low-signal document. Dividing anyway raised ZeroDivisionError, and since
+    # _run_ingestion has no per-candidate guard, one thin document aborted the
+    # ingestion component for EVERY candidate in the run.
+    if probe_results:
+        hit_rate = sum(1 for p in probe_results if p["found_in_top1"]) / len(probe_results)
+        hit_rate = round(hit_rate, 3)
+    else:
+        hit_rate = None  # no probe terms — distinct from "probed and missed"
     report["embedding_probes"] = {
         "probes": probe_results,
-        "hit_rate": round(hit_rate, 3),
+        "hit_rate": hit_rate,
     }
-    print(f"[Ingestion Eval] Embedding probe hit rate: {hit_rate*100:.1f}%")
+    print("[Ingestion Eval] Embedding probe hit rate: "
+          + (f"{hit_rate*100:.1f}%" if hit_rate is not None else "n/a (no probe terms)"))
 
     return report

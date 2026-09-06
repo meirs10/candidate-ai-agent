@@ -176,7 +176,9 @@ if __name__ == "__main__":
             print(f"  {name}:")
             print(f"    Chunks: {cs.get('total_chunks', 0)} (avg size: {cs.get('avg_chunk_size', 0)})")
             print(f"    Summary score: {sq.get('llm_score', 'N/A')}")
-            print(f"    Embedding hit rate: {ep.get('hit_rate', 0)*100:.0f}%")
+            hr = ep.get("hit_rate")  # None when the doc yielded no probe terms
+            print("    Embedding hit rate: "
+                  + (f"{hr*100:.0f}%" if hr is not None else "n/a"))
 
     if results.get("report_path"):
         print(f"\n[OK]Report saved to: {results['report_path']}")
