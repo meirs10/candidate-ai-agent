@@ -4,7 +4,9 @@ from rag.embedder import embedder
 from rag.reranker import reranker
 from agent.llm import LLMClient
 
-CHROMA_PATH = "./chroma_db"
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+
+CHROMA_PATH = config.CHROMA_PATH  # single source of truth: settings.py
 
 client = chromadb.PersistentClient(path=CHROMA_PATH)
 
@@ -153,7 +155,7 @@ def _fusion_retrieve(collection, query: str, top_k: int) -> dict:
 def retrieve(
     query: str,
     candidate_id: str,
-    top_k: int = 8,
+    top_k: int | None = None,
     *,
     use_routing: bool = True,
     use_summary: bool = True,
@@ -171,9 +173,12 @@ def retrieve(
                       When False, a BROAD query falls back to the fusion path.
 
     A query only takes the summary path when BOTH flags are True and the router
-    classifies it as broad. The skill-proficiency estimator passes both False
-    (it queries by skill name, which is always specific) — or, more directly,
-    uses the training-retrieval helpers below, which never route.
+    classifies it as broad. The skill-proficiency estimator does not go through
+    this function at all — it uses retrieve_batch_for_training() below, which
+    never routes (a skill name is always a specific query) and returns doc_id
+    provenance alongside the chunks.
+
+    top_k defaults to settings.RETRIEVE_TOP_K.
 
     Returns a dict with:
         - chunks: list[str] — the retrieved text chunks
@@ -181,6 +186,7 @@ def retrieve(
         - expanded_queries: list[str] | None — query variations (specific only)
         - fused_pool: list[str] | None — candidate pool before re-rank (specific only)
     """
+    top_k = config.RETRIEVE_TOP_K if top_k is None else top_k
     collection = client.get_or_create_collection(
         name=candidate_id,
         metadata={"hnsw:space": "cosine"},
@@ -282,9 +288,3 @@ def retrieve_batch_for_training(
         vres = collection.query(query_embeddings=q_embeddings, n_results=FETCH_PER_QUERY)
         results.append(_fuse(query, list(vres["documents"]), variations))
     return results
-
-
-def retrieve_for_training(query: str, candidate_id: str,
-                          top_k: int = 3, expand: bool = False) -> dict:
-    """Single-query convenience wrapper over retrieve_batch_for_training."""
-    return retrieve_batch_for_training([query], candidate_id, top_k=top_k, expand=expand)[0]

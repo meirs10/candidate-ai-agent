@@ -30,7 +30,9 @@ from rag.ingest import (
 
 DATA_DIR = Path(__file__).parent.parent / "evaluation" / "data"
 TEST_COLLECTION = "test_ingest_unit"
-CHROMA_PATH = "./chroma_db"
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+
+CHROMA_PATH = config.CHROMA_PATH  # single source of truth: settings.py
 
 
 def _get_candidate_file(candidate_idx: int, prefix: str) -> Path:
@@ -122,6 +124,67 @@ class TestExtractSections:
         sections = extract_sections(str(cv_path))
 
         assert len(sections) > 0, "No sections extracted from PNG file"
+
+    def test_utf8_is_not_re_detected(self, tmp_path):
+        """A UTF-8 file must survive ingestion byte-for-byte.
+
+        Unstructured guesses the encoding with chardet, and on a real README it
+        guessed windows-1251 and turned every em-dash and box-drawing character
+        into mojibake. partition(..., encoding="utf-8") does not help: the
+        argument is accepted and then dropped.
+        """
+        doc = tmp_path / "encoding.md"
+        doc.write_text(
+            "# Restoration network\n\n"
+            "Inference runs on overlapping 512×512 tiles — a design "
+            "choice — with Hann-window blending, ≥ 33 FPS.\n",
+            encoding="utf-8",
+        )
+
+        text = " ".join(s["text"] for s in extract_sections(str(doc)))
+
+        for char in ("512×512", "—", "≥"):
+            assert char in text, f"{char!r} was lost or mangled during partitioning"
+
+    def test_numbered_headings_become_sections(self, tmp_path):
+        """Numbered Markdown headings are section names, not content.
+
+        _is_data_title() used to reject any Title containing a digit, so
+        "6.3 The probabilistic router" was swallowed as content and a README
+        with 99 numbered headings collapsed into a single section.
+        """
+        doc = tmp_path / "numbered.md"
+        doc.write_text(
+            "# 1. Executive Summary\n\nWhat the system does.\n\n"
+            "# 4. Configuration System\n\nHow it is configured.\n\n"
+            "# 6.3 The probabilistic router\n\nHow tools are scored.\n",
+            encoding="utf-8",
+        )
+
+        names = [s["section"] for s in extract_sections(str(doc))]
+
+        assert "4. Configuration System" in names, names
+        assert "6.3 The probabilistic router" in names, names
+
+    def test_narrative_sentence_is_not_a_section_name(self, tmp_path):
+        """A mislabelled prose sentence must not become a section name.
+
+        Section names are prepended to every chunk beneath them before
+        embedding, so an entire sentence adopted as a heading is embedded noise
+        on top of being unreadable in the recruiter's evidence panel.
+        """
+        doc = tmp_path / "prose.md"
+        doc.write_text(
+            "# Cleanup\n\n"
+            "Three scripts delete audio permanently. Each requires an "
+            "interactive yes at the console before it will remove anything "
+            "from the recordings directory.\n",
+            encoding="utf-8",
+        )
+
+        for s in extract_sections(str(doc)):
+            assert len(s["section"]) <= 80, \
+                f"Section name is a narrative sentence: {s['section']!r}"
 
 
 # ── Chunk Quality Tests ──────────────────────────────────────────────────────

@@ -30,7 +30,9 @@ import chromadb
 
 DATA_DIR = Path(__file__).parent.parent / "evaluation" / "data"
 TEST_COLLECTION = "test_retriever_unit"
-CHROMA_PATH = "./chroma_db"
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+
+CHROMA_PATH = config.CHROMA_PATH  # single source of truth: settings.py
 
 
 def _get_candidate_file(candidate_idx: int, prefix: str) -> Path:

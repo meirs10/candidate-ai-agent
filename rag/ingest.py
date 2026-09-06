@@ -6,7 +6,9 @@ from agent.llm import LLMClient
 import os
 import re
 
-CHROMA_PATH = "./chroma_db"
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+
+CHROMA_PATH = config.CHROMA_PATH  # single source of truth: settings.py
 
 client = chromadb.PersistentClient(path=CHROMA_PATH)
 
@@ -47,19 +49,71 @@ def _is_spaced_header(text: str) -> bool:
     return bool(_SPACED_HEADER_RE.match(text.strip()))
 
 
+# A leading section number belongs to the heading, not to the content: "6.3 The
+# probabilistic router" is a section name, "GPA: 94.3" is not. Without stripping
+# it first every numbered Markdown heading was read as content, and a 127 KB
+# README with 99 headings collapsed into a single section.
+_SECTION_NUMBER_RE = re.compile(r"^\d+(\.\d+)*[.)]?\s+")
+
+# Longest plausible section name. Past this the partitioner has almost always
+# mislabelled a narrative sentence as a Title, and adopting it as a section name
+# stamps that sentence onto the front of every chunk beneath it.
+_MAX_SECTION_NAME_LEN = 80
+
+
 def _is_data_title(text: str) -> bool:
     """Detect Title elements that are actually content (contain numbers, colons, etc.).
 
     Examples that should be treated as content, not section names:
         'GPA: 94.3 🏆 Dean's Honor List (1st & 2nd Year)'
         '✉ ofir@gmail.com ☎ +972-54-2863632'
+        'Three scripts delete audio permanently. Each requires an interactive yes...'
     """
     stripped = text.strip()
-    if re.search(r"\d", stripped):
-        return True
     if "@" in stripped or "☎" in stripped or "✉" in stripped:
         return True
+
+    body = _SECTION_NUMBER_RE.sub("", stripped)
+    if re.search(r"\d", body):
+        return True
+    if len(stripped) > _MAX_SECTION_NAME_LEN:
+        return True
+    # A complete sentence is prose the partitioner mislabelled, not a heading.
+    if body.endswith(".") and len(body.split()) > 6:
+        return True
     return False
+
+
+def _read_utf8(file_path: str) -> str | None:
+    """Return the file decoded as UTF-8, or None if it is not UTF-8 text."""
+    try:
+        with open(file_path, "rb") as fh:
+            raw = fh.read()
+        return raw.decode("utf-8-sig")
+    except (UnicodeDecodeError, OSError):
+        return None
+
+
+def _partition_utf8_text(file_path: str, text: str):
+    """Partition already-decoded text, or None if the extension isn't plain text.
+
+    Exists because Unstructured guesses the encoding with chardet and cannot be
+    told not to: partition(..., encoding="utf-8") is accepted and then silently
+    dropped, since partition_md re-reads the file through its own detector. That
+    detector called one perfectly valid UTF-8 README windows-1251 and mangled
+    every non-ASCII character in it. Handing the partitioner a decoded string
+    removes the guess entirely.
+    """
+    name = os.path.basename(file_path)
+    ext = os.path.splitext(file_path)[1].lower()
+
+    if ext in (".md", ".markdown"):
+        from unstructured.partition.md import partition_md
+        return partition_md(text=text, metadata_filename=name)
+    if ext in (".txt", ".text"):
+        from unstructured.partition.text import partition_text
+        return partition_text(text=text, metadata_filename=name)
+    return None
 
 
 def extract_sections(file_path: str) -> list[dict]:
@@ -68,7 +122,14 @@ def extract_sections(file_path: str) -> list[dict]:
     Returns a list of {text, section} dicts where consecutive elements
     under the same section are merged into a single text block.
     """
-    elements = partition(file_path)
+    elements = None
+    text = _read_utf8(file_path)
+    if text is not None:
+        elements = _partition_utf8_text(file_path, text)
+    # Everything else — PDF, DOCX, and any genuinely non-UTF-8 file — goes
+    # through the normal detection path.
+    if elements is None:
+        elements = partition(file_path)
 
     sections = []
     current_section = "general"
@@ -106,42 +167,95 @@ def extract_sections(file_path: str) -> list[dict]:
     return sections
 
 
+# -- Document type -----------------------------------------------------------
+
+# Re-exported: these live in a dependency-free module so callers that only need
+# to classify a filename (the setup page, reindex_profile's dry run) don't have
+# to import `unstructured` and build an LLM client to do it.
+from rag.ingest_types import DOC_TYPES, infer_doc_type  # noqa: E402,F401
+
+
 # -- Summary generation ------------------------------------------------------
+
+# Never let a refusal reach the summary index. Every rubric below ends with this
+# because the summaries ARE the broad-query answer path: a stored "I cannot
+# summarize this" is retrieved and read out when a recruiter asks the single most
+# likely opening question, "tell me about the candidate".
+_SUMMARY_CONTRACT = (
+    "Summarize only what the document actually contains. Never refuse, never ask "
+    "for a different document, and never say the document is the wrong kind — if "
+    "a point below is absent, simply leave it out and summarize the rest.\n"
+    "Be factual, no opinions. Output the summary text only.\n\n"
+)
+
 
 def generate_summary(full_text: str, doc_type: str) -> str:
     """Ask the LLM to summarize the document in 5-6 sentences.
 
-    The "project" doc_type summarizes the software project itself; every other
-    doc_type is treated as a candidate document.
+    The rubric follows doc_type, because a rubric demanding a name, a degree and
+    years of experience is unanswerable for anything that is not a CV. Applying
+    it to a project write-up produced summaries like "Unable to provide requested
+    summary" and, worse, ones that invented a candidate identity from whatever
+    name appeared in the text.
     """
     if doc_type == "project":
-        prompt = (
+        rubric = (
             "You are summarizing the documentation of a software project for a "
             "recruiter who wants a quick overview of the system.\n"
-            "Write a concise 5-6 sentence summary that must cover:\n"
+            "Write a concise 5-6 sentence summary covering:\n"
             "1. What the project is and what problem it solves\n"
-            "2. Its overall architecture (agentic tool-calling + RAG pipeline)\n"
-            "3. The standout feature (the trained skill-proficiency scorer)\n"
+            "2. Its overall architecture\n"
+            "3. Its standout capability\n"
             "4. The main technology stack\n"
             "5. How it is evaluated and deployed\n"
-            "Be factual, no opinions.\n\n"
-            f"Document:\n{full_text[:3000]}"
         )
-        return _llm.complete(prompt).strip()
+    elif doc_type == "cv":
+        rubric = (
+            "You are summarizing a candidate's CV for a recruiter.\n"
+            "Write a concise 5-6 sentence summary covering:\n"
+            "1. Candidate's full name and current/most recent role\n"
+            "2. Education: degree(s), institution(s), and graduation year(s)\n"
+            "3. Total years of professional experience\n"
+            "4. Key technical skills and domain expertise\n"
+            "5. Most notable achievement or project\n"
+        )
+    elif doc_type == "recommendation":
+        rubric = (
+            "You are summarizing a recommendation letter about a job candidate "
+            "for a recruiter.\n"
+            "Write a concise 4-5 sentence summary covering:\n"
+            "1. Who wrote it and in what capacity they worked with the candidate\n"
+            "2. The specific work or project they describe\n"
+            "3. The strengths they attest to, with any concrete detail given\n"
+        )
+    elif doc_type == "certificate":
+        rubric = (
+            "You are summarizing a certificate, transcript or award belonging to "
+            "a job candidate, for a recruiter.\n"
+            "Write a concise 3-4 sentence summary covering:\n"
+            "1. What the document certifies, and the issuing body\n"
+            "2. Any grades, scores, honours or dates it records\n"
+            "3. The subject area it evidences\n"
+        )
+    else:
+        # readme / project write-ups authored BY the candidate about their own
+        # work, and any unclassified document. The subject is the work, not the
+        # person — asking for a CV summary here is what produced the refusals.
+        rubric = (
+            "You are summarizing one of a job candidate's own project write-ups "
+            "for a recruiter assessing their engineering work.\n"
+            "Write a concise 4-6 sentence summary covering:\n"
+            "1. What the project does and the problem it solves\n"
+            "2. The technical approach and the notable engineering decisions\n"
+            "3. The technologies used\n"
+            "4. Any measured results the document reports\n"
+            "Describe the WORK. Do not try to infer the candidate's identity, "
+            "employment history or education from it, and do not attribute the "
+            "project to any name mentioned in the text.\n"
+        )
 
-    prompt = (
-        f"You are summarizing a {doc_type} document for a recruiter.\n"
-        f"Write a concise 5-6 sentence summary that must cover:\n"
-        f"1. Candidate's full name and current/most recent role\n"
-        f"2. Education: degree(s), institution(s), and graduation year(s)\n"
-        f"3. Total years of professional experience\n"
-        f"4. Key technical skills and domain expertise\n"
-        f"5. Most notable achievement or project\n"
-        f"Be factual, no opinions.\n\n"
-        f"Document:\n{full_text[:3000]}"
-    )
-
-    return _llm.complete(prompt).strip()
+    return _llm.complete(rubric + _SUMMARY_CONTRACT
+                         + f"Document:\n{full_text[:3000]}").strip()
 
 
 # -- In-memory ingestion (raw text, no file, no summary) ---------------------
