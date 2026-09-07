@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import re
 
 DATA_PATH = "./store/data/candidate.json"
 
@@ -101,7 +102,125 @@ def save(data: dict):
         json.dump(data, f, indent=2)
 
 
+# Field names the router is likely to invent, mapped to the real keys. The
+# router is told the exact field list, but a recruiter asks "what's their
+# preferred work setup?" and the router paraphrases — and an unmatched name used
+# to return "Not provided", which the agent then reported as "the candidate
+# hasn't provided their availability", a confident false negative about data
+# that was sitting right there. Getting the field name slightly wrong must
+# degrade to a lookup, not to a denial.
+_FIELD_ALIASES = {
+    "name": "full_name",
+    "fullname": "full_name",
+    "email": "email_address",
+    "mail": "email_address",
+    "phone": "phone_number",
+    "mobile": "phone_number",
+    "telephone": "phone_number",
+    "linkedin_url": "linkedin",
+    "github_url": "github",
+    "degree": "education",
+    "university": "education",
+    "school": "education",
+    "gpa": "education",
+    "experience": "years_of_experience",
+    "years_experience": "years_of_experience",
+    "seniority": "years_of_experience",
+    "role": "current_role",
+    "title": "current_role",
+    "position": "current_role",
+    "current_position": "current_role",
+    "desired_role": "desired_job_title",
+    "target_role": "desired_job_title",
+    "summary": "job_description",
+    "bio": "job_description",
+    "about": "job_description",
+    "salary": "monthly_salary_expectation",
+    "salary_expectation": "monthly_salary_expectation",
+    "compensation": "monthly_salary_expectation",
+    "pay": "monthly_salary_expectation",
+    "location": "preferred_location",
+    "preferred_work_location": "preferred_location",
+    "city": "preferred_location",
+    "start_date": "availability",
+    "notice_period": "availability",
+    "when_can_they_start": "availability",
+    "work_setup": "work_type",
+    "preferred_work_setup": "work_type",
+    "work_arrangement": "work_type",
+    "work_preference": "work_type",
+    "remote": "work_type",
+    "hybrid": "work_type",
+    "relocation": "open_to_relocation",
+    "willing_to_relocate": "open_to_relocation",
+}
+
+
+def _canonical_field(field: str) -> list[str]:
+    """Resolve a requested field name to one or more real profile keys.
+
+    Handles three kinds of near-miss, in order: a compound request
+    ("availability and work setup" — the router only gets one argument, but a
+    recruiter routinely asks for two things at once), a known paraphrase, and a
+    loose match against the real key names. Returns [] when nothing resembles a
+    field, which the caller reports honestly rather than guessing.
+    """
+    raw = (field or "").strip().lower()
+    if not raw:
+        return []
+
+    # Split a compound request into its parts before resolving each one.
+    parts = [p.strip() for p in re.split(r",|;|\band\b|/|\+", raw) if p.strip()]
+    resolved: list[str] = []
+
+    for part in parts:
+        norm = re.sub(r"[^a-z0-9]+", "_", part).strip("_")
+        if not norm:
+            continue
+        if norm in DEFAULT_FIELDS or norm in ("skills", "skill_evidence", "education"):
+            resolved.append(norm)
+            continue
+        if norm in _FIELD_ALIASES:
+            resolved.append(_FIELD_ALIASES[norm])
+            continue
+        # Loose match: "preferred_work" -> preferred_location? No — require the
+        # key's distinctive word, so a partial name only matches when it is
+        # unambiguous.
+        candidates = [k for k in list(DEFAULT_FIELDS) + ["skills", "skill_evidence"]
+                      if norm in k or k in norm]
+        if len(candidates) == 1:
+            resolved.append(candidates[0])
+
+    # De-duplicate, preserving order.
+    seen, out = set(), []
+    for k in resolved:
+        if k not in seen:
+            seen.add(k)
+            out.append(k)
+    return out
+
+
 def get_field(field: str) -> str:
+    """Look up one or more profile fields by name.
+
+    Accepts a compound or paraphrased name and resolves it (see
+    _canonical_field). With several fields resolved, each is returned on its own
+    labelled line so the agent can answer a two-part question from one call.
+    """
+    resolved = _canonical_field(field)
+    if len(resolved) > 1:
+        lines = []
+        for key in resolved:
+            value = _get_one_field(key)
+            label = key.replace("_", " ").capitalize()
+            lines.append(f"{label}: {value}")
+        return "\n".join(lines)
+    if len(resolved) == 1:
+        return _get_one_field(resolved[0])
+    return _get_one_field(field)
+
+
+def _get_one_field(field: str) -> str:
     data = load()
 
     # Handle education field specially — format all degrees into readable text
