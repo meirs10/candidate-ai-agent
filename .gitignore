@@ -41,3 +41,6 @@ evaluation/reports/partial/
 
 # Conversation telemetry — contains recruiter questions and the agent's answers.
 logs/
+
+# Ruff's cache (main added ruff for linting).
+.ruff_cache/

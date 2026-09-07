@@ -1,10 +1,10 @@
 import chromadb
 from rank_bm25 import BM25Okapi
-from rag.embedder import embedder
-from rag.reranker import reranker
-from agent.llm import LLMClient
 
 import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+from agent.llm import LLMClient
+from rag.embedder import embedder
+from rag.reranker import reranker
 
 CHROMA_PATH = config.CHROMA_PATH  # single source of truth: settings.py
 
@@ -37,7 +37,7 @@ def expand_query(original_query: str, n_variations: int = 3) -> list[str]:
 
     raw = _llm.complete(prompt).strip()
     variations = [line.strip() for line in raw.splitlines() if line.strip()]
-    return [original_query] + variations[:n_variations]
+    return [original_query, *variations[:n_variations]]
 
 
 # ---------------------------------------------------------------------------

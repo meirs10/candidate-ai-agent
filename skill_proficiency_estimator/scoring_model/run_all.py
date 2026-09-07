@@ -15,20 +15,29 @@ import argparse
 import config
 import report as report_mod
 from train import train
-from evaluate import evaluate
 
 
 def main():
     parser = argparse.ArgumentParser(description="Run and compare all scoring experiments")
-    parser.add_argument("--smoke", action="store_true",
-                        help="Fast sanity run: small subset + few epochs (default subset=0.05, epochs=2).")
-    parser.add_argument("--subset", type=float, default=None,
-                        help="Train-data fraction (0-1) or row count (>=1). Overrides --smoke default.")
-    parser.add_argument("--epochs", type=int, default=None,
-                        help="Epochs per experiment. Overrides --smoke default.")
-    parser.add_argument("--experiments", nargs="+", choices=list(config.EXPERIMENTS),
-                        default=list(config.EXPERIMENTS),
-                        help="Which experiments to run (default: all).")
+    parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Fast sanity run: small subset + few epochs (default subset=0.05, epochs=2).",
+    )
+    parser.add_argument(
+        "--subset",
+        type=float,
+        default=None,
+        help="Train-data fraction (0-1) or row count (>=1). Overrides --smoke default.",
+    )
+    parser.add_argument("--epochs", type=int, default=None, help="Epochs per experiment. Overrides --smoke default.")
+    parser.add_argument(
+        "--experiments",
+        nargs="+",
+        choices=list(config.EXPERIMENTS),
+        default=list(config.EXPERIMENTS),
+        help="Which experiments to run (default: all).",
+    )
     args = parser.parse_args()
 
     if args.smoke:
@@ -40,8 +49,10 @@ def main():
         subset, epochs = args.subset, args.epochs
 
     mode = "SMOKE" if args.smoke else "FULL"
-    print(f"\n########## RUN ALL ({mode}) — {len(args.experiments)} experiment(s) "
-          f"| subset={subset} epochs={epochs or config.EPOCHS} ##########")
+    print(
+        f"\n########## RUN ALL ({mode}) — {len(args.experiments)} experiment(s) "
+        f"| subset={subset} epochs={epochs or config.EPOCHS} ##########"
+    )
 
     for exp in args.experiments:
         config.apply_experiment(exp)

@@ -1,10 +1,9 @@
-from rag.retriever import retrieve
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 from store.structured import (
     get_field,
     get_skill_evidence,
     get_skill_evidence_for,
 )
-import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 
 # Rebindable module attributes, not direct imports: the eval harness swaps them
 # per candidate at runtime (evaluation/pipeline.set_candidate_id). Defaults come

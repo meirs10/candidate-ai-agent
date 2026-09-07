@@ -18,8 +18,9 @@ Prerequisites on the pod (scripts/pod_setup.sh checks all of them):
 """
 import time
 
-from evaluation.harness import run_evaluation, ALL_COMPONENTS
 import settings as config
+from evaluation.harness import ALL_COMPONENTS, run_evaluation
+
 
 def main() -> None:
     t0 = time.time()

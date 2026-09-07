@@ -26,7 +26,7 @@ _SCORING_DIR = _REPRESENTOR_ROOT / "skill_proficiency_estimator" / "scoring_mode
 if str(_SCORING_DIR) not in sys.path:
     sys.path.insert(0, str(_SCORING_DIR))
 
-import predict  # noqa: E402  (import after sys.path setup, by design)
+import predict
 
 
 def _free_ollama_vram() -> None:

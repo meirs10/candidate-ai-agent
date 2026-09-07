@@ -125,7 +125,7 @@ def test_load_returns_independent_defaults(temp_profile):
     before = copy.deepcopy(structured.DEFAULT_FIELDS)
     a["education"].append({"degree_title": "Mutated"})
     a["skills"].append("Mutated")
-    assert structured.DEFAULT_FIELDS == before, "mutating a loaded profile changed the defaults"
+    assert before == structured.DEFAULT_FIELDS, "mutating a loaded profile changed the defaults"
 
 
 # ── Unset fields must read as "Not provided" ─────────────────────────────────

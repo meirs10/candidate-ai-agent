@@ -29,6 +29,7 @@ import numpy as np
 import pandas as pd
 
 from rag.embedder import embedder
+
 # Reuse the retriever's existing Chroma client — opening a second PersistentClient
 # on the same path in the same process can conflict.
 from rag.retriever import client as chroma_client

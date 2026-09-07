@@ -4,9 +4,9 @@ import streamlit as st
 
 import ratelimit
 from agent.agent import run_streaming
+from app_pages import ui
 from auth import require_auth, require_bot_check
 from store.structured import load as load_profile
-from app_pages import ui
 
 # Two gates, in cost order. The bot check is what protects the public link; the
 # access code is a no-op unless APP_PASSWORD is still configured.

@@ -9,7 +9,7 @@ import pytest
 
 import ratelimit
 import settings as config
-from agent.agent import strip_preamble, _stream_without_preamble
+from agent.agent import _stream_without_preamble, strip_preamble
 
 
 @pytest.fixture(autouse=True)

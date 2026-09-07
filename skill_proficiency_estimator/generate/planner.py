@@ -2,15 +2,16 @@
 Phase 3+4: Document planning and evidence allocation via LLM.
 """
 
-import json
 import asyncio
-import aiohttp
+import json
 import logging
 from pathlib import Path
 
+import aiohttp
+
 from generate.hyperparams import sample_doc_count, sample_document_hyperparams
+from generate.personas import _extract_json, llm_call
 from generate.prompts import DOCUMENT_PLANNING, EVIDENCE_ALLOCATION
-from generate.personas import llm_call, _extract_json
 
 logger = logging.getLogger(__name__)
 
@@ -103,13 +104,11 @@ async def plan_documents(
                 # Adjust if LLM gave different count — use what we got if reasonable
                 if len(doc_plans) < 1 or len(doc_plans) > 7:
                     raise ValueError(f"Unreasonable doc count: {len(doc_plans)}")
-                logger.warning(
-                    f"{persona_id}: requested {doc_count} docs, got {len(doc_plans)}"
-                )
+                logger.warning(f"{persona_id}: requested {doc_count} docs, got {len(doc_plans)}")
 
             break
         except (json.JSONDecodeError, ValueError, KeyError) as e:
-            logger.warning(f"{persona_id} doc planning attempt {attempt+1}: {e}")
+            logger.warning(f"{persona_id} doc planning attempt {attempt + 1}: {e}")
             if attempt == max_retries - 1:
                 # Fallback: create a minimal plan with just a CV
                 doc_plans = [{"doc_type": "cv", "topic_summary": "Full CV", "title": "CV"}]
@@ -153,9 +152,7 @@ async def allocate_evidence(
     for i, doc in enumerate(doc_plans, 1):
         title = doc.get("title", doc["doc_type"])
         topic = doc.get("topic_summary", "")
-        docs_list_lines.append(
-            f"{i}. [{doc['doc_id']}] {doc['doc_type']}: \"{title}\" — {topic}"
-        )
+        docs_list_lines.append(f'{i}. [{doc["doc_id"]}] {doc["doc_type"]}: "{title}" — {topic}')
 
     # Build skills list for prompt
     skills_lines = []
@@ -210,7 +207,7 @@ async def allocate_evidence(
                 raise ValueError("Allocation failed hard constraints")
 
         except (json.JSONDecodeError, ValueError, KeyError) as e:
-            logger.warning(f"{persona_id} allocation attempt {attempt+1}: {e}")
+            logger.warning(f"{persona_id} allocation attempt {attempt + 1}: {e}")
             if attempt == max_retries - 1:
                 # Fallback: deterministic allocation
                 logger.error(f"{persona_id}: using fallback allocation")

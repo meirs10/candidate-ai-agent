@@ -18,12 +18,12 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from contextvars import copy_context
 
-import settings as config
 import agent.tools as tools_module
+import settings as config
 from agent import telemetry
+from agent.llm import AGENT_MAX_TOKENS, LLMClient
+from agent.tool_router import SOURCE_ORDER, TOOL_NAMES, TOOL_SOURCE, score_tools
 from agent.tools import execute_tool
-from agent.tool_router import score_tools, TOOL_SOURCE, SOURCE_ORDER, TOOL_NAMES
-from agent.llm import LLMClient, AGENT_MAX_TOKENS
 from rag.retriever import retrieve
 
 llm = LLMClient()

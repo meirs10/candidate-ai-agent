@@ -31,7 +31,7 @@ import pandas as pd
 # NOTE: import ONLY the router + LLM client — NOT agent.agent / agent.tools,
 # which would pull in rag.retriever -> chromadb. The router needs neither.
 from agent.llm import LLMClient
-from agent.tool_router import score_tools, TOOL_SOURCE, SOURCE_ORDER
+from agent.tool_router import SOURCE_ORDER, score_tools
 
 _DATA_DIR = Path(__file__).parent / "data"
 _REPORTS_DIR = Path(__file__).parent / "reports"
@@ -190,8 +190,5 @@ if __name__ == "__main__":
     workers = 4
     if "--workers" in args:
         workers = int(args[args.index("--workers") + 1])
-    if "--analyze" in args and _OUT.exists():
-        df = pd.read_csv(_OUT)
-    else:
-        df = collect(workers=workers)
+    df = pd.read_csv(_OUT) if "--analyze" in args and _OUT.exists() else collect(workers=workers)
     analyze(df)

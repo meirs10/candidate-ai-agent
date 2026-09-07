@@ -71,7 +71,7 @@ def load() -> dict:
         # lets an unsaved edit leak into DEFAULT_FIELDS for the rest of the
         # process — and from there into the next session's "blank" profile.
         return copy.deepcopy(DEFAULT_FIELDS)
-    with open(DATA_PATH, "r") as f:
+    with open(DATA_PATH) as f:
         data = json.load(f)
     # Migration: convert old flat education fields to list format
     if "education" not in data and "degree_title" in data:
@@ -186,7 +186,7 @@ def _canonical_field(field: str) -> list[str]:
         # Loose match: "preferred_work" -> preferred_location? No — require the
         # key's distinctive word, so a partial name only matches when it is
         # unambiguous.
-        candidates = [k for k in list(DEFAULT_FIELDS) + ["skills", "skill_evidence"]
+        candidates = [k for k in [*list(DEFAULT_FIELDS), "skills", "skill_evidence"]
                       if norm in k or k in norm]
         if len(candidates) == 1:
             resolved.append(candidates[0])
@@ -229,7 +229,7 @@ def _get_one_field(field: str) -> str:
         if not entries:
             return "Not provided"
         lines = []
-        for i, edu in enumerate(entries, 1):
+        for _i, edu in enumerate(entries, 1):
             title = edu.get("degree_title", "")
             if not title:
                 continue

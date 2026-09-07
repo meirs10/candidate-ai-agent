@@ -1,12 +1,13 @@
-import chromadb
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from unstructured.partition.auto import partition
-from rag.embedder import embedder
-from agent.llm import LLMClient
 import os
 import re
 
+import chromadb
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from unstructured.partition.auto import partition
+
 import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+from agent.llm import LLMClient
+from rag.embedder import embedder
 
 CHROMA_PATH = config.CHROMA_PATH  # single source of truth: settings.py
 
@@ -79,9 +80,7 @@ def _is_data_title(text: str) -> bool:
     if len(stripped) > _MAX_SECTION_NAME_LEN:
         return True
     # A complete sentence is prose the partitioner mislabelled, not a heading.
-    if body.endswith(".") and len(body.split()) > 6:
-        return True
-    return False
+    return bool(body.endswith(".") and len(body.split()) > 6)
 
 
 def _read_utf8(file_path: str) -> str | None:
@@ -172,8 +171,7 @@ def extract_sections(file_path: str) -> list[dict]:
 # Re-exported: these live in a dependency-free module so callers that only need
 # to classify a filename (the setup page, reindex_profile's dry run) don't have
 # to import `unstructured` and build an LLM client to do it.
-from rag.ingest_types import DOC_TYPES, infer_doc_type  # noqa: E402,F401
-
+from rag.ingest_types import DOC_TYPES, infer_doc_type  # noqa: F401
 
 # -- Summary generation ------------------------------------------------------
 

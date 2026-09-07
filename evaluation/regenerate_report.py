@@ -63,7 +63,7 @@ def _load_eval_results(reports_dir: Path) -> dict:
 
     ingestion_path = reports_dir / _INGESTION_FILE
     if ingestion_path.exists():
-        with open(ingestion_path, "r", encoding="utf-8") as f:
+        with open(ingestion_path, encoding="utf-8") as f:
             eval_results["ingestion_report"] = json.load(f)
 
     return eval_results
@@ -80,7 +80,7 @@ def regenerate_html(reports_dir: str | Path | None = None) -> str:
             f"(python -m evaluation.run_eval), which writes the report files this "
             f"rebuilds from."
         )
-    with open(pipeline_path, "r", encoding="utf-8") as f:
+    with open(pipeline_path, encoding="utf-8") as f:
         pipeline_results = json.load(f)
     if not pipeline_results:
         raise ValueError(f"{pipeline_path} contains no results to report on.")
@@ -91,7 +91,7 @@ def regenerate_html(reports_dir: str | Path | None = None) -> str:
     html_path = generate_report(pipeline_results, eval_results, output_format="html")
     print(f"[regenerate] Source: {reports_dir}")
     print(f"[regenerate] {len(pipeline_results)} questions, components: {loaded}")
-    print(f"[regenerate] HTML rebuilt from existing reports (no recompute).")
+    print("[regenerate] HTML rebuilt from existing reports (no recompute).")
     return html_path
 
 

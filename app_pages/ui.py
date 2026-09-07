@@ -20,6 +20,8 @@ Two rules kept throughout:
 
 from __future__ import annotations
 
+import contextlib
+
 import streamlit as st
 
 # One place for the palette. Mirrors .streamlit/config.toml so widgets Streamlit
@@ -267,17 +269,17 @@ def page_setup(title: str, icon: str = "💼", *, wide: bool = False,
     anything has already rendered. Without it the tab reads "Streamlit" with the
     stock icon, which is the first thing a recruiter sees when they open the link.
     """
-    try:
+    # Suppressed because set_page_config raises when it has already run this
+    # pass — multi-page navigation re-executes the entry script — and that is a
+    # normal, expected outcome here, not a failure. The styling below still has
+    # to apply either way.
+    with contextlib.suppress(Exception):
         st.set_page_config(
             page_title=title,
             page_icon=icon,
             layout="wide" if wide else "centered",
             initial_sidebar_state=sidebar,
         )
-    except Exception:
-        # Already configured earlier in this run (multi-page navigation re-executes
-        # the entry script). Styling below still needs to apply.
-        pass
     st.markdown(_CSS, unsafe_allow_html=True)
 
 

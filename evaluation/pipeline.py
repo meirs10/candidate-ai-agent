@@ -6,8 +6,9 @@ without requiring Streamlit or a running server.
 """
 
 import agent.tools as tools_module
-from agent.agent import run as agent_run, get_last_tool_scores
 import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+from agent.agent import get_last_tool_scores
+from agent.agent import run as agent_run
 
 # Precedence for reducing a multi-tool trajectory to a single "final_tool": the
 # tool that most grounds the answer wins, so retrieval questions still register

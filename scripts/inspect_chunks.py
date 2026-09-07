@@ -6,11 +6,13 @@ Usage:
     python -m tests.inspect_chunks
 """
 
-import sys
 import io
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+import sys
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 from pathlib import Path
+
 from rag.ingest import extract_sections, text_splitter
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -30,8 +32,7 @@ def inspect_file(file_path: Path):
         chunks = text_splitter.split_text(section["text"])
         total_chunks += len(chunks)
 
-        print(f"  -- Section {s_idx}: \"{section['section']}\" "
-              f"({len(chunks)} chunk{'s' if len(chunks) != 1 else ''}) --")
+        print(f'  -- Section {s_idx}: "{section["section"]}" ({len(chunks)} chunk{"s" if len(chunks) != 1 else ""}) --')
 
         for c_idx, chunk in enumerate(chunks):
             size = len(chunk)
@@ -50,15 +51,17 @@ def inspect_file(file_path: Path):
         print()
 
     print(f"  TOTAL: {total_chunks} chunks across {len(sections)} sections")
-    print(f"  Sizes: ", end="")
+    print("  Sizes: ", end="")
     all_sizes = []
     for section in sections:
         for chunk in text_splitter.split_text(section["text"]):
             all_sizes.append(len(chunk))
     if all_sizes:
-        print(f"min={min(all_sizes)}, max={max(all_sizes)}, "
-              f"avg={sum(all_sizes)//len(all_sizes)}, "
-              f"tiny(<10)={sum(1 for s in all_sizes if s < 10)}")
+        print(
+            f"min={min(all_sizes)}, max={max(all_sizes)}, "
+            f"avg={sum(all_sizes) // len(all_sizes)}, "
+            f"tiny(<10)={sum(1 for s in all_sizes if s < 10)}"
+        )
     print()
 
 

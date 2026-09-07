@@ -18,8 +18,8 @@ JSON_ONLY = "--json-only" in sys.argv
 # The document writers pull in heavy/optional deps (fpdf, python-docx, Pillow).
 # Only import them when we actually need to render documents.
 if not JSON_ONLY:
-    from fpdf import FPDF
     from docx import Document
+    from fpdf import FPDF
     from PIL import Image, ImageDraw, ImageFont
 
 DATA_DIR = Path(__file__).parent
@@ -111,12 +111,36 @@ def gen(idx, fmts, seed, cv, readme, rec, golden):
 if __name__=="__main__":
     print("Generating candidates...\n")
     # Import candidate modules
-    from evaluation.data.cand_1 import SEED as S1, CV as C1, README as R1, REC as RC1, GOLDEN as G1
-    from evaluation.data.cand_2 import SEED as S2, CV as C2, README as R2, REC as RC2, GOLDEN as G2
-    from evaluation.data.cand_3 import SEED as S3, CV as C3, README as R3, REC as RC3, GOLDEN as G3
-    from evaluation.data.cand_4 import SEED as S4, CV as C4, README as R4, REC as RC4, GOLDEN as G4
-    from evaluation.data.cand_5 import SEED as S5, CV as C5, README as R5, REC as RC5, GOLDEN as G5
-    from evaluation.data.cand_6 import SEED as S6, CV as C6, README as R6, REC as RC6, GOLDEN as G6
+    from evaluation.data.cand_1 import CV as C1
+    from evaluation.data.cand_1 import GOLDEN as G1
+    from evaluation.data.cand_1 import README as R1
+    from evaluation.data.cand_1 import REC as RC1
+    from evaluation.data.cand_1 import SEED as S1
+    from evaluation.data.cand_2 import CV as C2
+    from evaluation.data.cand_2 import GOLDEN as G2
+    from evaluation.data.cand_2 import README as R2
+    from evaluation.data.cand_2 import REC as RC2
+    from evaluation.data.cand_2 import SEED as S2
+    from evaluation.data.cand_3 import CV as C3
+    from evaluation.data.cand_3 import GOLDEN as G3
+    from evaluation.data.cand_3 import README as R3
+    from evaluation.data.cand_3 import REC as RC3
+    from evaluation.data.cand_3 import SEED as S3
+    from evaluation.data.cand_4 import CV as C4
+    from evaluation.data.cand_4 import GOLDEN as G4
+    from evaluation.data.cand_4 import README as R4
+    from evaluation.data.cand_4 import REC as RC4
+    from evaluation.data.cand_4 import SEED as S4
+    from evaluation.data.cand_5 import CV as C5
+    from evaluation.data.cand_5 import GOLDEN as G5
+    from evaluation.data.cand_5 import README as R5
+    from evaluation.data.cand_5 import REC as RC5
+    from evaluation.data.cand_5 import SEED as S5
+    from evaluation.data.cand_6 import CV as C6
+    from evaluation.data.cand_6 import GOLDEN as G6
+    from evaluation.data.cand_6 import README as R6
+    from evaluation.data.cand_6 import REC as RC6
+    from evaluation.data.cand_6 import SEED as S6
     gen(1,["pdf","pdf","pdf"],S1,C1,R1,RC1,G1)
     gen(2,["docx","docx","docx"],S2,C2,R2,RC2,G2)
     gen(3,["txt","txt","txt"],S3,C3,R3,RC3,G3)

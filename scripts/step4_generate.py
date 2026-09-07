@@ -14,8 +14,8 @@ Then package the results for the pod:
 """
 import time
 
-from evaluation.harness import run_evaluation
 import settings as config
+from evaluation.harness import run_evaluation
 
 # All 490 questions. Set to a small int for a smoke run.
 QUESTION_LIMIT = None

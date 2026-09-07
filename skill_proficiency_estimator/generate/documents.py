@@ -7,25 +7,26 @@ Integrates:
 - Per-document temperature sampling
 """
 
-import json
 import asyncio
-import aiohttp
+import json
 import logging
 import random
 from pathlib import Path
 
+import aiohttp
+
+from generate.personas import llm_call
+from generate.phrase_tracker import PhraseTracker
 from generate.prompts import (
+    BLOG_GENERATION,
     CV_GENERATION,
+    LINKEDIN_GENERATION,
     README_GENERATION,
     RECOMMENDATION_GENERATION,
-    LINKEDIN_GENERATION,
-    BLOG_GENERATION,
     build_skill_evidence_instructions,
 )
-from generate.personas import llm_call
 from generate.sanitizer import sanitize_document
-from generate.phrase_tracker import PhraseTracker
-from generate.seed_generator import pick_seed, format_seed_for_prompt
+from generate.seed_generator import format_seed_for_prompt, pick_seed
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +73,7 @@ def _extract_text(raw: str) -> str:
     if "<think>" in text:
         think_end = text.rfind("</think>")
         if think_end != -1:
-            text = text[think_end + len("</think>"):].strip()
+            text = text[think_end + len("</think>") :].strip()
 
     # Strip markdown fences if the LLM wrapped the output
     if text.startswith("```") and text.endswith("```"):
@@ -196,7 +197,7 @@ async def generate_document(
 
             break
         except Exception as e:
-            logger.warning(f"{doc_id} generation attempt {attempt+1}: {e}")
+            logger.warning(f"{doc_id} generation attempt {attempt + 1}: {e}")
             if attempt == max_retries - 1:
                 text = f"[GENERATION FAILED: {e}]"
 

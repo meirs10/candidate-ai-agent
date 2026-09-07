@@ -2,17 +2,20 @@
 
 # 🤖 Candidate AI Agent
 
-**An AI-powered digital avatar designed to represent job candidates to recruiters.**
+**An AI-powered digital avatar designed to represent you to recruiters 24/7.**
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" />
+  <img src="https://img.shields.io/badge/Python-3.11%2B-blue?style=for-the-badge&logo=python" />
   <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" />
   <img src="https://img.shields.io/badge/OpenRouter-6566F1?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Claude_Haiku_4.5-D97757?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Voyage_AI-1A1A1A?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Ollama-black?style=for-the-badge&logo=ollama&logoColor=white" />
-  <img src="https://img.shields.io/badge/DeBERTa--v3-5A2D81?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white" />
   <img src="https://img.shields.io/badge/ChromaDB-FFA500?style=for-the-badge&logo=database&logoColor=white" />
+  <img src="https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logo=uv&logoColor=white" />
+  <img src="https://img.shields.io/badge/Ruff-261230?style=for-the-badge&logo=ruff&logoColor=D7FF64" />
+  <img src="https://img.shields.io/github/actions/workflow/status/meirs10/candidate-ai-agent/ci.yml?branch=main&style=for-the-badge&label=CI" />
 </p>
 
 </div>
@@ -215,7 +218,7 @@ Retrieval feeding the scorer is near-perfect (**Hit@8 = 0.998**), so remaining e
 ## 🚀 Getting Started
 
 ### Prerequisites
-1. **Python 3.10+**.
+1. **Python 3.11+**. [uv](https://docs.astral.sh/uv/) manages the virtualenv and the lockfile.
 2. API keys for the hosted stack — [OpenRouter](https://openrouter.ai/keys) and [Voyage AI](https://dashboard.voyageai.com). Copy `.env.example` to `.env` and fill them in; `settings.py` loads it automatically.
    *Prefer no API keys?* Set `LLM_PROVIDER=ollama`, `EMBED_PROVIDER=nomic`, `RERANK_PROVIDER=qwen3`, install [Ollama](https://ollama.ai/) and `ollama pull qwen3`. Same pipeline, zero cost, no code changes.
 3. A CUDA GPU is recommended for the skill scorer (CPU works but is slow; the first estimation also downloads `deberta-v3-base`).
@@ -224,17 +227,27 @@ Retrieval feeding the scorer is near-perfect (**Hit@8 = 0.998**), so remaining e
 ### Installation
 ```bash
 git clone <your-repo-url> && cd candidate-ai-agent
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements-dev.txt                 # build env: ingestion + scorer + eval
+uv sync                      # creates .venv and installs everything from uv.lock
 ```
 
-> `requirements.txt` is the **lean production runtime** (no torch) used by the
-> hosted app. `requirements-dev.txt` includes it and adds everything needed to
-> build a profile and run the evaluation locally.
+<details>
+<summary>Without uv (pip)</summary>
+
+```bash
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements-dev.txt
+```
+</details>
+
+> **Two dependency sets, on purpose.** `requirements.txt` is the lean production
+> runtime with no torch — it is what the hosted app installs, and Streamlit
+> Community Cloud reads it directly, so it must stay in the repo even though uv
+> owns local development. `requirements-dev.txt` adds everything needed to build
+> a profile and run the evaluation: ingestion, the scorer, and the eval suite.
 
 ### Running the App
 ```bash
-streamlit run main.py
+uv run streamlit run main.py
 ```
 1. **Candidate Setup** — set `APP_MODE=setup` in `.env` to expose it. Fill in your verified details, upload documents, list your skills, click **Estimate Skill Proficiency**, then **Save Profile**.
 2. **Recruiter Chat** — the only page served when `APP_MODE=production`. Share the link plus the `APP_PASSWORD` access code.
@@ -262,13 +275,71 @@ See [`DEPLOY.md`](DEPLOY.md). The short version: build your profile locally, the
 artifacts to a separate **private** repo that Streamlit Cloud builds — so the
 public repo never contains personal data.
 
+### Docker
+Build and run without installing anything locally (except Ollama):
+```bash
+docker build -t candidate-ai-agent .
+docker run -p 8501:8501 candidate-ai-agent
+```
+The multi-stage `Dockerfile` uses the official uv image for fast, cached builds and produces a slim runtime image.
+
 ### (Optional) Rebuild the skill scorer
 From inside `skill_proficiency_estimator/`:
 ```bash
-python run_generation.py --num-personas 300 --concurrency 4   # generate the corpus
-python scoring_model/build_dataset.py                         # RAG → training_data.csv
-python scoring_model/run_all.py                               # train all experiments + report
+uv run python run_generation.py --num-personas 300 --concurrency 4   # generate the corpus
+uv run python scoring_model/build_dataset.py                         # RAG → training_data.csv
+uv run python scoring_model/run_all.py                               # train all experiments + report
 ```
+
+---
+
+## 🚢 Deployment
+
+**Live today:** Streamlit Community Cloud, serving the recruiter chat on the hosted
+API stack (OpenRouter + Voyage). The build/serve split is what makes this cheap —
+the deployed image never installs torch, because document parsing and skill
+scoring already ran locally and the app only reads their output. Private profile
+artifacts (`chroma_db/`, `store/data/candidate.json`) are gitignored here and
+published to a separate private repo by `scripts/publish_deploy.sh`, so this
+public repository never carries personal data. The chat is protected by a
+Cloudflare Turnstile bot check and a per-client rate limit rather than a shared
+password.
+
+**Portable alternative:** the included multi-stage `Dockerfile` builds the whole
+app as a single image, deployable to any container platform (Cloud Run, ECS,
+Azure Container Apps, Kubernetes).
+
+**Production architecture would look like:**
+
+- **App container** — the Streamlit app, built from the included `Dockerfile`, exposing the UI on port `8501`. Stateless aside from session data, so it can be scaled horizontally behind a load balancer if needed.
+- **LLM backend** — Ollama runs as a separate service rather than inside the app container, either as a sidecar container on the same host (for GPU access) or as a dedicated inference service. This keeps the app container lightweight and lets the GPU-bound component scale independently.
+- **Vector store** — ChromaDB's data directory would be mounted to persistent storage (a volume or cloud disk) rather than the container's ephemeral filesystem, so ingested documents and embeddings survive restarts and redeploys.
+- **Skill scorer checkpoint** — the trained DeBERTa+CORAL model (~700MB) would be pulled from object storage (e.g. S3/GCS) at container startup or baked into a dedicated image layer, rather than committed to the repo.
+- **Configuration** — model endpoints, ports, and any secrets would be injected via environment variables rather than local config files, following standard 12-factor practices.
+
+**CI/CD path:** the existing GitHub Actions pipeline already builds and health-checks the image on every push. Adding a deployment step (e.g. push to a container registry, then trigger a deploy on the target platform) would complete the pipeline from commit to running service.
+
+---
+
+## 🛠️ Development
+
+```bash
+uv sync                        # install all deps including dev group (ruff, pytest)
+uv run ruff check .            # lint
+uv run ruff check --fix .      # lint + auto-fix
+uv run ruff format .           # format
+uv run pytest                  # run tests
+```
+
+### CI
+
+A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every push/PR to `main`:
+
+| Job | What it does |
+|-----|--------------|
+| **lint** | `uv run ruff check .` |
+| **test** | Runs the e2e smoke test — validates the full agent wiring (tool dispatch → structured store → answer assembly) with mocked LLM |
+| **docker** | Builds the Docker image and verifies Streamlit's health endpoint responds |
 
 ---
 

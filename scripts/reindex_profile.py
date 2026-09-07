@@ -40,7 +40,8 @@ import settings as config
 # copy that used to live here missed "letter", "diploma" and "degree", and
 # checked "cv" before "recommendation", so "CV recommendation letter.pdf" was
 # typed differently depending on which entry point you used.
-from rag.ingest_types import DOC_TYPES as VALID_TYPES, infer_doc_type as infer_type
+from rag.ingest_types import DOC_TYPES as VALID_TYPES
+from rag.ingest_types import infer_doc_type as infer_type
 
 
 def purge(client, collection_name: str, source_files: list[str]) -> int:
@@ -117,7 +118,7 @@ def main() -> int:
           f"/ {config.CANDIDATE_ID}_summaries")
 
     print("\n-- re-ingesting --")
-    from rag.ingest import ingest_document          # imported late: pulls unstructured
+    from rag.ingest import ingest_document  # imported late: pulls unstructured
 
     ok = 0
     for f, t in plan:

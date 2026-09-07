@@ -1,12 +1,13 @@
-import streamlit as st
 import hashlib
 import os
 
+import streamlit as st
+
 import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
-from auth import require_auth
-from rag.ingest import ingest_document, infer_doc_type
-from store.structured import save, load, save_skill_results, DEFAULT_EDUCATION
 from app_pages import ui
+from auth import require_auth
+from rag.ingest import infer_doc_type, ingest_document
+from store.structured import DEFAULT_EDUCATION, load, save, save_skill_results
 
 # Defense in depth. main.py already gates on the access code and only registers
 # this page outside production — but this page can edit the profile and trigger
@@ -304,10 +305,9 @@ for i, edu in enumerate(st.session_state.education):
                 key=f"gpa_{i}",
             )
 
-    if i > 0:
-        if st.button("Remove", key=f"remove_edu_{i}"):
-            st.session_state.education.pop(i)
-            st.rerun()
+    if i > 0 and st.button("Remove", key=f"remove_edu_{i}"):
+        st.session_state.education.pop(i)
+        st.rerun()
 
 if st.button("+ Add Education"):
     st.session_state.education.append(DEFAULT_EDUCATION.copy())

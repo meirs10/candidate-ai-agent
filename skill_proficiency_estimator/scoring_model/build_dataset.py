@@ -45,19 +45,19 @@ import pandas as pd
 # The unified `rag/` now lives at the representor project root (one level above
 # the estimator), so add both: the estimator root for its own modules, and the
 # representor root so `from rag...` resolves to the single shared RAG system.
-_ESTIMATOR_ROOT = Path(__file__).resolve().parent.parent          # skill_proficiency_estimator/
-_REPRESENTOR_ROOT = _ESTIMATOR_ROOT.parent                        # candidate_representor/ (shared rag lives here)
+_ESTIMATOR_ROOT = Path(__file__).resolve().parent.parent  # skill_proficiency_estimator/
+_REPRESENTOR_ROOT = _ESTIMATOR_ROOT.parent  # candidate_representor/ (shared rag lives here)
 for _p in (_REPRESENTOR_ROOT, _ESTIMATOR_ROOT):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 
-try:                       # works when run as a script (scoring_model/ on path)
+try:  # works when run as a script (scoring_model/ on path)
     import config
     import metrics
 except ModuleNotFoundError:  # works when run as `python -m scoring_model.build_dataset`
     from scoring_model import config, metrics
 
-from rag.ingest import ingest_text, get_collection
+from rag.ingest import get_collection, ingest_text
 from rag.retriever import retrieve_batch_for_training
 
 
@@ -169,14 +169,15 @@ def build(limit: int | None = None, top_k: int | None = None, expand: bool = Fal
         personas = personas[:limit]
 
     flagged_personas, flagged_skills = _load_exclusion_inputs(documents_db)
-    print(f"Building training data from {len(personas)} personas "
-          f"(top_k={top_k}, expand={expand})")
-    print(f"Exclusion inputs: {len(flagged_personas)} flagged personas (rule 3), "
-          f"{len(flagged_skills)} flagged (persona,skill) (rule 1)")
+    print(f"Building training data from {len(personas)} personas (top_k={top_k}, expand={expand})")
+    print(
+        f"Exclusion inputs: {len(flagged_personas)} flagged personas (rule 3), "
+        f"{len(flagged_skills)} flagged (persona,skill) (rule 1)"
+    )
 
     csv_rows: list[dict] = []
     meta_rows: list[dict] = []
-    retrieval_grades: list[dict] = []   # only kept (non-excluded) rows
+    retrieval_grades: list[dict] = []  # only kept (non-excluded) rows
     reason_counts: Counter = Counter()
     row_id = 0
 
@@ -204,7 +205,7 @@ def build(limit: int | None = None, top_k: int | None = None, expand: bool = Fal
         batch = retrieve_batch_for_training(skill_names, pid, top_k=top_k, expand=expand)
 
         # --- One training row per skill ---
-        for (skill, level), res in zip(skill_items, batch):
+        for (skill, level), res in zip(skill_items, batch, strict=False):
             chunks = res["chunks"]
             retrieved_doc_ids = res["doc_ids"]
             padded = (chunks + [""] * top_k)[:top_k]
@@ -212,9 +213,9 @@ def build(limit: int | None = None, top_k: int | None = None, expand: bool = Fal
             # --- Exclusion decision (rules 1 & 2) ---
             exclude_reason = None
             if (pid, _norm(skill)) in flagged_skills:
-                exclude_reason = "skill_mismatch"          # rule 1
+                exclude_reason = "skill_mismatch"  # rule 1
             elif not padded[0]:
-                exclude_reason = "empty_retrieval"         # rule 2
+                exclude_reason = "empty_retrieval"  # rule 2
             exclude = exclude_reason is not None
             if exclude:
                 reason_counts[exclude_reason] += 1
@@ -231,20 +232,22 @@ def build(limit: int | None = None, top_k: int | None = None, expand: bool = Fal
             if not exclude:
                 retrieval_grades.append(grade)
 
-            meta_rows.append({
-                "row_id": row_id,
-                "persona_id": pid,
-                "skill": skill,
-                "label": int(level),
-                "retrieved_doc_ids": retrieved_doc_ids,
-                "evidence_doc_ids": sorted(relevant),
-                "hit": grade["hit"],
-                "precision": grade["precision"],
-                "rr": grade["rr"],
-                "evaluable": grade["evaluable"],
-                "exclude": exclude,
-                "exclude_reason": exclude_reason,
-            })
+            meta_rows.append(
+                {
+                    "row_id": row_id,
+                    "persona_id": pid,
+                    "skill": skill,
+                    "label": int(level),
+                    "retrieved_doc_ids": retrieved_doc_ids,
+                    "evidence_doc_ids": sorted(relevant),
+                    "hit": grade["hit"],
+                    "precision": grade["precision"],
+                    "rr": grade["rr"],
+                    "evaluable": grade["evaluable"],
+                    "exclude": exclude,
+                    "exclude_reason": exclude_reason,
+                }
+            )
             row_id += 1
 
         if (p_idx + 1) % 10 == 0:
@@ -270,7 +273,7 @@ def build(limit: int | None = None, top_k: int | None = None, expand: bool = Fal
     print("DATASET BUILD COMPLETE")
     print("=" * 56)
     print(f"  Rows emitted (CSV): {len(df)}   kept={len(kept)}  excluded={int(df['exclude'].sum())}")
-    print(f"  Dropped total     : {dropped}/{total} ({100*dropped/total:.1f}%) incl. flagged personas")
+    print(f"  Dropped total     : {dropped}/{total} ({100 * dropped / total:.1f}%) incl. flagged personas")
     print("  Drop reasons:")
     for reason, n in reason_counts.most_common():
         print(f"    {reason:24s}: {n}")
@@ -287,13 +290,15 @@ def build(limit: int | None = None, top_k: int | None = None, expand: bool = Fal
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Build RAG-backed scoring-model training data")
-    parser.add_argument("--limit", type=int, default=None,
-                        help="Only process the first N personas (quick runs)")
-    parser.add_argument("--top-k", type=int, default=None,
-                        help=f"Chunks retrieved per skill (default: {config.RETRIEVE_TOP_K})")
-    parser.add_argument("--expand", action="store_true",
-                        help="Enable LLM query expansion (wider recall, but an LLM "
-                             "call per skill — much slower). Off by default.")
+    parser.add_argument("--limit", type=int, default=None, help="Only process the first N personas (quick runs)")
+    parser.add_argument(
+        "--top-k", type=int, default=None, help=f"Chunks retrieved per skill (default: {config.RETRIEVE_TOP_K})"
+    )
+    parser.add_argument(
+        "--expand",
+        action="store_true",
+        help="Enable LLM query expansion (wider recall, but an LLM call per skill — much slower). Off by default.",
+    )
     args = parser.parse_args()
 
     build(limit=args.limit, top_k=args.top_k, expand=args.expand)

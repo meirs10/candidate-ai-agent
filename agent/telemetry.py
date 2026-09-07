@@ -34,15 +34,15 @@ import os
 import threading
 import time
 import uuid
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from contextvars import ContextVar
-from dataclasses import dataclass, field, fields, asdict
+from dataclasses import asdict, dataclass, field, fields
 
 import settings as config
 
 # The turn currently being recorded, visible to every LLM call it triggers —
 # including ones made from tool worker threads (see module docstring).
-_current_turn: ContextVar["TurnRecord | None"] = ContextVar("_current_turn", default=None)
+_current_turn: ContextVar[TurnRecord | None] = ContextVar("_current_turn", default=None)
 
 _file_lock = threading.Lock()
 
@@ -176,7 +176,7 @@ def turn(question: str, session_id: str = "local"):
         _emit(rec)
 
 
-def current_turn() -> "TurnRecord | None":
+def current_turn() -> TurnRecord | None:
     return _current_turn.get()
 
 
@@ -193,10 +193,8 @@ def _emit(rec: TurnRecord) -> None:
     line = json.dumps(payload, ensure_ascii=False)
 
     # 1. stdout — the durable sink on hosted platforms.
-    try:
+    with suppress(Exception):
         print("[turn] " + line, flush=True)
-    except Exception:
-        pass
 
     # 2. append-only file — backs the admin view.
     try:
@@ -215,7 +213,7 @@ def read_turns(limit: int | None = None) -> list[dict]:
     if not os.path.exists(path):
         return []
     rows = []
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:

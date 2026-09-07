@@ -491,15 +491,15 @@ def _build_merged_df(pipeline_results, eval_results) -> tuple[pd.DataFrame, list
             # Legacy CSV without identity columns — fall back to positional
             # alignment (only correct if this ragas_df was produced by exactly
             # today's select_rag_results predicate).
-            rag_pred = (lambda r: r.get("expected_source") in ("docs", "project")
-                        and r.get("contexts"))
+            def rag_pred(r):
+                return (r.get("expected_source") in ("docs", "project")
+                                    and r.get("contexts"))
             for col in ragas_cols:
                 _assign_subset(ragas_df, col, col, predicate=rag_pred)
 
     # Coerce every metric column to numeric (bools → 1/0, missing → NaN) so the
     # group means are well-defined.
-    metric_cols = ["tool_correct", "route_correct", "refusal_correct",
-                   "retrieval_ok", "answer_correctness"] + ragas_cols
+    metric_cols = ["tool_correct", "route_correct", "refusal_correct", "retrieval_ok", "answer_correctness", *ragas_cols]
     for col in metric_cols:
         if col in base.columns:
             base[col] = pd.to_numeric(base[col], errors="coerce")
@@ -549,7 +549,7 @@ def _breakdown_table(merged: pd.DataFrame, group_col: str, group_label: str,
               + "<th>Latency</th>")
 
     body = ""
-    for g in groups + ["__ALL__"]:
+    for g in [*groups, "__ALL__"]:
         is_all = g == "__ALL__"
         sub = merged if is_all else merged[merged[group_col] == g]
         name = "All" if is_all else str(g)

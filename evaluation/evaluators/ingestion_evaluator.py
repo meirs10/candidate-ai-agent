@@ -8,8 +8,9 @@ import re
 import chromadb
 import numpy as np
 import ollama
-from rag.embedder import embedder
+
 import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+from rag.embedder import embedder
 
 CHROMA_PATH = config.CHROMA_PATH  # single source of truth: settings.py
 
@@ -207,14 +208,14 @@ def run_ingestion_evaluation(
                 f"Check if the summary mentions each of these key facts:\n"
                 + "\n".join(f"  - {item}" for item in checklist)
                 + "\n\nFor each item, respond with YES or NO. "
-                f"Then give an overall quality score from 0.0 to 1.0.\n\n"
-                f"Format your response EXACTLY as:\n"
-                f"candidate name: YES/NO\n"
-                f"current role/job title: YES/NO\n"
-                f"key technical skills: YES/NO\n"
-                f"education/degree: YES/NO\n"
-                f"years of experience: YES/NO\n"
-                f"SCORE: 0.X"
+                "Then give an overall quality score from 0.0 to 1.0.\n\n"
+                "Format your response EXACTLY as:\n"
+                "candidate name: YES/NO\n"
+                "current role/job title: YES/NO\n"
+                "key technical skills: YES/NO\n"
+                "education/degree: YES/NO\n"
+                "years of experience: YES/NO\n"
+                "SCORE: 0.X"
             )
         response = ollama.chat(
             model=judge_model,

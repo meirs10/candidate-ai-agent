@@ -22,16 +22,16 @@ from pathlib import Path
 import chromadb
 import pandas as pd
 
+import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 from evaluation.pipeline import (
+    restore_candidate_id,
+    restore_project_id,
     run_full_pipeline,
     set_candidate_id,
-    restore_candidate_id,
     set_project_id,
-    restore_project_id,
 )
 from rag.ingest import ingest_document
 from store.structured import DATA_PATH as STRUCTURED_DATA_PATH
-import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
 
 # Paths
 EVAL_DIR = Path(__file__).parent
@@ -74,7 +74,7 @@ def _discover_candidates(candidates_filter: list[int] | None = None) -> list[dic
         seed_path = d / "candidate_seed.json"
         if not seed_path.exists():
             continue
-        with open(seed_path, "r", encoding="utf-8") as f:
+        with open(seed_path, encoding="utf-8") as f:
             seed = json.load(f)
 
         candidates.append({
@@ -124,7 +124,7 @@ def _load_golden_dataset(
 ) -> list[dict]:
     """Load golden_dataset.json from the candidate's directory."""
     path = candidate_dir / "golden_dataset.json"
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         dataset = json.load(f)
     if category_filter:
         dataset = [q for q in dataset if q["category"] == category_filter]
@@ -219,7 +219,7 @@ def _seed_skill_scores(candidate_dir: Path, eval_candidate_id: str):
     actual (non-dry, non-reuse) run reaches this point.
     """
     seed_path = candidate_dir / "candidate_seed.json"
-    with open(seed_path, "r", encoding="utf-8") as f:
+    with open(seed_path, encoding="utf-8") as f:
         seed = json.load(f)
     skills = seed.get("skills") or []
     if not skills:
@@ -356,7 +356,7 @@ def _run_project_block(
     if not dataset_path.exists():
         return []
 
-    with open(dataset_path, "r", encoding="utf-8") as f:
+    with open(dataset_path, encoding="utf-8") as f:
         dataset = json.load(f)
     if category_filter:
         dataset = [q for q in dataset if q.get("category") == category_filter]
@@ -372,7 +372,7 @@ def _run_project_block(
     partial_path = partial_dir / f"{EVAL_PROJECT_ID}.json"
     if resume and partial_path.exists():
         try:
-            with open(partial_path, "r", encoding="utf-8") as f:
+            with open(partial_path, encoding="utf-8") as f:
                 payload = json.load(f)
             if (payload.get("top_k") == top_k
                     and payload.get("category_filter") == category_filter):
@@ -607,7 +607,7 @@ def run_evaluation(
 
     if reuse_results:
         raw_path = REPORTS_DIR / "pipeline_results.json"
-        with open(raw_path, "r", encoding="utf-8") as f:
+        with open(raw_path, encoding="utf-8") as f:
             all_pipeline_results = json.load(f)
         if category_filter:
             all_pipeline_results = [
@@ -652,7 +652,7 @@ def run_evaluation(
             cached = None
             if resume and partial_path.exists():
                 try:
-                    with open(partial_path, "r", encoding="utf-8") as f:
+                    with open(partial_path, encoding="utf-8") as f:
                         payload = json.load(f)
                     if (payload.get("top_k") == top_k
                             and payload.get("category_filter") == category_filter):

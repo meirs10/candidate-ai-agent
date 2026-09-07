@@ -167,7 +167,7 @@ if __name__ == "__main__":
     # -- Ingestion Summary --
     if results["ingestion_report"] is not None:
         print("\n-- Ingestion Quality Summary --")
-        for eval_id, entry in results["ingestion_report"].items():
+        for _eval_id, entry in results["ingestion_report"].items():
             report = entry["report"]
             name = entry["name"]
             cs = report.get("chunk_stats", {})

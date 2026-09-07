@@ -3,14 +3,14 @@ Validation: LLM Check A (per-document skill showcase) and Check B (allocation ra
 All checks are read-only — output reports only, no modification to the DB.
 """
 
-import json
 import asyncio
-import aiohttp
+import json
 import logging
 from pathlib import Path
 
-from generate.prompts import VALIDATION_SKILL_SHOWCASE, VALIDATION_ALLOCATION_RATIONALITY
-from generate.personas import llm_call, _extract_json
+import aiohttp
+from generate.personas import _extract_json, llm_call
+from generate.prompts import VALIDATION_ALLOCATION_RATIONALITY, VALIDATION_SKILL_SHOWCASE
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +50,15 @@ async def check_skill_showcase(
                 llm_level = 1
 
         delta = abs(alloc_level - llm_level)
-        comparisons.append({
-            "skill": skill,
-            "allocated_level": alloc_level,
-            "llm_judged_level": llm_level,
-            "delta": delta,
-            "flagged": delta >= 2,
-        })
+        comparisons.append(
+            {
+                "skill": skill,
+                "allocated_level": alloc_level,
+                "llm_judged_level": llm_level,
+                "delta": delta,
+                "flagged": delta >= 2,
+            }
+        )
 
     return {
         "doc_id": document["doc_id"],
@@ -82,7 +84,7 @@ async def check_allocation_rationality(
     for doc in doc_plans:
         title = doc.get("title", doc["doc_type"])
         topic = doc.get("topic_summary", "")
-        docs_lines.append(f"- [{doc['doc_id']}] {doc['doc_type']}: \"{title}\" — {topic}")
+        docs_lines.append(f'- [{doc["doc_id"]}] {doc["doc_type"]}: "{title}" — {topic}')
 
     # Build skills list
     skills_lines = []
@@ -140,16 +142,12 @@ async def run_validation_checks(
     # --- Check A: Skill Showcase ---
     logger.info("Running LLM Check A: Per-document skill showcase...")
     showcase_tasks = []
-    for doc_id, doc in documents_db.items():
-        skills = list(doc.get("skill_evidence", {}).keys())
+    for _doc_id, doc in documents_db.items():
+        list(doc.get("skill_evidence", {}).keys())
         # Only check skills that should appear (intensity > 1)
-        skills_to_check = [
-            s for s, v in doc.get("skill_evidence", {}).items() if v > 1
-        ]
+        skills_to_check = [s for s, v in doc.get("skill_evidence", {}).items() if v > 1]
         if skills_to_check:
-            showcase_tasks.append(
-                check_skill_showcase(doc, skills_to_check, session, semaphore)
-            )
+            showcase_tasks.append(check_skill_showcase(doc, skills_to_check, session, semaphore))
 
     showcase_results = await asyncio.gather(*showcase_tasks)
     showcase_report = {
@@ -177,11 +175,7 @@ async def run_validation_checks(
                 doc_plans = json.load(f)
             with open(alloc_file) as f:
                 allocation = json.load(f)
-            alloc_tasks.append(
-                check_allocation_rationality(
-                    persona, doc_plans, allocation, session, semaphore
-                )
-            )
+            alloc_tasks.append(check_allocation_rationality(persona, doc_plans, allocation, session, semaphore))
 
     alloc_results = await asyncio.gather(*alloc_tasks)
     alloc_report = {

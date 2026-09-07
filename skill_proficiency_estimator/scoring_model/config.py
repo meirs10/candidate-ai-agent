@@ -5,8 +5,8 @@
 from pathlib import Path
 
 # ── Paths (absolute, cwd-independent) ───────────────────────
-_THIS_DIR = Path(__file__).resolve().parent          # scoring_model/
-_PROJECT_DIR = _THIS_DIR.parent                       # repo root
+_THIS_DIR = Path(__file__).resolve().parent  # scoring_model/
+_PROJECT_DIR = _THIS_DIR.parent  # repo root
 _DATA_DIR = _PROJECT_DIR / "data"
 
 # ── Transformer backbone ────────────────────────────────────
@@ -23,14 +23,15 @@ MAX_LEN = 2048
 # (0 = head-only; embeddings + lower layers always stay frozen). Full fine-tune
 # is intentionally not an option — it overfits this small dataset.
 EXPERIMENTS = {
-    "coral_frozen":      {"head_type": "coral",      "unfreeze_last_n": 0,
-                          "desc": "DeBERTa + CORAL head, head-only (current)"},
-    "classifier_frozen": {"head_type": "classifier", "unfreeze_last_n": 0,
-                          "desc": "DeBERTa + softmax classifier head, head-only"},
-    "coral_top3":        {"head_type": "coral",      "unfreeze_last_n": 3,
-                          "desc": "DeBERTa + CORAL head, fine-tune top 3 layers"},
+    "coral_frozen": {"head_type": "coral", "unfreeze_last_n": 0, "desc": "DeBERTa + CORAL head, head-only (current)"},
+    "classifier_frozen": {
+        "head_type": "classifier",
+        "unfreeze_last_n": 0,
+        "desc": "DeBERTa + softmax classifier head, head-only",
+    },
+    "coral_top3": {"head_type": "coral", "unfreeze_last_n": 3, "desc": "DeBERTa + CORAL head, fine-tune top 3 layers"},
 }
-EXPERIMENT = "coral_frozen"   # <-- change this (or pass --experiment) to switch
+EXPERIMENT = "coral_frozen"  # <-- change this (or pass --experiment) to switch
 
 # Derived from EXPERIMENT (re-derived by apply_experiment at runtime).
 HEAD_TYPE = None
@@ -53,15 +54,15 @@ def apply_experiment(name: str) -> None:
 # higher, but a single global value keeps the comparison clean.
 BATCH_SIZE = 8
 EPOCHS = 25
-EARLY_STOP_PATIENCE = 10   # stop if val MAE hasn't improved for this many epochs
-HEAD_LR = 1e-3       # MLP head learning rate
-BACKBONE_LR = 2e-5   # transformer LR (used only when fine-tuning, i.e. unfrozen)
+EARLY_STOP_PATIENCE = 10  # stop if val MAE hasn't improved for this many epochs
+HEAD_LR = 1e-3  # MLP head learning rate
+BACKBONE_LR = 2e-5  # transformer LR (used only when fine-tuning, i.e. unfrozen)
 DROPOUT = 0.3
-GRAD_CLIP = 1.0      # max grad norm — prevents fine-tuning blow-ups (NaN loss)
+GRAD_CLIP = 1.0  # max grad norm — prevents fine-tuning blow-ups (NaN loss)
 
 # ── GPU efficiency ──────────────────────────────────────────
-NUM_WORKERS = 4      # DataLoader workers — parallelise the (slow) DeBERTa tokenizer
-USE_AMP = True       # bf16 autocast on CUDA for forward passes (no-op on CPU)
+NUM_WORKERS = 4  # DataLoader workers — parallelise the (slow) DeBERTa tokenizer
+USE_AMP = True  # bf16 autocast on CUDA for forward passes (no-op on CPU)
 
 # ── Data ────────────────────────────────────────────────────
 # Built by scoring_model/build_dataset.py (RAG → training rows).
@@ -83,28 +84,29 @@ RANDOM_SEED = 42
 # Number of reranked chunks retrieved, saved (chunk1..chunkN) and fed to the
 # scorer. Single source of truth — build_dataset and dataset.py both follow it.
 RETRIEVE_TOP_K = 8
-EVIDENCE_THRESHOLD = 2   # min skill_evidence intensity for a doc to count
-                         # as a *relevant* retrieval target (see build_dataset)
+EVIDENCE_THRESHOLD = 2  # min skill_evidence intensity for a doc to count
+# as a *relevant* retrieval target (see build_dataset)
 
 # ── Row exclusion (data-quality filters applied in build_dataset) ──
 # Rows are tagged (not deleted) with an exclude_reason in retrieval_meta.jsonl;
 # load_data drops excluded rows when EXCLUDE_FLAGGED is True, so thresholds can
 # be toggled without rebuilding.
 EXCLUDE_FLAGGED = True
-SKILL_MISMATCH_MAX = 3   # rule 1: drop (persona,skill) if max |delta| >= this
-SKILL_MISMATCH_AVG = 2   # rule 1: ...or if avg |delta| >= this
-MIN_DOC_WORDS = 30       # rule 4: ingestion skips shorter / failed documents
+SKILL_MISMATCH_MAX = 3  # rule 1: drop (persona,skill) if max |delta| >= this
+SKILL_MISMATCH_AVG = 2  # rule 1: ...or if avg |delta| >= this
+MIN_DOC_WORDS = 30  # rule 4: ingestion skips shorter / failed documents
 
 _REPORTS_DIR = _DATA_DIR / "reports"
 SHOWCASE_REPORT_PATH = str(_REPORTS_DIR / "skill_showcase_report.json")
 ALLOCATION_REPORT_PATH = str(_REPORTS_DIR / "allocation_rationality_report.json")
 
 # ── Classes ─────────────────────────────────────────────────
-NUM_CLASSES = 5          # ordinal labels 1-5  →  0-4 (zero-indexed)
-NUM_CORAL_OUTPUTS = NUM_CLASSES - 1   # = 4 cumulative logits (coral head only)
+NUM_CLASSES = 5  # ordinal labels 1-5  →  0-4 (zero-indexed)
+NUM_CORAL_OUTPUTS = NUM_CLASSES - 1  # = 4 cumulative logits (coral head only)
 
 # ── Run artifacts (per experiment) ──────────────────────────
 _RUNS_DIR = _THIS_DIR / "runs"
+
 
 def run_dir() -> Path:
     """runs/<EXPERIMENT>/ — created on demand; holds the checkpoint + metrics."""
@@ -112,8 +114,10 @@ def run_dir() -> Path:
     d.mkdir(parents=True, exist_ok=True)
     return d
 
+
 def checkpoint_path() -> str:
     return str(run_dir() / "best_model.pt")
+
 
 def metrics_path() -> str:
     return str(run_dir() / "metrics.json")

@@ -14,16 +14,15 @@ import sys
 from pathlib import Path
 
 import aiohttp
-from tqdm.auto import tqdm
-
-from generate.personas import generate_persona
-from generate.planner import plan_documents, allocate_evidence
-from generate.documents import generate_document
 from generate.assembler import assemble_dataset
+from generate.documents import generate_document
+from generate.personas import generate_persona
+from generate.planner import allocate_evidence, plan_documents
 from generate.seed_generator import generate_all_seeds
+from tqdm.auto import tqdm
+from validate.cross_validate import run_validation_checks
 from validate.shortcut_check import run_shortcut_checks
 from validate.stats import run_stats_checks
-from validate.cross_validate import run_validation_checks
 
 # Directories
 BASE_DIR = Path(__file__).resolve().parent
@@ -52,19 +51,26 @@ async def process_persona(
 
     # Phase 2: Generate persona
     persona = await generate_persona(
-        persona_id, session, semaphore,
+        persona_id,
+        session,
+        semaphore,
         checkpoint_dir=CHECKPOINT_DIR / "personas",
     )
 
     # Phase 3: Plan documents
     doc_plans = await plan_documents(
-        persona, session, semaphore,
+        persona,
+        session,
+        semaphore,
         checkpoint_dir=CHECKPOINT_DIR / "allocations",
     )
 
     # Phase 4: Allocate evidence
     allocation = await allocate_evidence(
-        persona, doc_plans, session, semaphore,
+        persona,
+        doc_plans,
+        session,
+        semaphore,
         checkpoint_dir=CHECKPOINT_DIR / "allocations",
     )
 
@@ -79,8 +85,11 @@ async def process_persona(
     # Phase 5: Generate all documents (parallel within persona)
     doc_tasks = [
         generate_document(
-            doc_plan, persona, allocation,
-            session, semaphore,
+            doc_plan,
+            persona,
+            allocation,
+            session,
+            semaphore,
             checkpoint_dir=CHECKPOINT_DIR / "documents",
             structure_seeds=structure_seeds,
         )
@@ -88,20 +97,21 @@ async def process_persona(
     ]
     documents = await asyncio.gather(*doc_tasks)
 
-    logger.info(
-        f"Completed {persona_id}: {persona['name']} — "
-        f"{len(persona['skills'])} skills, {len(documents)} docs"
-    )
+    logger.info(f"Completed {persona_id}: {persona['name']} — {len(persona['skills'])} skills, {len(documents)} docs")
     return persona
 
 
 async def run_generation(num_personas: int, concurrency: int):
     """Run the full generation pipeline."""
     # Ensure directories exist
-    for d in [DATA_DIR, CHECKPOINT_DIR, REPORTS_DIR,
-              CHECKPOINT_DIR / "personas",
-              CHECKPOINT_DIR / "allocations",
-              CHECKPOINT_DIR / "documents"]:
+    for d in [
+        DATA_DIR,
+        CHECKPOINT_DIR,
+        REPORTS_DIR,
+        CHECKPOINT_DIR / "personas",
+        CHECKPOINT_DIR / "allocations",
+        CHECKPOINT_DIR / "documents",
+    ]:
         d.mkdir(parents=True, exist_ok=True)
 
     semaphore = asyncio.Semaphore(concurrency)
@@ -113,9 +123,7 @@ async def run_generation(num_personas: int, concurrency: int):
     structure_seeds = await generate_all_seeds(seeds_path)
     logger.info(f"Loaded {sum(len(v) for v in structure_seeds.values())} structure seeds")
 
-    async with aiohttp.ClientSession(
-        timeout=aiohttp.ClientTimeout(total=300)
-    ) as session:
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=300)) as session:
         # Process all personas in parallel (throttled by semaphore), with a
         # progress bar that advances as each persona finishes (any order).
         pbar = tqdm(total=num_personas, desc="Personas", unit="persona")
@@ -172,13 +180,13 @@ async def run_validation(concurrency: int):
 
     # LLM checks
     semaphore = asyncio.Semaphore(concurrency)
-    async with aiohttp.ClientSession(
-        timeout=aiohttp.ClientTimeout(total=300)
-    ) as session:
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=300)) as session:
         await run_validation_checks(
-            personas, documents_db,
+            personas,
+            documents_db,
             CHECKPOINT_DIR / "allocations",
-            session, semaphore,
+            session,
+            semaphore,
             REPORTS_DIR,
         )
 
@@ -200,19 +208,25 @@ async def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SPE Synthetic Dataset Generation")
     parser.add_argument(
-        "--num-personas", type=int, default=50,
+        "--num-personas",
+        type=int,
+        default=50,
         help="Number of personas to generate (default: 50 for pilot)",
     )
     parser.add_argument(
-        "--concurrency", type=int, default=4,
+        "--concurrency",
+        type=int,
+        default=4,
         help="Max concurrent LLM calls (default: 4)",
     )
     parser.add_argument(
-        "--skip-validation", action="store_true",
+        "--skip-validation",
+        action="store_true",
         help="Skip validation checks after generation",
     )
     parser.add_argument(
-        "--validate-only", action="store_true",
+        "--validate-only",
+        action="store_true",
         help="Only run validation on existing dataset",
     )
     args = parser.parse_args()

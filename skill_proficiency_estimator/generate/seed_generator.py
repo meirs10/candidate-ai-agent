@@ -9,11 +9,11 @@ Seeds are cached to disk after generation so this step only runs once.
 """
 
 import json
-import asyncio
-import aiohttp
 import logging
 import random
 from pathlib import Path
+
+import aiohttp
 
 logger = logging.getLogger(__name__)
 
@@ -202,7 +202,7 @@ def _extract_json(text: str) -> dict:
     if "<think>" in text:
         think_end = text.rfind("</think>")
         if think_end != -1:
-            text = text[think_end + len("</think>"):].strip()
+            text = text[think_end + len("</think>") :].strip()
     if "```json" in text:
         start = text.index("```json") + len("```json")
         end = text.index("```", start)
@@ -249,19 +249,12 @@ async def generate_seeds_for_type(
                     seed["seniority"] = seniority_key
 
                 all_seeds.extend(seeds)
-                logger.info(
-                    f"Generated {len(seeds)} seeds for {doc_type}/{seniority_key}"
-                )
+                logger.info(f"Generated {len(seeds)} seeds for {doc_type}/{seniority_key}")
                 break
             except (json.JSONDecodeError, ValueError, KeyError) as e:
-                logger.warning(
-                    f"Seed generation {doc_type}/{seniority_key} "
-                    f"attempt {attempt + 1}: {e}"
-                )
+                logger.warning(f"Seed generation {doc_type}/{seniority_key} attempt {attempt + 1}: {e}")
                 if attempt == max_retries - 1:
-                    logger.error(
-                        f"Failed to generate seeds for {doc_type}/{seniority_key}"
-                    )
+                    logger.error(f"Failed to generate seeds for {doc_type}/{seniority_key}")
 
     return all_seeds
 
@@ -285,9 +278,7 @@ async def generate_all_seeds(
     logger.info("Generating document structure seeds...")
 
     all_seeds = {}
-    async with aiohttp.ClientSession(
-        timeout=aiohttp.ClientTimeout(total=300)
-    ) as session:
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=300)) as session:
         for doc_type in DOC_TYPE_CONFIGS:
             seeds = await generate_seeds_for_type(doc_type, session)
             all_seeds[doc_type] = seeds

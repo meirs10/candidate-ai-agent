@@ -1,0 +1,26 @@
+.git
+.gitignore
+.idea
+.venv
+.ruff_cache
+.pytest_cache
+.deepeval
+# NOT .streamlit — config.toml carries the theme and must be in the image.
+# Secrets never are: .env and secrets.toml are excluded explicitly below.
+.streamlit/secrets.toml
+.ipynb_checkpoints
+__pycache__
+*.pyc
+*.pt
+*.bin
+*.log
+chroma_db
+uploads
+Dockerfile
+.dockerignore
+README.md
+LICENSE
+.env
+logs
+store/data/candidate.json
+evaluation/reports

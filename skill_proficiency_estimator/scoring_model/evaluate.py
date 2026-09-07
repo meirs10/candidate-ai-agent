@@ -18,15 +18,14 @@ import argparse
 import json
 import os
 
-import numpy as np
-import torch
-from sklearn.metrics import confusion_matrix
-
 import config
 import heads
 import metrics
+import numpy as np
+import torch
 from dataset import load_data_with_frames
 from model import ScoringModel
+from sklearn.metrics import confusion_matrix
 
 
 def _load_retrieval_meta() -> dict:
@@ -146,8 +145,7 @@ def _report_joint(test_df, preds_orig, labels_orig, retrieval_meta, row_ids):
 
     _summary("retrieval HIT", hit_mask)
     _summary("retrieval MISS", miss_mask)
-    print("\n  (Large gap => retrieval is limiting the scorer; close gap => "
-          "scoring errors are intrinsic.)")
+    print("\n  (Large gap => retrieval is limiting the scorer; close gap => scoring errors are intrinsic.)")
 
 
 def evaluate() -> dict:
@@ -172,9 +170,9 @@ def evaluate() -> dict:
     all_preds, all_labels = [], []
     with torch.no_grad():
         for batch in test_loader:
-            input_ids      = batch["input_ids"].to(device)
-            attention_mask  = batch["attention_mask"].to(device)
-            labels          = batch["label"].to(device)
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch["attention_mask"].to(device)
+            labels = batch["label"].to(device)
 
             with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=amp_enabled):
                 logits = model(input_ids, attention_mask)
@@ -183,11 +181,11 @@ def evaluate() -> dict:
             all_preds.append(preds.cpu())
             all_labels.append(labels.cpu())
 
-    all_preds  = torch.cat(all_preds).numpy()
+    all_preds = torch.cat(all_preds).numpy()
     all_labels = torch.cat(all_labels).numpy()
 
     # ── shift back to original 1-5 scale ────────────────────
-    preds_orig  = all_preds + 1
+    preds_orig = all_preds + 1
     labels_orig = all_labels + 1
 
     retrieval_meta = _load_retrieval_meta()
@@ -201,8 +199,7 @@ def evaluate() -> dict:
     # ── persist metrics for cross-experiment comparison ─────
     cm = confusion_matrix(labels_orig, preds_orig, labels=[1, 2, 3, 4, 5])
     per_class = {
-        int(lbl): (float(cm[i][i] / cm[i].sum()) if cm[i].sum() else 0.0)
-        for i, lbl in enumerate([1, 2, 3, 4, 5])
+        int(lbl): (float(cm[i][i] / cm[i].sum()) if cm[i].sum() else 0.0) for i, lbl in enumerate([1, 2, 3, 4, 5])
     }
     result = {
         "experiment": config.EXPERIMENT,
@@ -210,7 +207,7 @@ def evaluate() -> dict:
         "model_name": config.MODEL_NAME,
         "head_type": config.HEAD_TYPE,
         "unfreeze_last_n": config.UNFREEZE_LAST_N,
-        "n_test": int(len(labels_orig)),
+        "n_test": len(labels_orig),
         "scoring": scoring,
         "per_class_accuracy": per_class,
         "confusion_matrix": cm.tolist(),
@@ -226,7 +223,9 @@ def evaluate() -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate a skill-scoring experiment")
     parser.add_argument(
-        "--experiment", choices=list(config.EXPERIMENTS), default=None,
+        "--experiment",
+        choices=list(config.EXPERIMENTS),
+        default=None,
         help=f"Which variant to evaluate (default: config.EXPERIMENT = {config.EXPERIMENT}).",
     )
     args = parser.parse_args()
