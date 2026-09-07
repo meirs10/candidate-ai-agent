@@ -1,7 +1,14 @@
+# settings MUST be imported before chromadb, not merely alongside it: its
+# bootstrap aliases pysqlite3 over the stdlib sqlite3 and forces protobuf's
+# pure-Python backend, and both are no-ops once chromadb has already pulled
+# in sqlite3 and OpenTelemetry. The app happens to import settings first via
+# main.py; the build scripts do not, so the order is pinned here instead of
+# being left to whichever entry point runs.
+# isort: off
+import settings as config
 import chromadb
 from rank_bm25 import BM25Okapi
-
-import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+# isort: on
 from agent.llm import LLMClient
 from rag.embedder import embedder
 from rag.reranker import reranker

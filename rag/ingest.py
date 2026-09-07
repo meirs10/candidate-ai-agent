@@ -1,11 +1,17 @@
 import os
 import re
 
+# settings MUST be imported before chromadb, not merely alongside it: its
+# bootstrap aliases pysqlite3 over the stdlib sqlite3 and forces protobuf's
+# pure-Python backend, and both are no-ops once chromadb has already pulled in
+# sqlite3 and OpenTelemetry. This module is the entry point for the build
+# scripts, which never import settings first on their own.
+# isort: off
+import settings as config
 import chromadb
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from unstructured.partition.auto import partition
-
-import settings as config  # module named `settings` to avoid shadowing the scorer's `config`
+# isort: on
 from agent.llm import LLMClient
 from rag.embedder import embedder
 
