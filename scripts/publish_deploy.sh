@@ -21,7 +21,11 @@
 set -euo pipefail
 
 REMOTE=deploy
-BRANCH=main            # branch Streamlit Cloud is pointed at, in the PRIVATE repo
+# Branch Streamlit Cloud is pointed at, in the PRIVATE repo. Override to stage a
+# candidate build on a second branch and point a throwaway Streamlit app at it,
+# so a risky change is verified against real artifacts before main moves:
+#     DEPLOY_BRANCH=integration bash scripts/publish_deploy.sh
+BRANCH="${DEPLOY_BRANCH:-main}"
 ARTIFACTS=(chroma_db store/data/candidate.json)
 
 # Trees the SERVE path never touches, stripped from the deploy commit. Without
