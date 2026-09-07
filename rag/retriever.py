@@ -1,9 +1,8 @@
 # settings MUST be imported before chromadb, not merely alongside it: its
-# bootstrap aliases pysqlite3 over the stdlib sqlite3 and forces protobuf's
-# pure-Python backend, and both are no-ops once chromadb has already pulled
-# in sqlite3 and OpenTelemetry. The app happens to import settings first via
-# main.py; the build scripts do not, so the order is pinned here instead of
-# being left to whichever entry point runs.
+# bootstrap aliases pysqlite3 over the stdlib sqlite3, and that is a no-op once
+# chromadb has already imported sqlite3. The app happens to import settings
+# first via main.py; the build scripts do not, so the order is pinned here
+# rather than left to whichever entry point runs.
 # isort: off
 import settings as config
 import chromadb

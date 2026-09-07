@@ -95,31 +95,8 @@ def _ensure_modern_sqlite() -> None:
         pass
 
 
-def _ensure_protobuf_compat() -> None:
-    """Force protobuf's pure-Python backend before ChromaDB loads.
-
-    ChromaDB imports OpenTelemetry, whose generated *_pb2.py modules were
-    produced by an older protoc. The C++ protobuf runtime refuses them at import
-    with a bare `TypeError` from `_CheckCalledFromGeneratedFile()` — which
-    Streamlit Cloud then redacts, so the app dies with an unreadable error and a
-    traceback ending inside protobuf.
-
-    It is a resolution accident rather than anything this project does: nothing
-    here pins protobuf, so a fresh deployment can install a newer runtime than
-    the one those generated files were built for. Pinning a version would fix
-    today's combination and break on the next release; the pure-Python backend
-    accepts both old and new generated code. It is slower, which is irrelevant —
-    the only protobuf traffic here is ChromaDB's telemetry, which is off.
-
-    setdefault, not assignment: an operator who sets this explicitly keeps it.
-    Must run before `import chromadb`.
-    """
-    os.environ.setdefault("PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION", "python")
-
-
 _ensure_tesseract_on_path()
 _ensure_modern_sqlite()
-_ensure_protobuf_compat()
 
 
 # ── Deployment mode ──────────────────────────────────────────────────────────

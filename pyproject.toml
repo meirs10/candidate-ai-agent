@@ -9,7 +9,15 @@ dependencies = [
     # Core agent
     "streamlit",
     "python-dotenv",             # loads .env — the single local secrets file
-    "chromadb",
+    "chromadb>=1.0",
+    # See requirements.txt: an old opentelemetry-proto ships pre-protoc-3.20
+    # generated modules that the modern protobuf runtime refuses at import,
+    # killing the app before it starts. Kept in step with requirements.txt.
+    "opentelemetry-api>=1.30",
+    "opentelemetry-sdk>=1.30",
+    "opentelemetry-proto>=1.30",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.30",
+    "protobuf>=5.27",
     # ChromaDB needs sqlite >= 3.35. Some hosted Linux images link Python's
     # stdlib sqlite3 against an older system library, which makes `import
     # chromadb` abort; settings._ensure_modern_sqlite() aliases this wheel over

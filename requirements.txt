@@ -10,7 +10,23 @@
 
 streamlit
 python-dotenv  # loads .env (single local secrets file — see .env.example)
-chromadb
+chromadb>=1.0
+# Pin the OpenTelemetry family, which ChromaDB imports at module load.
+#
+# A fresh deploy resolved an old opentelemetry-proto whose generated _pb2
+# modules use the pre-protoc-3.20 `_descriptor.FieldDescriptor(...)` style. The
+# modern protobuf runtime rejects those from _CheckCalledFromGeneratedFile(),
+# and the app dies at import with a TypeError that Streamlit Cloud redacts.
+#
+# Setting PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python does NOT help here:
+# Streamlit imports protobuf itself before any application code runs, and
+# protobuf picks its backend at its own import time. The version floor is the
+# only thing that fixes it. 1.42.x is the combination running locally.
+opentelemetry-api>=1.30
+opentelemetry-sdk>=1.30
+opentelemetry-proto>=1.30
+opentelemetry-exporter-otlp-proto-grpc>=1.30
+protobuf>=5.27
 # ChromaDB needs sqlite >= 3.35. Some hosted Linux images link Python's stdlib
 # sqlite3 against an older system library, which makes `import chromadb` abort.
 # settings._ensure_modern_sqlite() aliases this wheel over the stdlib name when
