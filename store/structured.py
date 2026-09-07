@@ -1,4 +1,5 @@
 import copy
+import datetime as _dt
 import json
 import os
 import re
@@ -200,6 +201,25 @@ def _canonical_field(field: str) -> list[str]:
     return out
 
 
+def _graduation_phrase(year: str) -> str:
+    """Render a graduation year as a completed or expected date.
+
+    A bare "(2026)" states a year without saying whether the degree is finished,
+    and the agent filled that gap by guessing — reporting a graduate as
+    "currently pursuing his Bachelor's, expected completion in 2026". The
+    candidate's own CV said "graduate with honors", but a direct education
+    question is answered from this field, so the documents were never in context
+    to contradict it.
+
+    An unparseable year is passed through in parentheses rather than guessed at:
+    "Expected 2026-2027" is already explicit, and labelling it again would be
+    both redundant and possibly wrong.
+    """
+    if not year.isdigit():
+        return f"({year})"
+    return f"graduated {year}" if int(year) <= _dt.date.today().year else f"expected {year}"
+
+
 def get_field(field: str) -> str:
     """Look up one or more profile fields by name.
 
@@ -239,7 +259,7 @@ def _get_one_field(field: str) -> str:
             if edu.get("institution"):
                 parts.append(f"from {edu['institution']}")
             if edu.get("graduation_year"):
-                parts.append(f"({edu['graduation_year']})")
+                parts.append(_graduation_phrase(str(edu["graduation_year"])))
             if edu.get("gpa"):
                 parts.append(f"- GPA: {edu['gpa']}")
             lines.append(" ".join(parts))

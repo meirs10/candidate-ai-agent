@@ -167,3 +167,51 @@ def test_collection_ids_come_from_settings():
     assert tools.CANDIDATE_ID == config.CANDIDATE_ID
     assert tools.PROJECT_ID == config.PROJECT_ID
     assert ingest.CHROMA_PATH == retriever.CHROMA_PATH == config.CHROMA_PATH
+
+
+# ── Education wording ────────────────────────────────────────────────────────
+
+def test_graduation_year_states_completed_or_expected():
+    """A graduation year must never be rendered bare.
+
+    "(2026)" says a year without saying whether the degree is finished, and the
+    agent filled that gap by guessing — telling a recruiter a graduate was
+    "currently pursuing his Bachelor's". A direct education question is answered
+    from this field, so the CV chunks that said "graduate with honors" were
+    never in context to contradict it.
+    """
+    import datetime
+
+    from store.structured import _graduation_phrase
+
+    this_year = datetime.date.today().year
+    assert _graduation_phrase(str(this_year - 5)) == f"graduated {this_year - 5}"
+    assert _graduation_phrase(str(this_year)) == f"graduated {this_year}"
+    assert _graduation_phrase(str(this_year + 2)) == f"expected {this_year + 2}"
+    # Already explicit — passed through rather than relabelled.
+    assert _graduation_phrase("Expected 2027") == "(Expected 2027)"
+
+
+def test_education_field_is_unambiguous(monkeypatch, tmp_path):
+    """The rendered education string carries the completion status."""
+    import json
+
+    from store import structured
+
+    profile = {
+        "full_name": "Ada Lovelace",
+        "education": [{
+            "degree_title": "B.Sc.",
+            "field_of_study": "Computer Science",
+            "institution": "Somewhere",
+            "graduation_year": "2019",
+            "gpa": "3.9",
+        }],
+    }
+    path = tmp_path / "candidate.json"
+    path.write_text(json.dumps(profile), encoding="utf-8")
+    monkeypatch.setattr(structured, "DATA_PATH", str(path))
+
+    rendered = structured.get_field("education")
+    assert "graduated 2019" in rendered
+    assert "(2019)" not in rendered, "a bare year invites the agent to guess a status"
