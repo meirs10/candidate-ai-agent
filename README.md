@@ -43,6 +43,7 @@ A standout capability is **Skill Proficiency Estimation**: a trained scoring mod
 | **Agent & Orchestration** | Custom probabilistic tool router, concurrent tool execution |
 | **Ingestion** | `unstructured`, section-aware chunking, OCR via Tesseract |
 | **Evaluation** | RAGAS, DeepEval (GEval), custom retrieval-gate analysis |
+| **Access control** | Cloudflare Turnstile bot check (server-verified) + per-client rate limiting |
 | **Observability** | Per-turn cost / latency / conversation log + private dashboard |
 | **Frontend** | Streamlit |
 
@@ -118,15 +119,42 @@ Generation and judging are deliberately split: answers come from the hosted API 
 
 A standout feature of the suite is **retrieval gate localization**, which traces each failed query to the exact stage it broke down — ingestion, recall, or re-ranking. This pinpointed the re-ranker as the primary bottleneck and informed a targeted upgrade to `Qwen3-Reranker-0.6B`, rather than guessing from an aggregate recall score.
 
+### 🔒 An Open Link, Without an Open Door
+The recruiter link is public — handing out a shared code is friction a recruiter
+shouldn't have to accept, and a code that circulates isn't a secret anyway. Two
+things replace it:
+
+* **Bot check.** A Cloudflare Turnstile challenge, verified **server-side**
+  against Cloudflare's siteverify. The widget hands the browser a token, and a
+  browser is not a trusted narrator: a script can render the page, skip the
+  widget and post whatever it likes, so nothing unlocks until Cloudflare
+  confirms the token. Network failures fail closed. Most visitors pass it
+  without noticing.
+* **Rate limit.** A sliding two-window limiter (12/min, 120/hr per client) that
+  bounds what anyone who gets through can spend. Every question costs a routing
+  call, up to four tools, embeddings, a rerank and a synthesis call, so an
+  unattended script is a billing problem long before it is a load problem. The
+  ceiling sits far above human use — nobody reads an answer and asks again
+  thirty times a minute.
+
+The Candidate Setup page is a different matter: it is never registered in
+production, still gated by `APP_PASSWORD`, and lives in a directory deliberately
+**not** named `pages/` — Streamlit auto-publishes every file in such a directory
+as its own route, bypassing the entry script and its gate.
+
 ### 💻 Candidate Setup Dashboard
-A sleek Streamlit interface where the candidate inputs verified structured facts, uploads unstructured PDFs/Docs for automatic chunking and ingestion, and - in the **Skills section** - lists their skills and runs the proficiency estimator (each result shows a 1–5 bar and an expandable "Evidence used" panel).
+A Streamlit interface where the candidate enters verified structured facts, uploads documents, and lists the skills to assess.
+
+Uploads are **staged, not ingested on sight**: each file gets its own document-type dropdown (CV, project write-up, recommendation, certificate), defaulted from the filename, and one button then ingests them all. The type picks the summary rubric — a CV is summarised by who the candidate is, a project write-up by what the work does — and staging means a wrong guess is corrected before it costs embedding and LLM calls. Files are de-duplicated by content hash, because Streamlit re-runs the script on every widget interaction and would otherwise re-ingest on each keystroke.
+
+In the **Skills section**, running the estimator shows each skill with a 1–5 bar and an expandable "Evidence used" panel.
 
 <p align="center">
   <img src="images/candidate_side.png" alt="Candidate Setup Dashboard" width="500" />
 </p>
 
 ### 💬 Recruiter Chat Interface
-Recruiters interact with the AI agent through a clean conversational UI, asking questions about the candidate's background, skills, and availability - all answered in real-time by the agentic pipeline.
+Recruiters interact with the agent through a clean conversational UI, asking about background, skills, projects and availability. Answers **stream token by token** as the model writes them, rather than appearing all at once when the turn finishes — the routing and tool calls happen behind a spinner, and text begins as soon as there is text to show.
 
 <p align="center">
   <img src="images/recruiter_side.png" alt="Recruiter Chat Interface" width="500" />
@@ -223,6 +251,7 @@ Retrieval feeding the scorer is near-perfect (**Hit@8 = 0.998**), so remaining e
    *Prefer no API keys?* Set `LLM_PROVIDER=ollama`, `EMBED_PROVIDER=nomic`, `RERANK_PROVIDER=qwen3`, install [Ollama](https://ollama.ai/) and `ollama pull qwen3`. Same pipeline, zero cost, no code changes.
 3. A CUDA GPU is recommended for the skill scorer (CPU works but is slow; the first estimation also downloads `deberta-v3-base`).
 4. Tesseract is needed only to ingest image documents (PNG/JPG scans).
+5. To serve a **public** recruiter link, add Cloudflare Turnstile keys (free, from the Cloudflare dashboard). Leave them unset locally and the bot check is skipped entirely. [`.env.example`](.env.example) documents every setting, including the private-link alternative and the rate-limit knobs.
 
 ### Installation
 ```bash
@@ -250,13 +279,18 @@ pip install -r requirements-dev.txt
 uv run streamlit run main.py
 ```
 1. **Candidate Setup** — set `APP_MODE=setup` in `.env` to expose it. Fill in your verified details, upload documents, list your skills, click **Estimate Skill Proficiency**, then **Save Profile**.
-2. **Recruiter Chat** — the only page served when `APP_MODE=production`. Share the link plus the `APP_PASSWORD` access code.
+2. **Recruiter Chat** — the only page served when `APP_MODE=production`. The link is public: recruiters need no code and no account, and a Cloudflare Turnstile check plus a per-client rate limit stand in for the shared secret. `APP_PASSWORD` still gates the setup page.
 
 ### Testing
 ```bash
-pytest -m "not integration"      # fast unit + regression suite
+pytest -m "not integration"      # fast unit + regression suite, no network
 pytest                           # adds tests that need a live provider / ChromaDB
+pytest e2e/                      # offline end-to-end smoke test
 ```
+
+`testpaths` is `tests/`, so a bare `pytest` does **not** collect `e2e/` — name it
+explicitly. Tests marked `integration` call a real provider (Voyage, Ollama) and
+cost money, which is why CI deselects them.
 
 ### Observability
 Every recruiter turn is logged with its cost, latency, selected tools, retrieval
@@ -269,14 +303,15 @@ total spend, cost per model role, p50/p95 latency and a searchable transcript of
 every conversation. It is never listed in the sidebar, so recruiters holding the
 chat code cannot discover it.
 
-### Deployment
+### Publishing Your Profile
 See [`DEPLOY.md`](DEPLOY.md). The short version: build your profile locally, then
 `bash scripts/publish_deploy.sh` pushes the serve path plus your private
 artifacts to a separate **private** repo that Streamlit Cloud builds — so the
 public repo never contains personal data.
 
 ### Docker
-Build and run without installing anything locally (except Ollama):
+Build and run without a local Python environment (pass your API keys in, or set
+`LLM_PROVIDER=ollama` and point it at a local Ollama):
 ```bash
 docker build -t candidate-ai-agent .
 docker run -p 8501:8501 candidate-ai-agent
@@ -328,18 +363,24 @@ uv sync                        # install all deps including dev group (ruff, pyt
 uv run ruff check .            # lint
 uv run ruff check --fix .      # lint + auto-fix
 uv run ruff format .           # format
-uv run pytest                  # run tests
+uv run pytest                  # unit suite
+uv run pytest e2e/             # end-to-end smoke test (not in testpaths)
 ```
 
 ### CI
 
-A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every push/PR to `main`:
+A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every push to `main` or `testing`, and on every PR to `main`:
 
 | Job | What it does |
 |-----|--------------|
 | **lint** | `uv run ruff check .` |
-| **test** | Runs the e2e smoke test — validates the full agent wiring (tool dispatch → structured store → answer assembly) with mocked LLM |
+| **test** | Installs Tesseract (the ingestion suite reads a PNG CV through the real OCR path), then runs the unit suite excluding `integration`, then the e2e smoke test |
 | **docker** | Builds the Docker image and verifies Streamlit's health endpoint responds |
+
+The two test runs are separate invocations on purpose. The smoke test replaces
+`rag.retriever` and `chromadb` in `sys.modules` before importing project code —
+the only point at which that mocking works — and in a shared session those mocks
+shadow the real modules and the unit suite fails to import.
 
 ---
 
