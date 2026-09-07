@@ -151,8 +151,15 @@ class TestRRFFusion:
 
 
 class TestReranker:
-    """Integration tests for the cross-encoder reranker."""
+    """Integration tests for the cross-encoder reranker.
 
+    Marked integration because rerank() calls the configured reranker provider,
+    which in the default configuration is the Voyage API — it needs a key and it
+    costs money. Only test_empty_chunks is unmarked: it short-circuits before any
+    call, which is precisely what it is checking.
+    """
+
+    @pytest.mark.integration
     def test_relevant_chunk_ranks_first(self):
         """Reranker should put the most relevant chunk first."""
         query = "What programming languages does the candidate know?"
@@ -171,6 +178,7 @@ class TestReranker:
         """Reranker should handle empty input gracefully."""
         assert rerank("anything", [], top_k=3) == []
 
+    @pytest.mark.integration
     def test_respects_top_k(self):
         """Reranker should return at most top_k results."""
         chunks = [f"Chunk about topic {i}" for i in range(10)]
