@@ -86,6 +86,12 @@ markers = [
     "e2e: end-to-end smoke tests with mocked externals",
 ]
 testpaths = ["tests"]
+# Put the repo root on sys.path for every pytest invocation, whatever the
+# entry point or the layout of the directory being collected. The project is
+# imported as top-level packages (agent, rag, store) rather than installed, so
+# without this its importability depends on pytest's rootdir inference — which
+# is what broke CI once already (see e2e/__init__.py).
+pythonpath = ["."]
 
 # ---------------------------------------------------------------------------
 # ruff
