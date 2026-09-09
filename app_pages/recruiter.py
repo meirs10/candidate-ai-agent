@@ -45,9 +45,9 @@ AVATARS = {"user": "🧑‍💼", "assistant": "💬"}
 # skill, a document search and a question about the system itself — so the first
 # click demonstrates the range instead of just answering one thing.
 SUGGESTIONS = [
-    "What's their strongest technical skill, and what's the evidence?",
-    "Walk me through their most significant project.",
-    "What's their availability and preferred work setup?",
+    "What's his strongest technical skill, and what's the evidence?",
+    "Walk me through his most significant project.",
+    "What's his availability and preferred work setup?",
     "How does this AI assistant actually work?",
 ]
 

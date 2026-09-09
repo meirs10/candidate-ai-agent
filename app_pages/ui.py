@@ -141,7 +141,19 @@ footer { visibility: hidden; }
 [data-testid="stChatMessage"] li { line-height: 1.55; }
 [data-testid="stChatMessage"] p:last-child { margin-bottom: 0; }
 
-[data-testid="stChatInput"] textarea { font-size: .97rem; }
+/* The agent answers in whatever language the recruiter asked in, and a Hebrew
+   question typed into an LTR page was rendering left-aligned with punctuation
+   on the wrong side. unicode-bidi: plaintext derives each paragraph's direction
+   from its own first strong character (UAX #9) rather than inheriting the
+   page's, so a Hebrew message aligns right and an English one keeps aligning
+   left — automatically, per message, with no language detection of our own and
+   no direction=rtl to get wrong on mixed-language text. */
+[data-testid="stChatMessage"] p,
+[data-testid="stChatMessage"] li {
+  unicode-bidi: plaintext;
+}
+
+[data-testid="stChatInput"] textarea { font-size: .97rem; unicode-bidi: plaintext; }
 [data-testid="stChatInput"] { border-radius: 14px; }
 
 /* ── Suggested questions ──────────────────────────────────────────────────── */
